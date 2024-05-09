@@ -23,25 +23,25 @@ const fms = {
       children: [
         {
           id: 'cityMaster',
-          title: 'CityMaster',
+          title: 'City Master',
           type: 'item',
           url: '/master/CityMaster'
         },
         {
           id: 'stateMaster',
-          title: 'StateMaster',
+          title: 'State Master',
           type: 'item',
           url: '/master/StateMaster'
         },
         {
           id: 'countryMaster',
-          title: 'CountryMaster',
+          title: 'Country Master',
           type: 'item',
           url: '/master/CountryMaster'
         },
         {
           id: 'companyDetails',
-          title: 'CompanyDetails',
+          title: 'Company Details',
           type: 'item',
           url: '/master/CompanyDetails'
         },
