@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 // material-ui
@@ -291,7 +291,13 @@ const ProfileSection = () => {
                           <ListItemIcon>
                             <IconLogout stroke={1.5} size="1.3rem" />
                           </ListItemIcon>
-                          <ListItemText primary={<Typography variant="body2">Logout</Typography>} />
+                          <ListItemText
+                            primary={
+                              <Typography variant="body2" component={Link} to="/pages/login/login3">
+                                Logout
+                              </Typography>
+                            }
+                          />
                         </ListItemButton>
                       </List>
                     </Box>

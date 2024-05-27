@@ -42,6 +42,7 @@ export const CompanyDetails = () => {
     exempted: false
   });
   const [tableData, setTableData] = useState([]);
+  const [listView, setListView] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -82,6 +83,14 @@ export const CompanyDetails = () => {
       .catch((error) => {
         console.error('Error:', error);
       });
+  };
+
+  const handleView = () => {
+    setListView(true);
+  };
+
+  const handleBackToInput = () => {
+    setListView(false);
   };
 
   const columns = useMemo(
@@ -163,310 +172,341 @@ export const CompanyDetails = () => {
     <>
       <div>{/* <ToastContainer /> */}</div>
       <div className="card w-full p-6 bg-base-100 shadow-xl" style={{ padding: '20px' }}>
-        <div className="row d-flex ml">
-          <div className="d-flex flex-wrap justify-content-start mb-4" style={{ marginBottom: '20px' }}>
-            <Tooltip title="Search" placement="top">
-              <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }}>
-                <Avatar
-                  variant="rounded"
-                  sx={{
-                    ...theme.typography.commonAvatar,
-                    ...theme.typography.mediumAvatar,
-                    transition: 'all .2s ease-in-out',
-                    background: theme.palette.secondary.light,
-                    color: theme.palette.secondary.dark,
-                    '&[aria-controls="menu-list-grow"],&:hover': {
-                      background: theme.palette.secondary.dark,
-                      color: theme.palette.secondary.light
-                    }
-                  }}
-                  ref={anchorRef}
-                  aria-haspopup="true"
-                  color="inherit"
-                >
-                  <SearchIcon size="1.3rem" stroke={1.5} />
-                </Avatar>
-              </ButtonBase>
-            </Tooltip>
+        {!listView ? (
+          <div className="row d-flex ml">
+            <div className="d-flex flex-wrap justify-content-start mb-4" style={{ marginBottom: '20px' }}>
+              <Tooltip title="Search" placement="top">
+                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }}>
+                  <Avatar
+                    variant="rounded"
+                    sx={{
+                      ...theme.typography.commonAvatar,
+                      ...theme.typography.mediumAvatar,
+                      transition: 'all .2s ease-in-out',
+                      background: theme.palette.secondary.light,
+                      color: theme.palette.secondary.dark,
+                      '&[aria-controls="menu-list-grow"],&:hover': {
+                        background: theme.palette.secondary.dark,
+                        color: theme.palette.secondary.light
+                      }
+                    }}
+                    ref={anchorRef}
+                    aria-haspopup="true"
+                    color="inherit"
+                  >
+                    <SearchIcon size="1.3rem" stroke={1.5} />
+                  </Avatar>
+                </ButtonBase>
+              </Tooltip>
 
-            <Tooltip title="Clear" placement="top">
-              {' '}
-              <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }}>
-                <Avatar
-                  variant="rounded"
-                  sx={{
-                    ...theme.typography.commonAvatar,
-                    ...theme.typography.mediumAvatar,
-                    transition: 'all .2s ease-in-out',
-                    background: theme.palette.secondary.light,
-                    color: theme.palette.secondary.dark,
-                    '&[aria-controls="menu-list-grow"],&:hover': {
-                      background: theme.palette.secondary.dark,
-                      color: theme.palette.secondary.light
-                    }
-                  }}
-                  ref={anchorRef}
-                  aria-haspopup="true"
-                  color="inherit"
-                >
-                  <ClearIcon size="1.3rem" stroke={1.5} />
-                </Avatar>
-              </ButtonBase>
-            </Tooltip>
+              <Tooltip title="Clear" placement="top">
+                {' '}
+                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }}>
+                  <Avatar
+                    variant="rounded"
+                    sx={{
+                      ...theme.typography.commonAvatar,
+                      ...theme.typography.mediumAvatar,
+                      transition: 'all .2s ease-in-out',
+                      background: theme.palette.secondary.light,
+                      color: theme.palette.secondary.dark,
+                      '&[aria-controls="menu-list-grow"],&:hover': {
+                        background: theme.palette.secondary.dark,
+                        color: theme.palette.secondary.light
+                      }
+                    }}
+                    ref={anchorRef}
+                    aria-haspopup="true"
+                    color="inherit"
+                  >
+                    <ClearIcon size="1.3rem" stroke={1.5} />
+                  </Avatar>
+                </ButtonBase>
+              </Tooltip>
 
-            <Tooltip title="List View" placement="top">
-              {' '}
-              <ButtonBase sx={{ borderRadius: '12px' }}>
-                <Avatar
-                  variant="rounded"
-                  sx={{
-                    ...theme.typography.commonAvatar,
-                    ...theme.typography.mediumAvatar,
-                    transition: 'all .2s ease-in-out',
-                    background: theme.palette.secondary.light,
-                    color: theme.palette.secondary.dark,
-                    '&[aria-controls="menu-list-grow"],&:hover': {
-                      background: theme.palette.secondary.dark,
-                      color: theme.palette.secondary.light
-                    }
-                  }}
-                  ref={anchorRef}
-                  aria-haspopup="true"
-                  color="inherit"
+              <Tooltip title="List View" placement="top">
+                {' '}
+                <ButtonBase sx={{ borderRadius: '12px' }} onClick={handleView}>
+                  <Avatar
+                    variant="rounded"
+                    sx={{
+                      ...theme.typography.commonAvatar,
+                      ...theme.typography.mediumAvatar,
+                      transition: 'all .2s ease-in-out',
+                      background: theme.palette.secondary.light,
+                      color: theme.palette.secondary.dark,
+                      '&[aria-controls="menu-list-grow"],&:hover': {
+                        background: theme.palette.secondary.dark,
+                        color: theme.palette.secondary.light
+                      }
+                    }}
+                    ref={anchorRef}
+                    aria-haspopup="true"
+                    color="inherit"
+                  >
+                    <FormatListBulletedTwoToneIcon size="1.3rem" stroke={1.5} />
+                  </Avatar>
+                </ButtonBase>
+              </Tooltip>
+              <Tooltip title="Save" placement="top">
+                {' '}
+                <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={handleSave}>
+                  <Avatar
+                    variant="rounded"
+                    sx={{
+                      ...theme.typography.commonAvatar,
+                      ...theme.typography.mediumAvatar,
+                      transition: 'all .2s ease-in-out',
+                      background: theme.palette.secondary.light,
+                      color: theme.palette.secondary.dark,
+                      '&[aria-controls="menu-list-grow"],&:hover': {
+                        background: theme.palette.secondary.dark,
+                        color: theme.palette.secondary.light
+                      }
+                    }}
+                    ref={anchorRef}
+                    aria-haspopup="true"
+                    color="inherit"
+                  >
+                    <SaveIcon size="1.3rem" stroke={1.5} />
+                  </Avatar>
+                </ButtonBase>
+              </Tooltip>
+            </div>
+            <div className="col-md-4 mb-3">
+              <TextField
+                id="outlined-textarea"
+                label="Name"
+                placeholder="Placeholder"
+                variant="outlined"
+                size="small"
+                name="Name"
+                fullWidth
+                required
+                // value={formData.subChapter}
+                // onChange={handleInputChange}
+                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+              />
+            </div>
+            <div className="col-md-4 mb-3">
+              <TextField
+                id="outlined-textarea"
+                label="Code"
+                placeholder="Placeholder"
+                variant="outlined"
+                size="small"
+                name="Code"
+                fullWidth
+                required
+                // value={formData.subChapter}
+                // onChange={handleInputChange}
+                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+              />
+            </div>
+            <div className="col-md-4 mb-3">
+              <TextField
+                id="outlined-textarea"
+                label="Email"
+                placeholder="Placeholder"
+                variant="outlined"
+                size="small"
+                name="Email"
+                fullWidth
+                required
+                // value={formData.subChapter}
+                // onChange={handleInputChange}
+                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+              />
+            </div>
+            <div className="col-md-4 mb-3">
+              <TextField
+                id="outlined-textarea"
+                label="Phone No"
+                placeholder="Placeholder"
+                variant="outlined"
+                size="small"
+                name="Phone"
+                fullWidth
+                required
+                // value={formData.subChapter}
+                // onChange={handleInputChange}
+                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+              />
+            </div>
+            <div className="col-md-4 mb-3">
+              <TextField
+                id="outlined-textarea"
+                label="Address"
+                placeholder="Placeholder"
+                variant="outlined"
+                size="small"
+                name="address"
+                fullWidth
+                required
+                // value={formData.subChapter}
+                // onChange={handleInputChange}
+                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+              />
+            </div>
+            <div className="col-md-4 mb-3">
+              <FormControl fullWidth size="small">
+                <InputLabel id="demo-simple-select-label">Country</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="Country"
+                  required
+                  // value={formData.exempted}
+                  name="Country"
+                  // onChange={handleInputChange}
                 >
-                  <FormatListBulletedTwoToneIcon size="1.3rem" stroke={1.5} />
-                </Avatar>
-              </ButtonBase>
-            </Tooltip>
-            <Tooltip title="Save" placement="top">
-              {' '}
-              <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={handleSave}>
-                <Avatar
-                  variant="rounded"
-                  sx={{
-                    ...theme.typography.commonAvatar,
-                    ...theme.typography.mediumAvatar,
-                    transition: 'all .2s ease-in-out',
-                    background: theme.palette.secondary.light,
-                    color: theme.palette.secondary.dark,
-                    '&[aria-controls="menu-list-grow"],&:hover': {
-                      background: theme.palette.secondary.dark,
-                      color: theme.palette.secondary.light
-                    }
-                  }}
-                  ref={anchorRef}
-                  aria-haspopup="true"
-                  color="inherit"
+                  <MenuItem value="0">India</MenuItem>
+                  <MenuItem value="1">America</MenuItem>
+                </Select>
+                {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
+              </FormControl>
+            </div>
+            <div className="col-md-4 mb-3">
+              <FormControl fullWidth size="small">
+                <InputLabel id="demo-simple-select-label">State</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="State"
+                  required
+                  // value={formData.exempted}
+                  name="State"
+                  // onChange={handleInputChange}
                 >
-                  <SaveIcon size="1.3rem" stroke={1.5} />
-                </Avatar>
-              </ButtonBase>
-            </Tooltip>
-          </div>
-          <div className="col-md-4 mb-3">
-            <TextField
-              id="outlined-textarea"
-              label="Name"
-              placeholder="Placeholder"
-              variant="outlined"
-              size="small"
-              name="Name"
-              fullWidth
-              required
-              // value={formData.subChapter}
-              // onChange={handleInputChange}
-              // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
-            />
-          </div>
-          <div className="col-md-4 mb-3">
-            <TextField
-              id="outlined-textarea"
-              label="Code"
-              placeholder="Placeholder"
-              variant="outlined"
-              size="small"
-              name="Code"
-              fullWidth
-              required
-              // value={formData.subChapter}
-              // onChange={handleInputChange}
-              // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
-            />
-          </div>
-          <div className="col-md-4 mb-3">
-            <TextField
-              id="outlined-textarea"
-              label="Email"
-              placeholder="Placeholder"
-              variant="outlined"
-              size="small"
-              name="Email"
-              fullWidth
-              required
-              // value={formData.subChapter}
-              // onChange={handleInputChange}
-              // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
-            />
-          </div>
-          <div className="col-md-4 mb-3">
-            <TextField
-              id="outlined-textarea"
-              label="Phone No"
-              placeholder="Placeholder"
-              variant="outlined"
-              size="small"
-              name="Phone"
-              fullWidth
-              required
-              // value={formData.subChapter}
-              // onChange={handleInputChange}
-              // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
-            />
-          </div>
-          <div className="col-md-4 mb-3">
-            <TextField
-              id="outlined-textarea"
-              label="Address"
-              placeholder="Placeholder"
-              variant="outlined"
-              size="small"
-              name="address"
-              fullWidth
-              required
-              // value={formData.subChapter}
-              // onChange={handleInputChange}
-              // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
-            />
-          </div>
-          <div className="col-md-4 mb-3">
-            <FormControl fullWidth size="small">
-              <InputLabel id="demo-simple-select-label">Country</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                label="Country"
-                required
-                // value={formData.exempted}
-                name="Country"
-                // onChange={handleInputChange}
-              >
-                <MenuItem value="0">India</MenuItem>
-                <MenuItem value="1">America</MenuItem>
-              </Select>
-              {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
-            </FormControl>
-          </div>
-          <div className="col-md-4 mb-3">
-            <FormControl fullWidth size="small">
-              <InputLabel id="demo-simple-select-label">State</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                label="State"
-                required
-                // value={formData.exempted}
-                name="State"
-                // onChange={handleInputChange}
-              >
-                <MenuItem value="0">TamilNadu</MenuItem>
-                <MenuItem value="1">Karnataka</MenuItem>
-              </Select>
-              {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
-            </FormControl>
-          </div>
-          <div className="col-md-4 mb-3">
-            <FormControl fullWidth size="small">
-              <InputLabel id="demo-simple-select-label">City</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                label="City"
-                required
-                // value={formData.exempted}
-                name="City"
-                // onChange={handleInputChange}
-              >
-                <MenuItem value="0">Salem</MenuItem>
-                <MenuItem value="1">Erode</MenuItem>
-              </Select>
-              {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
-            </FormControl>
-          </div>
+                  <MenuItem value="0">TamilNadu</MenuItem>
+                  <MenuItem value="1">Karnataka</MenuItem>
+                </Select>
+                {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
+              </FormControl>
+            </div>
+            <div className="col-md-4 mb-3">
+              <FormControl fullWidth size="small">
+                <InputLabel id="demo-simple-select-label">City</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="City"
+                  required
+                  // value={formData.exempted}
+                  name="City"
+                  // onChange={handleInputChange}
+                >
+                  <MenuItem value="0">Salem</MenuItem>
+                  <MenuItem value="1">Erode</MenuItem>
+                </Select>
+                {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
+              </FormControl>
+            </div>
 
-          <div className="col-md-4 mb-3">
-            <TextField
-              id="outlined-textarea"
-              label="Pin Code"
-              placeholder="Placeholder"
-              variant="outlined"
-              size="small"
-              fullWidth
-              required
-              name="pinCode"
-              // value={formData.hsnCode}
-              // onChange={handleInputChange}
-              // helperText={<span style={{ color: 'red' }}>{fieldErrors.hsnCode ? 'This field is required' : ''}</span>}
-            />
+            <div className="col-md-4 mb-3">
+              <TextField
+                id="outlined-textarea"
+                label="Pin Code"
+                placeholder="Placeholder"
+                variant="outlined"
+                size="small"
+                fullWidth
+                required
+                name="pinCode"
+                // value={formData.hsnCode}
+                // onChange={handleInputChange}
+                // helperText={<span style={{ color: 'red' }}>{fieldErrors.hsnCode ? 'This field is required' : ''}</span>}
+              />
+            </div>
+            <div className="col-md-4 mb-3">
+              <TextField
+                id="outlined-textarea"
+                label="Admin Email"
+                placeholder="Placeholder"
+                variant="outlined"
+                size="small"
+                name="admin"
+                fullWidth
+                required
+                // value={formData.subChapter}
+                // onChange={handleInputChange}
+                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+              />
+            </div>
+            <div className="col-md-4 mb-3">
+              <TextField
+                id="outlined-textarea"
+                label="Passport"
+                placeholder="Placeholder"
+                variant="outlined"
+                size="small"
+                name="passport"
+                fullWidth
+                required
+                // value={formData.subChapter}
+                // onChange={handleInputChange}
+                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+              />
+            </div>
+            <div className="col-md-4 mb-3">
+              <FormGroup>
+                <FormControlLabel
+                  control={<Checkbox defaultChecked sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }} />}
+                  label="Active"
+                />
+              </FormGroup>
+            </div>
           </div>
-          <div className="col-md-4 mb-3">
-            <TextField
-              id="outlined-textarea"
-              label="Admin Email"
-              placeholder="Placeholder"
-              variant="outlined"
-              size="small"
-              name="admin"
-              fullWidth
-              required
-              // value={formData.subChapter}
-              // onChange={handleInputChange}
-              // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
-            />
-          </div>
-          <div className="col-md-4 mb-3">
-            <TextField
-              id="outlined-textarea"
-              label="Passport"
-              placeholder="Placeholder"
-              variant="outlined"
-              size="small"
-              name="passport"
-              fullWidth
-              required
-              // value={formData.subChapter}
-              // onChange={handleInputChange}
-              // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
-            />
-          </div>
-          <div className="col-md-4 mb-3">
-            <FormGroup>
-              <FormControlLabel control={<Checkbox defaultChecked sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }} />} label="Active" />
-            </FormGroup>
-          </div>
-        </div>
-        <div className="mt-4">
-          <MaterialReactTable
-            displayColumnDefOptions={{
-              'mrt-row-actions': {
-                muiTableHeadCellProps: {
-                  align: 'center'
-                },
-                size: 80
-              }
-            }}
-            columns={columns}
-            data={tableData}
-            editingMode="modal"
-            enableColumnOrdering
-            renderRowActions={({ row, table }) => (
-              <Box
-                sx={{
-                  display: 'flex',
-                  gap: '1rem',
-                  justifyContent: 'flex-end'
-                }}
-              >
-                {/* <Tooltip arrow placement="right" title="Edit">
+        ) : (
+          <div className="mt-4">
+            <div>
+              <Tooltip title="Clear" placement="top">
+                {' '}
+                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleBackToInput}>
+                  <Avatar
+                    variant="rounded"
+                    sx={{
+                      ...theme.typography.commonAvatar,
+                      ...theme.typography.mediumAvatar,
+                      transition: 'all .2s ease-in-out',
+                      background: theme.palette.secondary.light,
+                      color: theme.palette.secondary.dark,
+                      '&[aria-controls="menu-list-grow"],&:hover': {
+                        background: theme.palette.secondary.dark,
+                        color: theme.palette.secondary.light
+                      }
+                    }}
+                    ref={anchorRef}
+                    aria-haspopup="true"
+                    color="inherit"
+                  >
+                    <ClearIcon size="1.3rem" stroke={1.5} />
+                  </Avatar>
+                </ButtonBase>
+              </Tooltip>
+            </div>
+            <MaterialReactTable
+              displayColumnDefOptions={{
+                'mrt-row-actions': {
+                  muiTableHeadCellProps: {
+                    align: 'center'
+                  },
+                  size: 80
+                }
+              }}
+              columns={columns}
+              data={tableData}
+              editingMode="modal"
+              enableColumnOrdering
+              renderRowActions={({ row, table }) => (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    gap: '1rem',
+                    justifyContent: 'flex-end'
+                  }}
+                >
+                  {/* <Tooltip arrow placement="right" title="Edit">
                   <IconButton style={{ color: "blue" }}>
                     <Edit />
                   </IconButton>
@@ -480,10 +520,11 @@ export const CompanyDetails = () => {
                     <VisibilityIcon />
                   </IconButton>
                 </Tooltip> */}
-              </Box>
-            )}
-          />
-        </div>
+                </Box>
+              )}
+            />
+          </div>
+        )}
       </div>
     </>
   );

@@ -17,7 +17,7 @@ import { MaterialReactTable } from 'material-react-table';
 // import { ToastContainer, toast } from 'react-toastify';
 // import 'react-toastify/dist/ReactToastify.css';
 
-export const Port = () => {
+export const PartyScreening = () => {
   const [formData, setFormData] = useState({
     chapter: '',
     subChapter: '',
@@ -271,13 +271,31 @@ export const Port = () => {
               </Tooltip>
             </div>
             <div className="col-md-4 mb-3">
+              <FormControl fullWidth size="small">
+                <InputLabel id="demo-simple-select-label">Party Type</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="Party Type"
+                  required
+                  // value={formData.exempted}
+                  name="partyType"
+                  // onChange={handleInputChange}
+                >
+                  <MenuItem value="0">India</MenuItem>
+                  <MenuItem value="1">America</MenuItem>
+                </Select>
+                {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
+              </FormControl>
+            </div>
+            <div className="col-md-4 mb-3">
               <TextField
                 id="outlined-textarea"
-                label="Port Name"
+                label="Entity Name"
                 placeholder="Placeholder"
                 variant="outlined"
                 size="small"
-                name="portName"
+                name="entityName"
                 fullWidth
                 required
                 // value={formData.subChapter}
@@ -289,53 +307,62 @@ export const Port = () => {
             <div className="col-md-4 mb-3">
               <TextField
                 id="outlined-textarea"
-                label="Port Code"
+                label="Alternative Entity Names"
                 placeholder="Placeholder"
                 variant="outlined"
                 size="small"
+                name="alternative"
                 fullWidth
                 required
-                name="portCode"
-                // value={formData.hsnCode}
+                // value={formData.subChapter}
                 // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.hsnCode ? 'This field is required' : ''}</span>}
+                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
               />
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Country</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label="Country"
-                  required
-                  // value={formData.exempted}
-                  name="Country"
-                  // onChange={handleInputChange}
-                >
-                  <MenuItem value="0">India</MenuItem>
-                  <MenuItem value="1">America</MenuItem>
-                </Select>
-                {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
-              </FormControl>
+              <TextField
+                id="outlined-textarea"
+                label="ID"
+                placeholder="Placeholder"
+                variant="outlined"
+                size="small"
+                name="id"
+                fullWidth
+                required
+                // value={formData.subChapter}
+                // onChange={handleInputChange}
+                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+              />
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Type</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label="Type"
-                  required
-                  // value={formData.exempted}
-                  name="Type"
-                  // onChange={handleInputChange}
-                >
-                  <MenuItem value="0">Sea</MenuItem>
-                  <MenuItem value="1">Air</MenuItem>
-                </Select>
-                {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
-              </FormControl>
+              <TextField
+                id="outlined-textarea"
+                label="Include Alias"
+                placeholder="Placeholder"
+                variant="outlined"
+                size="small"
+                name="includeAlias"
+                fullWidth
+                required
+                // value={formData.subChapter}
+                // onChange={handleInputChange}
+                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+              />
+            </div>
+            <div className="col-md-4 mb-3">
+              <TextField
+                id="outlined-textarea"
+                label="Screening Status"
+                placeholder="Placeholder"
+                variant="outlined"
+                size="small"
+                name="screeningStatus"
+                fullWidth
+                required
+                // value={formData.subChapter}
+                // onChange={handleInputChange}
+                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+              />
             </div>
           </div>
         ) : (
@@ -410,4 +437,4 @@ export const Port = () => {
     </>
   );
 };
-export default Port;
+export default PartyScreening;

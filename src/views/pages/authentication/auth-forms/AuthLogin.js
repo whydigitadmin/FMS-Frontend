@@ -1,8 +1,12 @@
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
-
+import Axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { setUserRole } from 'store/actions';
+import { encryptPassword } from 'views/utilities/passwordEnc';
 // material-ui
-import { useTheme } from '@mui/material/styles';
 import {
   Box,
   Button,
@@ -17,13 +21,14 @@ import {
   InputLabel,
   OutlinedInput,
   Stack,
-  Typography,
-  useMediaQuery
+  Typography
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { useRef } from 'react';
 
 // third party
-import * as Yup from 'yup';
 import { Formik } from 'formik';
+import * as Yup from 'yup';
 
 // project imports
 import useScriptRef from 'hooks/useScriptRef';
@@ -33,54 +38,106 @@ import AnimateButton from 'ui-component/extended/AnimateButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-import Google from 'assets/images/icons/social-google.svg';
-
 // ============================|| FIREBASE - LOGIN ||============================ //
 
 const FirebaseLogin = ({ ...others }) => {
   const theme = useTheme();
   const scriptedRef = useScriptRef();
-  const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
-  const customization = useSelector((state) => state.customization);
-  const [checked, setChecked] = useState(true);
-
-  const googleHandler = async () => {
-    console.error('Login');
-  };
-
+  const [checked, setChecked] = useState(false);
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
+  useEffect(() => {
+    const storedCredentials = localStorage.getItem('rememberedCredentials');
+    if (storedCredentials) {
+      const { email, password } = JSON.parse(storedCredentials);
+      formikRef.current.setValues({ email, password });
+      setChecked(true);
+    }
+  }, []);
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
 
+  const formikRef = useRef(null);
+  const navigate = useNavigate();
+  const resetForm = () => {
+    // Check if the formikRef is defined
+    if (formikRef.current) {
+      // Call the resetForm function using the ref
+      formikRef.current.resetForm({
+        values: {
+          email: '',
+          password: ''
+        }
+      });
+    }
+  };
+
+  const loginAPICall = async (values) => {
+    // Prepare the user registration data
+
+    const userData = {
+      password: encryptPassword(values.password),
+      userName: values.email
+    };
+    try {
+      const response = await Axios.post(`${process.env.REACT_APP_API_URL}/api/user/login`, userData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.data.status) {
+        // Handle authentication failure, display an error message, etc.
+
+        console.log('Test1', userData);
+
+        localStorage.setItem('orgId', response.data.paramObjectsMap.userVO.orgId); // Replace with the actual token
+        localStorage.setItem('LoginMessage', true);
+        const userRole = response.data.paramObjectsMap.userVO.role;
+        localStorage.setItem('ROLE', userRole);
+        dispatch(setUserRole(userRole));
+        resetForm();
+        // window.location.href = "/login";
+
+        navigate('/dashboard/default');
+        if (checked) {
+          localStorage.setItem('rememberedCredentials', JSON.stringify({ email: values.email, password: values.password }));
+        } else {
+          // Clear stored credentials if "Remember Me" is unchecked
+          localStorage.removeItem('rememberedCredentials');
+        }
+      } else {
+        // Successful registration, perform actions like storing tokens and redirecting
+        toast.error(response.data.paramObjectsMap.errorMessage, {
+          autoClose: 2000,
+          theme: 'colored'
+        });
+        // setTimeout(() => {
+        //   toast.success(response.data.paramObjectsMap.message, {
+        //     autoClose: 2000,
+        //     theme: 'colored'
+        //   });
+        // }, 2000);
+      }
+    } catch (error) {
+      toast.error('Network Error', {
+        autoClose: 2000,
+        theme: 'colored'
+      });
+    }
+  };
+
   return (
     <>
+      <div>
+        <ToastContainer />
+      </div>
       <Grid container direction="column" justifyContent="center" spacing={2}>
-        <Grid item xs={12}>
-          <AnimateButton>
-            <Button
-              disableElevation
-              fullWidth
-              onClick={googleHandler}
-              size="large"
-              variant="outlined"
-              sx={{
-                color: 'grey.700',
-                backgroundColor: theme.palette.grey[50],
-                borderColor: theme.palette.grey[100]
-              }}
-            >
-              <Box sx={{ mr: { xs: 1, sm: 2, width: 20 } }}>
-                <img src={Google} alt="google" width={16} height={16} style={{ marginRight: matchDownSM ? 8 : 16 }} />
-              </Box>
-              Sign in with Google
-            </Button>
-          </AnimateButton>
-        </Grid>
         <Grid item xs={12}>
           <Box
             sx={{
@@ -89,43 +146,24 @@ const FirebaseLogin = ({ ...others }) => {
             }}
           >
             <Divider sx={{ flexGrow: 1 }} orientation="horizontal" />
-
-            <Button
-              variant="outlined"
-              sx={{
-                cursor: 'unset',
-                m: 2,
-                py: 0.5,
-                px: 7,
-                borderColor: `${theme.palette.grey[100]} !important`,
-                color: `${theme.palette.grey[900]}!important`,
-                fontWeight: 500,
-                borderRadius: `${customization.borderRadius}px`
-              }}
-              disableRipple
-              disabled
-            >
-              OR
-            </Button>
-
-            <Divider sx={{ flexGrow: 1 }} orientation="horizontal" />
           </Box>
         </Grid>
         <Grid item xs={12} container alignItems="center" justifyContent="center">
-          <Box sx={{ mb: 2 }}>
+          {/* <Box sx={{ mb: 2 }}>
             <Typography variant="subtitle1">Sign in with Email address</Typography>
-          </Box>
+          </Box> */}
         </Grid>
       </Grid>
 
       <Formik
+        innerRef={formikRef}
         initialValues={{
-          email: 'info@codedthemes.com',
-          password: '123456',
+          email: '',
+          password: '',
           submit: null
         }}
         validationSchema={Yup.object().shape({
-          email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
+          email: Yup.string().max(255).required('UserId is required'),
           password: Yup.string().max(255).required('Password is required')
         })}
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
@@ -133,6 +171,7 @@ const FirebaseLogin = ({ ...others }) => {
             if (scriptedRef.current) {
               setStatus({ success: true });
               setSubmitting(false);
+              loginAPICall(values);
             }
           } catch (err) {
             console.error(err);

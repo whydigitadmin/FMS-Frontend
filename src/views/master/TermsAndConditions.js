@@ -13,11 +13,15 @@ import axios from 'axios';
 import { useRef, useState, useMemo } from 'react';
 import 'react-tabs/style/react-tabs.css';
 import { MaterialReactTable } from 'material-react-table';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import Checkbox from '@mui/material/Checkbox';
+import { FaTrash } from 'react-icons/fa';
 
 // import { ToastContainer, toast } from 'react-toastify';
 // import 'react-toastify/dist/ReactToastify.css';
 
-export const Port = () => {
+export const TermsAndConditions = () => {
   const [formData, setFormData] = useState({
     chapter: '',
     subChapter: '',
@@ -271,13 +275,31 @@ export const Port = () => {
               </Tooltip>
             </div>
             <div className="col-md-4 mb-3">
+              <FormControl fullWidth size="small">
+                <InputLabel id="demo-simple-select-label">Branch</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="Branch"
+                  required
+                  // value={formData.exempted}
+                  name="branch"
+                  // onChange={handleInputChange}
+                >
+                  <MenuItem value="0">India</MenuItem>
+                  <MenuItem value="1">America</MenuItem>
+                </Select>
+                {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
+              </FormControl>
+            </div>
+            <div className="col-md-4 mb-3">
               <TextField
                 id="outlined-textarea"
-                label="Port Name"
+                label="Document Type"
                 placeholder="Placeholder"
                 variant="outlined"
                 size="small"
-                name="portName"
+                name="documentType"
                 fullWidth
                 required
                 // value={formData.subChapter}
@@ -289,53 +311,33 @@ export const Port = () => {
             <div className="col-md-4 mb-3">
               <TextField
                 id="outlined-textarea"
-                label="Port Code"
+                label="Part Type"
                 placeholder="Placeholder"
                 variant="outlined"
                 size="small"
                 fullWidth
                 required
-                name="portCode"
+                name="partType"
                 // value={formData.hsnCode}
                 // onChange={handleInputChange}
                 // helperText={<span style={{ color: 'red' }}>{fieldErrors.hsnCode ? 'This field is required' : ''}</span>}
               />
             </div>
+
             <div className="col-md-4 mb-3">
-              <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Country</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label="Country"
-                  required
-                  // value={formData.exempted}
-                  name="Country"
-                  // onChange={handleInputChange}
-                >
-                  <MenuItem value="0">India</MenuItem>
-                  <MenuItem value="1">America</MenuItem>
-                </Select>
-                {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
-              </FormControl>
-            </div>
-            <div className="col-md-4 mb-3">
-              <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Type</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label="Type"
-                  required
-                  // value={formData.exempted}
-                  name="Type"
-                  // onChange={handleInputChange}
-                >
-                  <MenuItem value="0">Sea</MenuItem>
-                  <MenuItem value="1">Air</MenuItem>
-                </Select>
-                {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
-              </FormControl>
+              <TextField
+                id="outlined-textarea"
+                label="Terms"
+                placeholder="Placeholder"
+                variant="outlined"
+                size="small"
+                fullWidth
+                required
+                name="terms"
+                // value={formData.hsnCode}
+                // onChange={handleInputChange}
+                // helperText={<span style={{ color: 'red' }}>{fieldErrors.hsnCode ? 'This field is required' : ''}</span>}
+              />
             </div>
           </div>
         ) : (
@@ -410,4 +412,4 @@ export const Port = () => {
     </>
   );
 };
-export default Port;
+export default TermsAndConditions;

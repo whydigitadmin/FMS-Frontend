@@ -17,7 +17,7 @@ import { MaterialReactTable } from 'material-react-table';
 // import { ToastContainer, toast } from 'react-toastify';
 // import 'react-toastify/dist/ReactToastify.css';
 
-export const Port = () => {
+export const Container = () => {
   const [formData, setFormData] = useState({
     chapter: '',
     subChapter: '',
@@ -273,11 +273,11 @@ export const Port = () => {
             <div className="col-md-4 mb-3">
               <TextField
                 id="outlined-textarea"
-                label="Port Name"
+                label="Container Type"
                 placeholder="Placeholder"
                 variant="outlined"
                 size="small"
-                name="portName"
+                name="containerType"
                 fullWidth
                 required
                 // value={formData.subChapter}
@@ -287,27 +287,12 @@ export const Port = () => {
             </div>
 
             <div className="col-md-4 mb-3">
-              <TextField
-                id="outlined-textarea"
-                label="Port Code"
-                placeholder="Placeholder"
-                variant="outlined"
-                size="small"
-                fullWidth
-                required
-                name="portCode"
-                // value={formData.hsnCode}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.hsnCode ? 'This field is required' : ''}</span>}
-              />
-            </div>
-            <div className="col-md-4 mb-3">
               <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Country</InputLabel>
+                <InputLabel id="demo-simple-select-label">Category</InputLabel>
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  label="Country"
+                  label="Category"
                   required
                   // value={formData.exempted}
                   name="Country"
@@ -320,22 +305,79 @@ export const Port = () => {
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Type</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label="Type"
-                  required
-                  // value={formData.exempted}
-                  name="Type"
-                  // onChange={handleInputChange}
-                >
-                  <MenuItem value="0">Sea</MenuItem>
-                  <MenuItem value="1">Air</MenuItem>
-                </Select>
-                {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
-              </FormControl>
+              <TextField
+                id="outlined-textarea"
+                label="Length"
+                placeholder="Placeholder"
+                variant="outlined"
+                size="small"
+                name="length"
+                fullWidth
+                required
+                // value={formData.subChapter}
+                // onChange={handleInputChange}
+                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+              />
+            </div>
+            <div className="col-md-4 mb-3">
+              <TextField
+                id="outlined-textarea"
+                label="Width"
+                placeholder="Placeholder"
+                variant="outlined"
+                size="small"
+                name="width"
+                fullWidth
+                required
+                // value={formData.subChapter}
+                // onChange={handleInputChange}
+                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+              />
+            </div>
+            <div className="col-md-4 mb-3">
+              <TextField
+                id="outlined-textarea"
+                label="Height"
+                placeholder="Placeholder"
+                variant="outlined"
+                size="small"
+                name="height"
+                fullWidth
+                required
+                // value={formData.subChapter}
+                // onChange={handleInputChange}
+                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+              />
+            </div>
+            <div className="col-md-4 mb-3">
+              <TextField
+                id="outlined-textarea"
+                label="Weight"
+                placeholder="Placeholder"
+                variant="outlined"
+                size="small"
+                name="weight"
+                fullWidth
+                required
+                // value={formData.subChapter}
+                // onChange={handleInputChange}
+                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+              />
+            </div>
+            <div className="col-md-4 mb-3">
+              <TextField
+                id="outlined-textarea"
+                label="Volume"
+                placeholder="Placeholder"
+                variant="outlined"
+                size="small"
+                name="volume"
+                fullWidth
+                required
+                // value={formData.subChapter}
+                // onChange={handleInputChange}
+                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+              />
             </div>
           </div>
         ) : (
@@ -410,4 +452,4 @@ export const Port = () => {
     </>
   );
 };
-export default Port;
+export default Container;
