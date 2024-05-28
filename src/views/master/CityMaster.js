@@ -10,21 +10,31 @@ import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import { useTheme } from '@mui/material/styles';
 import axios from 'axios';
-import { useRef, useState, useMemo } from 'react';
+import { useRef, useState, useMemo, useEffect } from 'react';
 import 'react-tabs/style/react-tabs.css';
 import { MaterialReactTable } from 'material-react-table';
-
-// import { ToastContainer, toast } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
+import { Box } from '@mui/material';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
 
 export const CityMaster = () => {
+  const [orgId, setOrgId] = useState(localStorage.getItem('orgId'));
+
   const [formData, setFormData] = useState({
-    chapter: '',
-    subChapter: '',
-    hsnCode: '',
-    branchLocation: '',
-    newRate: '',
-    exempted: ''
+    cityCode: '',
+    cityName: '',
+    country: '',
+    state: '',
+    orgId: 1
+  });
+
+  const [fieldErrors, setFieldErrors] = useState({
+    cityCode: '',
+    cityName: '',
+    country: '',
+    state: ''
   });
 
   const [listView, setListView] = useState(false);
@@ -32,58 +42,95 @@ export const CityMaster = () => {
   const theme = useTheme();
   const anchorRef = useRef(null);
 
-  const [fieldErrors, setFieldErrors] = useState({
-    chapter: false,
-    subChapter: false,
-    hsnCode: false,
-    branchLocation: false,
-    newRate: false,
-    exempted: false
-  });
   const [tableData, setTableData] = useState([]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    setFieldErrors({ ...fieldErrors, [name]: false });
+    // Clear error message when user starts typing
+    setFieldErrors({ ...fieldErrors, [name]: '' });
+  };
+
+  const handleClear = () => {
+    setFormData({
+      cityCode: '',
+      cityName: '',
+      country: '',
+      state: ''
+    });
+    setFieldErrors({
+      cityCode: '',
+      cityName: '',
+      country: '',
+      state: ''
+    });
   };
 
   const handleSave = () => {
-    // Check if any field is empty
-    const errors = Object.keys(formData).reduce((acc, key) => {
-      if (!formData[key]) {
-        acc[key] = true;
-      }
-      return acc;
-    }, {});
-    // If there are errors, set the corresponding fieldErrors state to true
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return; // Prevent API call if there are errors
+    const errors = {};
+    if (!formData.cityCode) {
+      errors.cityCode = 'City Code is required';
     }
+    if (!formData.cityName) {
+      errors.cityName = 'City Name is required';
+    }
+    if (!formData.country) {
+      errors.country = 'Country is required';
+    }
+    if (!formData.state) {
+      errors.state = 'State is required';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      // Set error messages for each field
+      setFieldErrors(errors);
+      return;
+    }
+
     axios
-      .post(`${process.env.REACT_APP_API_URL}/api/master/updateCreateSetTaxRate`, formData)
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateCity`, formData)
       .then((response) => {
         console.log('Response:', response.data);
-        setFormData({
-          chapter: '',
-          subChapter: '',
-          hsnCode: '',
-          branchLocation: '',
-          newRate: '',
-          exempted: ''
-        });
-        toast.success('Set Tax Rate Created Successfully', {
+        toast.success('City created successfully', {
           autoClose: 2000,
           theme: 'colored'
+        });
+        setFormData({
+          cityCode: '',
+          cityName: '',
+          country: '',
+          state: ''
         });
       })
       .catch((error) => {
         console.error('Error:', error);
+        toast.error('An error occurred while saving the city');
       });
   };
 
+  const getAllCity = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getCityById`);
+      console.log('API Response:', response);
+
+      if (response.status === 200) {
+        setTableData(response.data.paramObjectsMap.cityVO);
+      } else {
+        // Handle error
+        console.error('API Error:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  // useEffect(() => {
+  //   getAllCity();
+  // });
+
   const handleView = () => {
+    getAllCity();
+
     setListView(true);
   };
 
@@ -111,23 +158,12 @@ export const CityMaster = () => {
             {/* <IconButton onClick={() => handleViewRow(row)}>
               <VisibilityIcon />
             </IconButton> */}
-            <IconButton onClick={() => handleEditRow(row)}>
+            <IconButton>
               <EditIcon />
             </IconButton>
           </div>
         )
       },
-      // {
-      //   accessorKey: "cityid",
-      //   header: "ID",
-      //   size: 50,
-      //   muiTableHeadCellProps: {
-      //     align: "first",
-      //   },
-      //   muiTableBodyCellProps: {
-      //     align: "first",
-      //   },
-      // },
       {
         accessorKey: 'cityName',
         header: 'City',
@@ -168,7 +204,6 @@ export const CityMaster = () => {
 
   return (
     <>
-      <div>{/* <ToastContainer /> */}</div>
       <div className="card w-full p-6 bg-base-100 shadow-xl" style={{ padding: '20px' }}>
         {!listView ? (
           <div className="row d-flex ml">
@@ -199,7 +234,7 @@ export const CityMaster = () => {
 
               <Tooltip title="Clear" placement="top">
                 {' '}
-                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }}>
+                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleClear}>
                   <Avatar
                     variant="rounded"
                     sx={{
@@ -271,71 +306,52 @@ export const CityMaster = () => {
                 </ButtonBase>
               </Tooltip>
             </div>
+            <div>
+              <ToastContainer />
+            </div>
             <div className="col-md-4 mb-3">
-              <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Country</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label="Country"
-                  required
-                  // value={formData.exempted}
-                  name="Country"
-                  // onChange={handleInputChange}
-                >
-                  <MenuItem value="0">India</MenuItem>
-                  <MenuItem value="1">America</MenuItem>
+              <FormControl variant="outlined" fullWidth error={!!fieldErrors.country}>
+                <InputLabel id="country-label">Country</InputLabel>
+                <Select labelId="country-label" label="Country" value={formData.country} onChange={handleInputChange} name="country">
+                  <MenuItem value="India">India</MenuItem>
+                  <MenuItem value="USA">USA</MenuItem>
                 </Select>
-                {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
+                {fieldErrors.country && <FormHelperText>{fieldErrors.country}</FormHelperText>}
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">State</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label="State"
-                  required
-                  // value={formData.exempted}
-                  name="State"
-                  // onChange={handleInputChange}
-                >
-                  <MenuItem value="0">TamilNadu</MenuItem>
-                  <MenuItem value="1">Karnataka</MenuItem>
+              <FormControl variant="outlined" fullWidth error={!!fieldErrors.state}>
+                <InputLabel id="state-label">State</InputLabel>
+                <Select labelId="state-label" label="State" value={formData.state} onChange={handleInputChange} name="state">
+                  <MenuItem value="Tamil Nadu">Tamil Nadu</MenuItem>
+                  <MenuItem value="Karnataka">Karnataka</MenuItem>
                 </Select>
-                {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
+                {fieldErrors.state && <FormHelperText>{fieldErrors.state}</FormHelperText>}
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
               <TextField
-                id="outlined-textarea"
-                label="City"
-                placeholder="Placeholder"
+                label="City Code"
                 variant="outlined"
-                size="small"
-                name="City"
                 fullWidth
-                required
-                // value={formData.subChapter}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+                name="cityCode"
+                value={formData.cityCode}
+                onChange={handleInputChange}
+                error={!!fieldErrors.cityCode} // Add error prop
+                helperText={fieldErrors.cityCode} // Add helperText prop
               />
             </div>
 
             <div className="col-md-4 mb-3">
               <TextField
-                id="outlined-textarea"
-                label="Code"
-                placeholder="Placeholder"
+                label="City Name"
                 variant="outlined"
-                size="small"
                 fullWidth
-                required
-                name="Code"
-                // value={formData.hsnCode}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.hsnCode ? 'This field is required' : ''}</span>}
+                name="cityName"
+                value={formData.cityName}
+                onChange={handleInputChange}
+                error={!!fieldErrors.cityName}
+                helperText={fieldErrors.cityName}
               />
             </div>
           </div>

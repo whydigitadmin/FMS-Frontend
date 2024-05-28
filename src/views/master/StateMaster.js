@@ -13,31 +13,33 @@ import axios from 'axios';
 import { useRef, useState, useMemo } from 'react';
 import 'react-tabs/style/react-tabs.css';
 import { MaterialReactTable } from 'material-react-table';
-
-// import { ToastContainer, toast } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
 
 export const StateMaster = () => {
+  const [orgId, setOrgId] = useState(localStorage.getItem('orgId'));
   const [formData, setFormData] = useState({
-    chapter: '',
-    subChapter: '',
-    hsnCode: '',
-    branchLocation: '',
-    newRate: '',
-    exempted: ''
+    stateCode: '',
+    stateNumber: '',
+    region: '',
+    stateName: '',
+    country: '',
+    orgId: 1
+  });
+
+  const [fieldErrors, setFieldErrors] = useState({
+    stateCode: '',
+    stateNumber: '',
+    region: '',
+    stateName: '',
+    country: ''
   });
 
   const theme = useTheme();
   const anchorRef = useRef(null);
 
-  const [fieldErrors, setFieldErrors] = useState({
-    chapter: false,
-    subChapter: false,
-    hsnCode: false,
-    branchLocation: false,
-    newRate: false,
-    exempted: false
-  });
   const [tableData, setTableData] = useState([]);
   const [listView, setListView] = useState(false);
 
@@ -47,42 +49,87 @@ export const StateMaster = () => {
     setFieldErrors({ ...fieldErrors, [name]: false });
   };
 
+  const handleClear = () => {
+    setFormData({
+      stateCode: '',
+      stateNumber: '',
+      region: '',
+      stateName: '',
+      country: ''
+    });
+    setFieldErrors({
+      stateCode: '',
+      stateNumber: '',
+      region: '',
+      stateName: '',
+      country: ''
+    });
+  };
+
   const handleSave = () => {
-    // Check if any field is empty
-    const errors = Object.keys(formData).reduce((acc, key) => {
-      if (!formData[key]) {
-        acc[key] = true;
-      }
-      return acc;
-    }, {});
-    // If there are errors, set the corresponding fieldErrors state to true
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return; // Prevent API call if there are errors
+    const errors = {};
+    if (!formData.stateCode) {
+      errors.stateCode = 'State Code is required';
     }
+    if (!formData.stateNumber) {
+      errors.stateNumber = 'State Number is required';
+    }
+    if (!formData.region) {
+      errors.region = 'Region is required';
+    }
+    if (!formData.stateName) {
+      errors.stateName = 'State Name is required';
+    }
+    if (!formData.country) {
+      errors.country = 'Country is required';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      // Set error messages for each field
+      setFieldErrors(errors);
+      return;
+    }
+
     axios
-      .post(`${process.env.REACT_APP_API_URL}/api/master/updateCreateSetTaxRate`, formData)
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateState`, formData)
       .then((response) => {
         console.log('Response:', response.data);
-        setFormData({
-          chapter: '',
-          subChapter: '',
-          hsnCode: '',
-          branchLocation: '',
-          newRate: '',
-          exempted: ''
-        });
-        toast.success('Set Tax Rate Created Successfully', {
+        toast.success('State created successfully', {
           autoClose: 2000,
           theme: 'colored'
+        });
+        setFormData({
+          stateCode: '',
+          stateNumber: '',
+          region: '',
+          stateName: '',
+          country: ''
         });
       })
       .catch((error) => {
         console.error('Error:', error);
+        toast.error('An error occurred while saving the state');
       });
   };
 
+  const getAllState = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getStateById`);
+      console.log('API Response:', response);
+
+      if (response.status === 200) {
+        setTableData(response.data.paramObjectsMap.stateVO);
+      } else {
+        // Handle error
+        console.error('API Error:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   const handleView = () => {
+    getAllState();
     setListView(true);
   };
 
@@ -116,20 +163,20 @@ export const StateMaster = () => {
           </div>
         )
       },
-      // {
-      //   accessorKey: "cityid",
-      //   header: "ID",
-      //   size: 50,
-      //   muiTableHeadCellProps: {
-      //     align: "first",
-      //   },
-      //   muiTableBodyCellProps: {
-      //     align: "first",
-      //   },
-      // },
       {
-        accessorKey: 'cityName',
-        header: 'City',
+        accessorKey: 'stateCode',
+        header: 'State Code',
+        size: 50,
+        muiTableHeadCellProps: {
+          align: 'first'
+        },
+        muiTableBodyCellProps: {
+          align: 'first'
+        }
+      },
+      {
+        accessorKey: 'region',
+        header: 'Region',
         size: 50,
         muiTableHeadCellProps: {
           align: 'center'
@@ -139,8 +186,8 @@ export const StateMaster = () => {
         }
       },
       {
-        accessorKey: 'cityCode',
-        header: 'Code',
+        accessorKey: 'stateName',
+        header: 'State Name',
         size: 50,
         muiTableHeadCellProps: {
           align: 'center'
@@ -167,7 +214,9 @@ export const StateMaster = () => {
 
   return (
     <>
-      <div>{/* <ToastContainer /> */}</div>
+      <div>
+        <ToastContainer />
+      </div>
       <div className="card w-full p-6 bg-base-100 shadow-xl" style={{ padding: '20px' }}>
         {!listView ? (
           <div className="row d-flex ml">
@@ -198,7 +247,7 @@ export const StateMaster = () => {
 
               <Tooltip title="Clear" placement="top">
                 {' '}
-                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }}>
+                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleClear}>
                   <Avatar
                     variant="rounded"
                     sx={{
@@ -272,66 +321,61 @@ export const StateMaster = () => {
             </div>
             <div className="col-md-4 mb-3">
               <TextField
-                id="outlined-textarea"
-                label="Code"
-                placeholder="Placeholder"
+                label="State Code"
                 variant="outlined"
-                size="small"
-                name="Code"
                 fullWidth
-                required
-                // value={formData.subChapter}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+                name="stateCode"
+                value={formData.stateCode}
+                onChange={handleInputChange}
+                error={!!fieldErrors.stateCode} // Add error prop
+                helperText={fieldErrors.stateCode} // Add helperText prop
               />
             </div>
 
             <div className="col-md-4 mb-3">
               <TextField
-                id="outlined-textarea"
-                label="No"
-                placeholder="Placeholder"
+                label="State Number"
                 variant="outlined"
-                size="small"
                 fullWidth
-                required
-                name="No"
-                // value={formData.hsnCode}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.hsnCode ? 'This field is required' : ''}</span>}
+                name="stateNumber"
+                value={formData.stateNumber}
+                onChange={handleInputChange}
+                error={!!fieldErrors.stateNumber} // Add error prop
+                helperText={fieldErrors.stateNumber} // Add helperText prop
               />
             </div>
             <div className="col-md-4 mb-3">
               <TextField
-                id="outlined-textarea"
-                label="State"
-                placeholder="Placeholder"
+                label="Region"
                 variant="outlined"
-                size="small"
                 fullWidth
-                required
-                name="State"
-                // value={formData.hsnCode}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.hsnCode ? 'This field is required' : ''}</span>}
+                name="region"
+                value={formData.region}
+                onChange={handleInputChange}
+                error={!!fieldErrors.region} // Add error prop
+                helperText={fieldErrors.region} // Add helperText prop
               />
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Country</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label="Country"
-                  required
-                  // value={formData.exempted}
-                  name="Country"
-                  // onChange={handleInputChange}
-                >
-                  <MenuItem value="0">India</MenuItem>
-                  <MenuItem value="1">America</MenuItem>
+              <TextField
+                label="State Name"
+                variant="outlined"
+                fullWidth
+                name="stateName"
+                value={formData.stateName}
+                onChange={handleInputChange}
+                error={!!fieldErrors.stateName} // Add error prop
+                helperText={fieldErrors.stateName} // Add helperText prop
+              />
+            </div>
+            <div className="col-md-4 mb-3">
+              <FormControl variant="outlined" fullWidth error={!!fieldErrors.country}>
+                <InputLabel id="country-label">Country</InputLabel>
+                <Select labelId="country-label" label="Country" value={formData.country} onChange={handleInputChange} name="country">
+                  <MenuItem value="India">India</MenuItem>
+                  <MenuItem value="USA">USA</MenuItem>
                 </Select>
-                {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
+                {fieldErrors.country && <FormHelperText>{fieldErrors.country}</FormHelperText>}
               </FormControl>
             </div>
           </div>

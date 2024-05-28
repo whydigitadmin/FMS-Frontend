@@ -13,30 +13,25 @@ import axios from 'axios';
 import { useRef, useState, useMemo } from 'react';
 import 'react-tabs/style/react-tabs.css';
 import { MaterialReactTable } from 'material-react-table';
-
-// import { ToastContainer, toast } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
 
 export const CountryMaster = () => {
+  const [orgId, setOrgId] = useState(localStorage.getItem('orgId'));
   const [formData, setFormData] = useState({
-    chapter: '',
-    subChapter: '',
-    hsnCode: '',
-    branchLocation: '',
-    newRate: '',
-    exempted: ''
+    country: '',
+    countryCode: '',
+    orgId: 1
   });
 
   const theme = useTheme();
   const anchorRef = useRef(null);
 
   const [fieldErrors, setFieldErrors] = useState({
-    chapter: false,
-    subChapter: false,
-    hsnCode: false,
-    branchLocation: false,
-    newRate: false,
-    exempted: false
+    country: '',
+    countryCode: ''
   });
   const [tableData, setTableData] = useState([]);
   const [listView, setListView] = useState(false);
@@ -47,42 +42,69 @@ export const CountryMaster = () => {
     setFieldErrors({ ...fieldErrors, [name]: false });
   };
 
+  const handleClear = () => {
+    setFormData({
+      country: '',
+      countryCode: ''
+    });
+    setFieldErrors({
+      country: '',
+      countryCode: ''
+    });
+  };
+
   const handleSave = () => {
-    // Check if any field is empty
-    const errors = Object.keys(formData).reduce((acc, key) => {
-      if (!formData[key]) {
-        acc[key] = true;
-      }
-      return acc;
-    }, {});
-    // If there are errors, set the corresponding fieldErrors state to true
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return; // Prevent API call if there are errors
+    const errors = {};
+    if (!formData.country) {
+      errors.country = 'Country is required';
     }
+    if (!formData.countryCode) {
+      errors.countryCode = 'Country Code is required';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      // Set error messages for each field
+      setFieldErrors(errors);
+      return;
+    }
+
     axios
-      .post(`${process.env.REACT_APP_API_URL}/api/master/updateCreateSetTaxRate`, formData)
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateCountry`, formData)
       .then((response) => {
         console.log('Response:', response.data);
-        setFormData({
-          chapter: '',
-          subChapter: '',
-          hsnCode: '',
-          branchLocation: '',
-          newRate: '',
-          exempted: ''
-        });
-        toast.success('Set Tax Rate Created Successfully', {
+        toast.success('Country created successfully', {
           autoClose: 2000,
           theme: 'colored'
+        });
+        setFormData({
+          country: '',
+          countryCode: ''
         });
       })
       .catch((error) => {
         console.error('Error:', error);
+        toast.error('An error occurred while saving the country');
       });
   };
 
+  const getAllCountry = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getCountryById`);
+      console.log('API Response:', response);
+
+      if (response.status === 200) {
+        setTableData(response.data.paramObjectsMap.countryVO);
+      } else {
+        // Handle error
+        console.error('API Error:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   const handleView = () => {
+    getAllCountry();
     setListView(true);
   };
 
@@ -116,30 +138,8 @@ export const CountryMaster = () => {
           </div>
         )
       },
-      // {
-      //   accessorKey: "cityid",
-      //   header: "ID",
-      //   size: 50,
-      //   muiTableHeadCellProps: {
-      //     align: "first",
-      //   },
-      //   muiTableBodyCellProps: {
-      //     align: "first",
-      //   },
-      // },
       {
-        accessorKey: 'cityName',
-        header: 'City',
-        size: 50,
-        muiTableHeadCellProps: {
-          align: 'center'
-        },
-        muiTableBodyCellProps: {
-          align: 'center'
-        }
-      },
-      {
-        accessorKey: 'cityCode',
+        accessorKey: 'countryCode',
         header: 'Code',
         size: 50,
         muiTableHeadCellProps: {
@@ -150,24 +150,37 @@ export const CountryMaster = () => {
         }
       },
       {
-        accessorKey: 'active',
-        header: 'Active',
+        accessorKey: 'country',
+        header: 'Country',
         size: 50,
         muiTableHeadCellProps: {
           align: 'center'
         },
         muiTableBodyCellProps: {
           align: 'center'
-        },
-        Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
+        }
       }
+      // {
+      //   accessorKey: 'active',
+      //   header: 'Active',
+      //   size: 50,
+      //   muiTableHeadCellProps: {
+      //     align: 'center'
+      //   },
+      //   muiTableBodyCellProps: {
+      //     align: 'center'
+      //   },
+      //   Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
+      // }
     ],
     []
   );
 
   return (
     <>
-      <div>{/* <ToastContainer /> */}</div>
+      <div>
+        <ToastContainer />
+      </div>
       <div className="card w-full p-6 bg-base-100 shadow-xl" style={{ padding: '20px' }}>
         {!listView ? (
           <div className="row d-flex ml">
@@ -198,7 +211,7 @@ export const CountryMaster = () => {
 
               <Tooltip title="Clear" placement="top">
                 {' '}
-                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }}>
+                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleClear}>
                   <Avatar
                     variant="rounded"
                     sx={{
@@ -272,36 +285,25 @@ export const CountryMaster = () => {
             </div>
             <div className="col-md-4 mb-3">
               <TextField
-                id="outlined-textarea"
                 label="Code"
-                placeholder="Placeholder"
                 variant="outlined"
-                size="small"
-                name="Code"
                 fullWidth
-                required
-                // value={formData.subChapter}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+                name="countryCode"
+                value={formData.countryCode}
+                onChange={handleInputChange}
+                error={!!fieldErrors.countryCode}
+                helperText={fieldErrors.countryCode}
               />
             </div>
 
             <div className="col-md-4 mb-3">
-              <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Country</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label="Country"
-                  required
-                  // value={formData.exempted}
-                  name="Country"
-                  // onChange={handleInputChange}
-                >
-                  <MenuItem value="0">India</MenuItem>
-                  <MenuItem value="1">America</MenuItem>
+              <FormControl variant="outlined" fullWidth error={!!fieldErrors.country}>
+                <InputLabel id="country-label">Country</InputLabel>
+                <Select labelId="country-label" label="Country" value={formData.country} onChange={handleInputChange} name="country">
+                  <MenuItem value="India">India</MenuItem>
+                  <MenuItem value="USA">USA</MenuItem>
                 </Select>
-                {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
+                {fieldErrors.country && <FormHelperText>{fieldErrors.country}</FormHelperText>}
               </FormControl>
             </div>
           </div>
