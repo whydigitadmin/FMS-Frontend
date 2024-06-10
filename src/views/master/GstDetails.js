@@ -22,6 +22,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { MaterialReactTable } from 'material-react-table';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 
 export const GstDetails = () => {
   const [formData, setFormData] = useState({
@@ -633,7 +635,7 @@ export const GstDetails = () => {
               />
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl variant="outlined" fullWidth error={!!fieldErrors.bussinessType}>
+              <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.bussinessType}>
                 <InputLabel id="bussinessType">Bussiness Type</InputLabel>
                 <Select
                   labelId="bussinessType"
@@ -649,7 +651,7 @@ export const GstDetails = () => {
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl variant="outlined" fullWidth error={!!fieldErrors.accountType}>
+              <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.accountType}>
                 <InputLabel id="accountType">Account Type</InputLabel>
                 <Select
                   labelId="accountType"
@@ -665,7 +667,7 @@ export const GstDetails = () => {
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl variant="outlined" fullWidth error={!!fieldErrors.businessCategory}>
+              <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.businessCategory}>
                 <InputLabel id="businessCategory">Business Category</InputLabel>
                 <Select
                   labelId="businessCategory"
@@ -704,9 +706,36 @@ export const GstDetails = () => {
             {tabValue === 0 ? (
               <div className="row d-flex ml">
                 <div className="mt-2">
-                  <button className="btn-primary" onClick={handleAddRow}>
+                  {/* <button
+                    style={{ backgroundColor: '#434AA8', width: '7%', height: '30px', border: '1px solid #434AA8' }}
+                    className="text-white"
+                    onClick={handleAddRow}
+                  >
                     + Add
-                  </button>
+                  </button> */}
+                  <Tooltip title="Add" placement="top">
+                    <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={handleAddRow}>
+                      <Avatar
+                        variant="rounded"
+                        sx={{
+                          ...theme.typography.commonAvatar,
+                          ...theme.typography.mediumAvatar,
+                          transition: 'all .2s ease-in-out',
+                          background: theme.palette.secondary.light,
+                          color: theme.palette.secondary.dark,
+                          '&[aria-controls="menu-list-grow"],&:hover': {
+                            background: theme.palette.secondary.dark,
+                            color: theme.palette.secondary.light
+                          }
+                        }}
+                        ref={anchorRef}
+                        aria-haspopup="true"
+                        color="inherit"
+                      >
+                        <AddIcon size="1.3rem" stroke={1.5} />
+                      </Avatar>
+                    </ButtonBase>
+                  </Tooltip>
                 </div>
                 {/* Table */}
                 <div className="row mt-2">
@@ -714,15 +743,15 @@ export const GstDetails = () => {
                     <div className="table-responsive">
                       <table className="table table-bordered">
                         <thead>
-                          <tr>
-                            <th className="px-2 py-2 bg-primary text-white">Action</th>
-                            <th className="px-2 py-2 bg-primary text-white">S.No</th>
-                            <th className="px-2 py-2 bg-primary text-white">State</th>
-                            <th className="px-2 py-2 bg-primary text-white">GST IN</th>
-                            <th className="px-2 py-2 bg-primary text-white">State Code</th>
-                            <th className="px-2 py-2 bg-primary text-white">Contact Person</th>
-                            <th className="px-2 py-2 bg-primary text-white">Contact Phone No</th>
-                            <th className="px-2 py-2 bg-primary text-white">Contact Email</th>
+                          <tr style={{ backgroundColor: '#434AA8' }}>
+                            <th className="px-2 py-2 text-white">Action</th>
+                            <th className="px-2 py-2 text-white">S.No</th>
+                            <th className="px-2 py-2 text-white">State</th>
+                            <th className="px-2 py-2 text-white">GST IN</th>
+                            <th className="px-2 py-2 text-white">State Code</th>
+                            <th className="px-2 py-2 text-white">Contact Person</th>
+                            <th className="px-2 py-2 text-white">Contact Phone No</th>
+                            <th className="px-2 py-2 text-white">Contact Email</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -730,9 +759,33 @@ export const GstDetails = () => {
                             <tr key={row.id}>
                               {/* Table cells */}
                               <td className="border px-2 py-2">
-                                <button onClick={() => handleDeleteRow(row.id)} className="btn-danger">
-                                  <FaTrash style={{ fontSize: '16px' }} />
-                                </button>
+                                {/* <button onClick={() => handleDeleteRow(row.id)} className="btn-danger"> */}
+                                {/* <FaTrash style={{ fontSize: '16px' }} /> */}
+
+                                <Tooltip title="Delete" placement="top">
+                                  <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={() => handleDeleteRow(row.id)}>
+                                    <Avatar
+                                      variant="rounded"
+                                      sx={{
+                                        ...theme.typography.commonAvatar,
+                                        ...theme.typography.mediumAvatar,
+                                        transition: 'all .2s ease-in-out',
+                                        background: theme.palette.secondary.light,
+                                        color: theme.palette.secondary.dark,
+                                        '&[aria-controls="menu-list-grow"],&:hover': {
+                                          background: theme.palette.secondary.dark,
+                                          color: theme.palette.secondary.light
+                                        }
+                                      }}
+                                      ref={anchorRef}
+                                      aria-haspopup="true"
+                                      color="inherit"
+                                    >
+                                      <DeleteIcon size="1.3rem" stroke={1.5} />
+                                    </Avatar>
+                                  </ButtonBase>
+                                </Tooltip>
+                                {/* </button> */}
                               </td>
 
                               <td className="border px-2 py-2">
@@ -886,9 +939,29 @@ export const GstDetails = () => {
               <div className="mt-4">
                 <div className="row d-flex ml">
                   <div className="mt-2">
-                    <button className="btn-primary" onClick={handleAddRow1}>
-                      + Add
-                    </button>
+                    <Tooltip title="Add" placement="top">
+                      <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={handleAddRow}>
+                        <Avatar
+                          variant="rounded"
+                          sx={{
+                            ...theme.typography.commonAvatar,
+                            ...theme.typography.mediumAvatar,
+                            transition: 'all .2s ease-in-out',
+                            background: theme.palette.secondary.light,
+                            color: theme.palette.secondary.dark,
+                            '&[aria-controls="menu-list-grow"],&:hover': {
+                              background: theme.palette.secondary.dark,
+                              color: theme.palette.secondary.light
+                            }
+                          }}
+                          ref={anchorRef}
+                          aria-haspopup="true"
+                          color="inherit"
+                        >
+                          <AddIcon size="1.3rem" stroke={1.5} />
+                        </Avatar>
+                      </ButtonBase>
+                    </Tooltip>
                   </div>
                   {/* Table */}
                   <div className="row mt-2">
@@ -896,17 +969,17 @@ export const GstDetails = () => {
                       <div className="table-responsive">
                         <table className="table table-bordered">
                           <thead>
-                            <tr>
-                              <th className="px-2 py-2 bg-primary text-white">Action</th>
-                              <th className="px-2 py-2 bg-primary text-white">S.No</th>
-                              <th className="px-2 py-2 bg-primary text-white">State</th>
-                              <th className="px-2 py-2 bg-primary text-white">Business Place</th>
-                              <th className="px-2 py-2 bg-primary text-white">City Name</th>
-                              <th className="px-2 py-2 bg-primary text-white">Address1</th>
-                              <th className="px-2 py-2 bg-primary text-white">Address2</th>
-                              <th className="px-2 py-2 bg-primary text-white">Contact Person</th>
-                              <th className="px-2 py-2 bg-primary text-white">Contact Phone No</th>
-                              <th className="px-2 py-2 bg-primary text-white">Contact Email</th>
+                            <tr style={{ backgroundColor: '#434AA8' }}>
+                              <th className="px-2 py-2 text-white">Action</th>
+                              <th className="px-2 py-2 text-white">S.No</th>
+                              <th className="px-2 py-2 text-white">State</th>
+                              <th className="px-2 py-2 text-white">Business Place</th>
+                              <th className="px-2 py-2 text-white">City Name</th>
+                              <th className="px-2 py-2 text-white">Address1</th>
+                              <th className="px-2 py-2 text-white">Address2</th>
+                              <th className="px-2 py-2 text-white">Contact Person</th>
+                              <th className="px-2 py-2 text-white">Contact Phone No</th>
+                              <th className="px-2 py-2 text-white">Contact Email</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -914,9 +987,29 @@ export const GstDetails = () => {
                               <tr key={row.id}>
                                 {/* Table cells */}
                                 <td className="border px-2 py-2">
-                                  <button onClick={() => handleDeleteRow1(row.id)} className="btn-danger">
-                                    <FaTrash style={{ fontSize: '16px' }} />
-                                  </button>
+                                  <Tooltip title="Delete" placement="top">
+                                    <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={() => handleDeleteRow(row.id)}>
+                                      <Avatar
+                                        variant="rounded"
+                                        sx={{
+                                          ...theme.typography.commonAvatar,
+                                          ...theme.typography.mediumAvatar,
+                                          transition: 'all .2s ease-in-out',
+                                          background: theme.palette.secondary.light,
+                                          color: theme.palette.secondary.dark,
+                                          '&[aria-controls="menu-list-grow"],&:hover': {
+                                            background: theme.palette.secondary.dark,
+                                            color: theme.palette.secondary.light
+                                          }
+                                        }}
+                                        ref={anchorRef}
+                                        aria-haspopup="true"
+                                        color="inherit"
+                                      >
+                                        <DeleteIcon size="1.3rem" stroke={1.5} />
+                                      </Avatar>
+                                    </ButtonBase>
+                                  </Tooltip>
                                 </td>
 
                                 <td className="border px-2 py-2">
@@ -1121,7 +1214,7 @@ export const GstDetails = () => {
         </div>
       ) : (
         <div className="mt-4">
-          <div>
+          <div className="mb-3">
             <Tooltip title="Clear" placement="top">
               {' '}
               <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleBackToInput}>

@@ -316,7 +316,7 @@ export const TermsAndConditions = () => {
               </Tooltip>
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl variant="outlined" fullWidth error={!!fieldErrors.branch}>
+              <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.branch}>
                 <InputLabel id="branch">Branch</InputLabel>
                 <Select labelId="branch" label="branch" value={formData.branch} onChange={handleInputChange} name="branch">
                   <MenuItem value="India">India</MenuItem>
@@ -378,7 +378,7 @@ export const TermsAndConditions = () => {
           </div>
         ) : (
           <div className="mt-4">
-            <div>
+            <div className="mb-3">
               <Tooltip title="Clear" placement="top">
                 {' '}
                 <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleBackToInput}>

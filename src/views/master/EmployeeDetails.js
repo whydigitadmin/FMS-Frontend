@@ -71,40 +71,34 @@ export const EmployeeDetails = () => {
     setFieldErrors({ ...fieldErrors, [name]: false });
   };
 
-  // const handleSave = () => {
-  //   // Check if any field is empty
-  //   const errors = Object.keys(formData).reduce((acc, key) => {
-  //     if (!formData[key]) {
-  //       acc[key] = true;
-  //     }
-  //     return acc;
-  //   }, {});
-  //   // If there are errors, set the corresponding fieldErrors state to true
-  //   if (Object.keys(errors).length > 0) {
-  //     setFieldErrors(errors);
-  //     return; // Prevent API call if there are errors
-  //   }
-  //   axios
-  //     .post(`${process.env.REACT_APP_API_URL}/api/master/updateCreateSetTaxRate`, formData)
-  //     .then((response) => {
-  //       console.log('Response:', response.data);
-  //       setFormData({
-  //         chapter: '',
-  //         subChapter: '',
-  //         hsnCode: '',
-  //         branchLocation: '',
-  //         newRate: '',
-  //         exempted: ''
-  //       });
-  //       toast.success('Set Tax Rate Created Successfully', {
-  //         autoClose: 2000,
-  //         theme: 'colored'
-  //       });
-  //     })
-  //     .catch((error) => {
-  //       console.error('Error:', error);
-  //     });
-  // };
+  const handleClear = () => {
+    setFormData({
+      employeeCode: '',
+      employeeName: '',
+      gender: '',
+      branch: '',
+      joiningDate: '',
+      department: '',
+      designation: '',
+      appointmentType: '',
+      modeOfEntry: '',
+      dateOfBirth: '',
+      leavingDate: ''
+    });
+    setFieldErrors({
+      employeeCode: '',
+      employeeName: '',
+      gender: '',
+      branch: '',
+      joiningDate: '',
+      department: '',
+      designation: '',
+      appointmentType: '',
+      modeOfEntry: '',
+      dateOfBirth: '',
+      leavingDate: ''
+    });
+  };
 
   const handleSave = () => {
     const errors = Object.keys(formData).reduce((acc, key) => {
@@ -304,7 +298,7 @@ export const EmployeeDetails = () => {
 
               <Tooltip title="Clear" placement="top">
                 {' '}
-                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }}>
+                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleClear}>
                   <Avatar
                     variant="rounded"
                     sx={{
@@ -426,6 +420,8 @@ export const EmployeeDetails = () => {
                   <FormControlLabel
                     control={
                       <Checkbox
+                        sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                        id="active"
                         name="active"
                         checked={formData.active}
                         onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
@@ -436,20 +432,17 @@ export const EmployeeDetails = () => {
                 </FormGroup>
               </div>
               <div className="col-md-4 mb-3">
-                <FormControl fullWidth>
+                <FormControl fullWidth variant="filled" size="small">
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
                       label="Joining Date"
                       value={formData.joiningDate}
                       onChange={(date) => handleDateChange('joiningDate', date)}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          fullWidth
-                          error={fieldErrors.joiningDate}
-                          helperText={fieldErrors.joiningDate && 'Joining Date is required'}
-                        />
-                      )}
+                      slotProps={{
+                        textField: { size: 'small', clearable: true }
+                      }}
+                      error={fieldErrors.joiningDate}
+                      helperText={fieldErrors.joiningDate && 'Required'}
                     />
                   </LocalizationProvider>
                 </FormControl>
@@ -507,7 +500,7 @@ export const EmployeeDetails = () => {
                 />
               </div>
               <div className="col-md-4 mb-3">
-                <FormControl fullWidth>
+                {/* <FormControl fullWidth>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
                       label="Date Of Birth"
@@ -523,16 +516,35 @@ export const EmployeeDetails = () => {
                       )}
                     />
                   </LocalizationProvider>
+                </FormControl> */}
+
+                <FormControl fullWidth variant="filled" size="small">
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      label="Date Of Birth"
+                      value={formData.dateOfBirth}
+                      onChange={(date) => handleDateChange('dateOfBirth', date)}
+                      slotProps={{
+                        textField: { size: 'small', clearable: true }
+                      }}
+                      error={fieldErrors.dateOfBirth}
+                      helperText={fieldErrors.dateOfBirth && 'Required'}
+                    />
+                  </LocalizationProvider>
                 </FormControl>
               </div>
               <div className="col-md-4 mb-3">
-                <FormControl fullWidth>
+                <FormControl fullWidth variant="filled" size="small">
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
                       label="Leaving Date"
                       value={formData.leavingDate}
                       onChange={(date) => handleDateChange('leavingDate', date)}
-                      renderInput={(params) => <TextField {...params} fullWidth />}
+                      slotProps={{
+                        textField: { size: 'small', clearable: true }
+                      }}
+                      error={fieldErrors.leavingDate}
+                      helperText={fieldErrors.leavingDate && 'Required'}
                     />
                   </LocalizationProvider>
                 </FormControl>
@@ -542,7 +554,7 @@ export const EmployeeDetails = () => {
         ) : (
           <>
             <div className="mt-4">
-              <div>
+              <div className="mb-3">
                 <Tooltip title="Clear" placement="top">
                   {' '}
                   <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleBackToInput}>

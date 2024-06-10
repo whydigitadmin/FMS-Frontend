@@ -476,7 +476,7 @@ export const Container = () => {
           </div>
         ) : (
           <div className="mt-4">
-            <div>
+            <div className="mb-3">
               <Tooltip title="Clear" placement="top">
                 {' '}
                 <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleBackToInput}>

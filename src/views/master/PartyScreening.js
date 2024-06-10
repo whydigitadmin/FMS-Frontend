@@ -338,7 +338,7 @@ export const PartyScreening = () => {
               </Tooltip>
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl variant="outlined" fullWidth error={!!fieldErrors.partyType}>
+              <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.partyType}>
                 <InputLabel id="partyType">Party Type</InputLabel>
                 <Select labelId="partyType" label="partyType" value={formData.partyType} onChange={handleInputChange} name="partyType">
                   <MenuItem value="India">Type 1</MenuItem>
@@ -431,7 +431,7 @@ export const PartyScreening = () => {
           </div>
         ) : (
           <div className="mt-4">
-            <div>
+            <div className="mb-3">
               <Tooltip title="Clear" placement="top">
                 {' '}
                 <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleBackToInput}>

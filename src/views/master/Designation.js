@@ -262,6 +262,7 @@ export const Designation = () => {
             <TextField
               label="Designation"
               variant="outlined"
+              size="small"
               fullWidth
               name="designation"
               value={formData.designation}

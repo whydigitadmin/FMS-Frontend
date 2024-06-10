@@ -16,6 +16,8 @@ import { FaTrash } from 'react-icons/fa';
 import { MaterialReactTable } from 'material-react-table';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 
 export const ListOfValues = () => {
   const [formData, setFormData] = useState({
@@ -420,9 +422,29 @@ export const ListOfValues = () => {
 
           <div className="row d-flex ml">
             <div className="mt-2">
-              <button className="btn-primary" onClick={handleAddRow}>
-                + Add
-              </button>
+              <Tooltip title="Add" placement="top">
+                <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={handleAddRow}>
+                  <Avatar
+                    variant="rounded"
+                    sx={{
+                      ...theme.typography.commonAvatar,
+                      ...theme.typography.mediumAvatar,
+                      transition: 'all .2s ease-in-out',
+                      background: theme.palette.secondary.light,
+                      color: theme.palette.secondary.dark,
+                      '&[aria-controls="menu-list-grow"],&:hover': {
+                        background: theme.palette.secondary.dark,
+                        color: theme.palette.secondary.light
+                      }
+                    }}
+                    ref={anchorRef}
+                    aria-haspopup="true"
+                    color="inherit"
+                  >
+                    <AddIcon size="1.3rem" stroke={1.5} />
+                  </Avatar>
+                </ButtonBase>
+              </Tooltip>
             </div>
 
             <div className="row mt-2">
@@ -430,21 +452,41 @@ export const ListOfValues = () => {
                 <div className="table-responsive">
                   <table className="table table-bordered">
                     <thead>
-                      <tr>
-                        <th className="px-2 py-2 bg-primary text-white">Action</th>
-                        <th className="px-2 py-2 bg-primary text-white">S.No</th>
-                        <th className="px-2 py-2 bg-primary text-white">Value Code</th>
-                        <th className="px-2 py-2 bg-primary text-white">Value Description</th>
-                        <th className="px-2 py-2 bg-primary text-white">Active</th>
+                      <tr style={{ backgroundColor: '#434AA8' }}>
+                        <th className="px-2 py-2 text-white">Action</th>
+                        <th className="px-2 py-2 text-white">S.No</th>
+                        <th className="px-2 py-2 text-white">Value Code</th>
+                        <th className="px-2 py-2 text-white">Value Description</th>
+                        <th className="px-2 py-2 text-white">Active</th>
                       </tr>
                     </thead>
                     <tbody>
                       {tableData.map((row, index) => (
                         <tr key={row.id}>
                           <td className="border px-2 py-2">
-                            <button onClick={() => handleDeleteRow(row.id)} className="btn-danger">
-                              <FaTrash style={{ fontSize: '16px' }} />
-                            </button>
+                            <Tooltip title="Delete" placement="top">
+                              <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={() => handleDeleteRow(row.id)}>
+                                <Avatar
+                                  variant="rounded"
+                                  sx={{
+                                    ...theme.typography.commonAvatar,
+                                    ...theme.typography.mediumAvatar,
+                                    transition: 'all .2s ease-in-out',
+                                    background: theme.palette.secondary.light,
+                                    color: theme.palette.secondary.dark,
+                                    '&[aria-controls="menu-list-grow"],&:hover': {
+                                      background: theme.palette.secondary.dark,
+                                      color: theme.palette.secondary.light
+                                    }
+                                  }}
+                                  ref={anchorRef}
+                                  aria-haspopup="true"
+                                  color="inherit"
+                                >
+                                  <DeleteIcon size="1.3rem" stroke={1.5} />
+                                </Avatar>
+                              </ButtonBase>
+                            </Tooltip>
                           </td>
                           <td className="border px-2 py-2">{index + 1}</td>
                           <td className="border px-2 py-2">
@@ -509,7 +551,7 @@ export const ListOfValues = () => {
         </div>
       ) : (
         <div className="mt-4">
-          <div>
+          <div className="mb-3">
             <Tooltip title="Clear" placement="top">
               {' '}
               <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleBackToInput}>

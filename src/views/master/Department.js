@@ -294,6 +294,7 @@ export const Department = () => {
               <TextField
                 label="Department Code"
                 variant="outlined"
+                size="small"
                 fullWidth
                 name="departmentCode"
                 value={formData.departmentCode}
@@ -307,6 +308,7 @@ export const Department = () => {
               <TextField
                 label="Department Name"
                 variant="outlined"
+                size="small"
                 fullWidth
                 name="department"
                 value={formData.department}
@@ -334,7 +336,7 @@ export const Department = () => {
           </div>
         ) : (
           <div className="mt-4">
-            <div>
+            <div className="mb-3">
               <Tooltip title="Clear" placement="top">
                 {' '}
                 <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleBackToInput}>

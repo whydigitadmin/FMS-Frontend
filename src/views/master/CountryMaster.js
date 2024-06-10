@@ -287,6 +287,7 @@ export const CountryMaster = () => {
               <TextField
                 label="Code"
                 variant="outlined"
+                size="small"
                 fullWidth
                 name="countryCode"
                 value={formData.countryCode}
@@ -297,7 +298,7 @@ export const CountryMaster = () => {
             </div>
 
             <div className="col-md-4 mb-3">
-              <FormControl variant="outlined" fullWidth error={!!fieldErrors.country}>
+              <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.country}>
                 <InputLabel id="country-label">Country</InputLabel>
                 <Select labelId="country-label" label="Country" value={formData.country} onChange={handleInputChange} name="country">
                   <MenuItem value="India">India</MenuItem>
@@ -309,7 +310,7 @@ export const CountryMaster = () => {
           </div>
         ) : (
           <div className="mt-4">
-            <div>
+            <div className="mb-3">
               <Tooltip title="Clear" placement="top">
                 {' '}
                 <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleBackToInput}>

@@ -18,6 +18,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { MaterialReactTable } from 'material-react-table';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 
 export const DocumentTypeMapping = () => {
   const [formData, setFormData] = useState({
@@ -98,6 +100,31 @@ export const DocumentTypeMapping = () => {
     const { name, value, type, checked } = e.target;
     setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
     setFieldErrors({ ...fieldErrors, [name]: false });
+  };
+
+  const handleClear = () => {
+    setFormData({
+      branch: '',
+      financialYear: ''
+    });
+    setFieldErrors({
+      branch: '',
+      financialYear: ''
+    });
+    setTableErrors([]);
+    setTableData([
+      {
+        docType: '',
+        subType: '',
+        subTypeId: '',
+        subTypeCode: '',
+        docName: '',
+        prefix: '',
+        postFinance: '',
+        lastNo: '',
+        resetOnFinYear: ''
+      }
+    ]);
   };
 
   const handleSave = () => {
@@ -326,7 +353,7 @@ export const DocumentTypeMapping = () => {
 
               <Tooltip title="Clear" placement="top">
                 {' '}
-                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }}>
+                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleClear}>
                   <Avatar
                     variant="rounded"
                     sx={{
@@ -399,7 +426,7 @@ export const DocumentTypeMapping = () => {
               </Tooltip>
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl variant="outlined" fullWidth error={!!fieldErrors.branch}>
+              <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.branch}>
                 <InputLabel id="branch">Branch</InputLabel>
                 <Select labelId="branch" label="Branch" value={formData.branch} onChange={handleInputChange} name="branch">
                   <MenuItem value="India">India</MenuItem>
@@ -409,7 +436,7 @@ export const DocumentTypeMapping = () => {
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl variant="outlined" fullWidth error={!!fieldErrors.financialYear}>
+              <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.financialYear}>
                 <InputLabel id="financialYear">Financial Year</InputLabel>
                 <Select
                   labelId="financialYear"
@@ -427,9 +454,36 @@ export const DocumentTypeMapping = () => {
           </div>
 
           <div className="mt-2">
-            <button className="btn-primary" onClick={handleAddRow}>
+            {/* <button
+              style={{ backgroundColor: '#434AA8', width: '7%', height: '30px', border: '1px solid #434AA8' }}
+              className="text-white"
+              onClick={handleAddRow}
+            >
               + Add
-            </button>
+            </button> */}
+            <Tooltip title="Add" placement="top">
+              <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={handleAddRow}>
+                <Avatar
+                  variant="rounded"
+                  sx={{
+                    ...theme.typography.commonAvatar,
+                    ...theme.typography.mediumAvatar,
+                    transition: 'all .2s ease-in-out',
+                    background: theme.palette.secondary.light,
+                    color: theme.palette.secondary.dark,
+                    '&[aria-controls="menu-list-grow"],&:hover': {
+                      background: theme.palette.secondary.dark,
+                      color: theme.palette.secondary.light
+                    }
+                  }}
+                  ref={anchorRef}
+                  aria-haspopup="true"
+                  color="inherit"
+                >
+                  <AddIcon size="1.3rem" stroke={1.5} />
+                </Avatar>
+              </ButtonBase>
+            </Tooltip>
           </div>
           {/* Table */}
           <div className="row mt-2">
@@ -437,18 +491,18 @@ export const DocumentTypeMapping = () => {
               <div className="table-responsive">
                 <table className="table table-bordered">
                   <thead>
-                    <tr>
-                      <th className="px-2 py-2 bg-primary text-white">Action</th>
-                      <th className="px-2 py-2 bg-primary text-white">S.No</th>
-                      <th className="px-2 py-2 bg-primary text-white">Doc Type</th>
-                      <th className="px-2 py-2 bg-primary text-white">Sub Type</th>
-                      <th className="px-2 py-2 bg-primary text-white">Sub Type Id</th>
-                      <th className="px-2 py-2 bg-primary text-white">Subtype Code</th>
-                      <th className="px-2 py-2 bg-primary text-white">Doc. Name</th>
-                      <th className="px-2 py-2 bg-primary text-white">Prefix</th>
-                      <th className="px-2 py-2 bg-primary text-white">Post Finance</th>
-                      <th className="px-2 py-2 bg-primary text-white">LastNo</th>
-                      <th className="px-2 py-2 bg-primary text-white">Reset On Fin.Year</th>
+                    <tr style={{ backgroundColor: '#434AA8' }}>
+                      <th className="px-2 py-2 text-white">Action</th>
+                      <th className="px-2 py-2 text-white">S.No</th>
+                      <th className="px-2 py-2 text-white">Doc Type</th>
+                      <th className="px-2 py-2 text-white">Sub Type</th>
+                      <th className="px-2 py-2 text-white">Sub Type Id</th>
+                      <th className="px-2 py-2 text-white">Subtype Code</th>
+                      <th className="px-2 py-2 text-white">Doc. Name</th>
+                      <th className="px-2 py-2 text-white">Prefix</th>
+                      <th className="px-2 py-2 text-white">Post Finance</th>
+                      <th className="px-2 py-2 text-white">LastNo</th>
+                      <th className="px-2 py-2 text-white">Reset On Fin.Year</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -456,9 +510,32 @@ export const DocumentTypeMapping = () => {
                       <tr key={row.id}>
                         {/* Table cells */}
                         <td className="border px-2 py-2">
-                          <button onClick={() => handleDeleteRow(row.id)} className="btn-danger">
+                          {/* <button onClick={() => handleDeleteRow(row.id)} className="btn-danger">
                             <FaTrash style={{ fontSize: '16px' }} />
-                          </button>
+                          </button> */}
+                          <Tooltip title="Delete" placement="top">
+                            <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={() => handleDeleteRow(row.id)}>
+                              <Avatar
+                                variant="rounded"
+                                sx={{
+                                  ...theme.typography.commonAvatar,
+                                  ...theme.typography.mediumAvatar,
+                                  transition: 'all .2s ease-in-out',
+                                  background: theme.palette.secondary.light,
+                                  color: theme.palette.secondary.dark,
+                                  '&[aria-controls="menu-list-grow"],&:hover': {
+                                    background: theme.palette.secondary.dark,
+                                    color: theme.palette.secondary.light
+                                  }
+                                }}
+                                ref={anchorRef}
+                                aria-haspopup="true"
+                                color="inherit"
+                              >
+                                <DeleteIcon size="1.3rem" stroke={1.5} />
+                              </Avatar>
+                            </ButtonBase>
+                          </Tooltip>
                         </td>
                         {/* <td className="border px-2 py-2">{index + 1}</td> */}
                         <td className="border px-2 py-2">
@@ -643,7 +720,7 @@ export const DocumentTypeMapping = () => {
         </div>
       ) : (
         <div className="mt-4">
-          <div>
+          <div className="mb-3">
             <Tooltip title="Clear" placement="top">
               {' '}
               <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleBackToInput}>

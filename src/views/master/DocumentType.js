@@ -20,6 +20,8 @@ import { FaStarOfLife, FaTrash } from 'react-icons/fa';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 
 export const DocumentType = () => {
   const [formData, setFormData] = useState({
@@ -526,87 +528,37 @@ export const DocumentType = () => {
             />
           </div>
         </div>
-        {/* <div className="mt-2">
-          <button className="btn btn-primary" onClick={handleAddRow}>
-            + Add
-          </button>
-        </div>
-        <div className="row mt-2">
-          <div className="col-lg-12">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr>
-                    <th class="px-2 py-2 bg-primary text-white">Action</th>
-                    <th class="px-2 py-2 bg-primary text-white">S.No</th>
-                    <th class="px-2 py-2 bg-primary text-white">Subtype</th>
-                    <th class="px-2 py-2 bg-primary text-white">Subtype Code</th>
-                    <th class="px-2 py-2 bg-primary text-white">Subtype Name</th>
-                    <th class="px-2 py-2 bg-primary text-white">Month</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tableData.map((row) => (
-                    <tr key={row.id}>
-\                      <td className="border px-2 py-2">
-                        <button onClick={() => handleDeleteRow(row.id)} className="btn-danger">
-                          <FaTrash style={{ fontSize: '16px' }} />
-                        </button>
-                      </td>
-
-                      <td className="border px-2 py-2">
-                        <input
-                          type="text"
-                          value={row.id}
-                          onChange={(e) => setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, id: e.target.value } : r)))}
-                        />
-                      </td>
-                      <td className="border px-2 py-2">
-                        <input
-                          type="text"
-                          value={row.subType}
-                          onChange={(e) =>
-                            setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, subType: e.target.value } : r)))
-                          }
-                        />
-                      </td>
-                      <td className="border px-2 py-2">
-                        <input
-                          type="text"
-                          value={row.subTypeCode}
-                          onChange={(e) =>
-                            setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, subTypeCode: e.target.value } : r)))
-                          }
-                        />
-                      </td>
-                      <td className="border px-2 py-2">
-                        <input
-                          type="text"
-                          value={row.subTypeName}
-                          onChange={(e) =>
-                            setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, subTypeName: e.target.value } : r)))
-                          }
-                        />
-                      </td>
-                      <td className="border px-2 py-2">
-                        <input
-                          type="text"
-                          value={row.month}
-                          onChange={(e) => setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, month: e.target.value } : r)))}
-                          onKeyDown={(e) => handleKeyDown(e, row)}
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div> */}
         <div className="mt-2">
-          <button className="btn-primary" onClick={handleAddRow}>
+          {/* <button
+            style={{ backgroundColor: '#434AA8', width: '7%', height: '30px', border: '1px solid #434AA8' }}
+            className="text-white"
+            onClick={handleAddRow}
+          >
             + Add
-          </button>
+          </button> */}
+          <Tooltip title="Add" placement="top">
+            <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={handleAddRow}>
+              <Avatar
+                variant="rounded"
+                sx={{
+                  ...theme.typography.commonAvatar,
+                  ...theme.typography.mediumAvatar,
+                  transition: 'all .2s ease-in-out',
+                  background: theme.palette.secondary.light,
+                  color: theme.palette.secondary.dark,
+                  '&[aria-controls="menu-list-grow"],&:hover': {
+                    background: theme.palette.secondary.dark,
+                    color: theme.palette.secondary.light
+                  }
+                }}
+                ref={anchorRef}
+                aria-haspopup="true"
+                color="inherit"
+              >
+                <AddIcon size="1.3rem" stroke={1.5} />
+              </Avatar>
+            </ButtonBase>
+          </Tooltip>
         </div>
         {/* Table */}
         <div className="row mt-2">
@@ -614,13 +566,13 @@ export const DocumentType = () => {
             <div className="table-responsive">
               <table className="table table-bordered">
                 <thead>
-                  <tr>
-                    <th className="px-2 py-2 bg-primary text-white">Action</th>
-                    <th className="px-2 py-2 bg-primary text-white">S.No</th>
-                    <th className="px-2 py-2 bg-primary text-white">Sub Type</th>
-                    <th className="px-2 py-2 bg-primary text-white">Subtype Code</th>
-                    <th className="px-2 py-2 bg-primary text-white">Subtype Name</th>
-                    <th className="px-2 py-2 bg-primary text-white">Month</th>
+                  <tr style={{ backgroundColor: '#434AA8' }}>
+                    <th className="px-2 py-2 text-white">Action</th>
+                    <th className="px-2 py-2 text-white">S.No</th>
+                    <th className="px-2 py-2 text-white">Sub Type</th>
+                    <th className="px-2 py-2 text-white">Subtype Code</th>
+                    <th className="px-2 py-2 text-white">Subtype Name</th>
+                    <th className="px-2 py-2 text-white">Month</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -628,9 +580,32 @@ export const DocumentType = () => {
                     <tr key={row.id}>
                       {/* Table cells */}
                       <td className="border px-2 py-2">
-                        <button onClick={() => handleDeleteRow(row.id)} className="btn-danger">
+                        {/* <button onClick={() => handleDeleteRow(row.id)} className="btn-danger">
                           <FaTrash style={{ fontSize: '16px' }} />
-                        </button>
+                        </button> */}
+                        <Tooltip title="Delete" placement="top">
+                          <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={() => handleDeleteRow(row.id)}>
+                            <Avatar
+                              variant="rounded"
+                              sx={{
+                                ...theme.typography.commonAvatar,
+                                ...theme.typography.mediumAvatar,
+                                transition: 'all .2s ease-in-out',
+                                background: theme.palette.secondary.light,
+                                color: theme.palette.secondary.dark,
+                                '&[aria-controls="menu-list-grow"],&:hover': {
+                                  background: theme.palette.secondary.dark,
+                                  color: theme.palette.secondary.light
+                                }
+                              }}
+                              ref={anchorRef}
+                              aria-haspopup="true"
+                              color="inherit"
+                            >
+                              <DeleteIcon size="1.3rem" stroke={1.5} />
+                            </Avatar>
+                          </ButtonBase>
+                        </Tooltip>
                       </td>
 
                       <td className="border px-2 py-2">

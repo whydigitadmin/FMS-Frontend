@@ -310,7 +310,7 @@ export const CityMaster = () => {
               <ToastContainer />
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl variant="outlined" fullWidth error={!!fieldErrors.country}>
+              <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.country}>
                 <InputLabel id="country-label">Country</InputLabel>
                 <Select labelId="country-label" label="Country" value={formData.country} onChange={handleInputChange} name="country">
                   <MenuItem value="India">India</MenuItem>
@@ -320,7 +320,7 @@ export const CityMaster = () => {
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl variant="outlined" fullWidth error={!!fieldErrors.state}>
+              <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.state}>
                 <InputLabel id="state-label">State</InputLabel>
                 <Select labelId="state-label" label="State" value={formData.state} onChange={handleInputChange} name="state">
                   <MenuItem value="Tamil Nadu">Tamil Nadu</MenuItem>
@@ -333,6 +333,7 @@ export const CityMaster = () => {
               <TextField
                 label="City Code"
                 variant="outlined"
+                size="small"
                 fullWidth
                 name="cityCode"
                 value={formData.cityCode}
@@ -346,6 +347,7 @@ export const CityMaster = () => {
               <TextField
                 label="City Name"
                 variant="outlined"
+                size="small"
                 fullWidth
                 name="cityName"
                 value={formData.cityName}
@@ -357,7 +359,7 @@ export const CityMaster = () => {
           </div>
         ) : (
           <div className="mt-4">
-            <div>
+            <div className="mb-3">
               <Tooltip title="Clear" placement="top">
                 {' '}
                 <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleBackToInput}>

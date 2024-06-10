@@ -24,24 +24,21 @@ import EditIcon from '@mui/icons-material/Edit';
 
 export const Events = () => {
   const [formData, setFormData] = useState({
-    chapter: '',
-    subChapter: '',
-    hsnCode: '',
-    branchLocation: '',
-    newRate: '',
-    exempted: ''
+    active: true,
+    eventid: '',
+    eventDescription: '',
+    eventType: '',
+    orgId: 1
   });
 
   const theme = useTheme();
   const anchorRef = useRef(null);
 
   const [fieldErrors, setFieldErrors] = useState({
-    chapter: false,
-    subChapter: false,
-    hsnCode: false,
-    branchLocation: false,
-    newRate: false,
-    exempted: false
+    active: true,
+    eventid: '',
+    eventDescription: '',
+    eventType: ''
   });
   const [tableData, setTableData] = useState([]);
   const [listView, setListView] = useState(false);
@@ -52,42 +49,77 @@ export const Events = () => {
     setFieldErrors({ ...fieldErrors, [name]: false });
   };
 
+  const handleClear = () => {
+    setFormData({
+      eventid: '',
+      eventDescription: '',
+      eventType: ''
+    });
+    setFieldErrors({
+      eventid: '',
+      eventDescription: '',
+      eventType: ''
+    });
+  };
+
   const handleSave = () => {
-    // Check if any field is empty
-    const errors = Object.keys(formData).reduce((acc, key) => {
-      if (!formData[key]) {
-        acc[key] = true;
-      }
-      return acc;
-    }, {});
-    // If there are errors, set the corresponding fieldErrors state to true
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return; // Prevent API call if there are errors
+    const errors = {};
+    if (!formData.eventid) {
+      errors.eventid = 'Event Id is required';
     }
+    if (!formData.eventDescription) {
+      errors.eventDescription = 'Event Description is required';
+    }
+    if (!formData.eventType) {
+      errors.eventType = 'Event Type is required';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      // Set error messages for each field
+      setFieldErrors(errors);
+      return;
+    }
+
     axios
-      .post(`${process.env.REACT_APP_API_URL}/api/master/updateCreateSetTaxRate`, formData)
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateEvents`, formData)
       .then((response) => {
         console.log('Response:', response.data);
-        setFormData({
-          chapter: '',
-          subChapter: '',
-          hsnCode: '',
-          branchLocation: '',
-          newRate: '',
-          exempted: ''
-        });
-        toast.success('Set Tax Rate Created Successfully', {
+        toast.success('Events created successfully', {
           autoClose: 2000,
           theme: 'colored'
+        });
+        setFormData({
+          active: true,
+          eventid: '',
+          eventDescription: '',
+          eventType: '',
+          orgId: 1
         });
       })
       .catch((error) => {
         console.error('Error:', error);
+        toast.error('An error occurred while saving the events');
       });
   };
 
+  const getAllEvents = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getEventsById`);
+      console.log('API Response:', response);
+
+      if (response.status === 200) {
+        setTableData(response.data.paramObjectsMap.eventsVO);
+      } else {
+        // Handle error
+        console.error('API Error:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   const handleView = () => {
+    getAllEvents();
     setListView(true);
   };
 
@@ -115,26 +147,15 @@ export const Events = () => {
             {/* <IconButton onClick={() => handleViewRow(row)}>
               <VisibilityIcon />
             </IconButton> */}
-            <IconButton onClick={() => handleEditRow(row)}>
+            <IconButton>
               <EditIcon />
             </IconButton>
           </div>
         )
       },
-      // {
-      //   accessorKey: "cityid",
-      //   header: "ID",
-      //   size: 50,
-      //   muiTableHeadCellProps: {
-      //     align: "first",
-      //   },
-      //   muiTableBodyCellProps: {
-      //     align: "first",
-      //   },
-      // },
       {
-        accessorKey: 'cityName',
-        header: 'City',
+        accessorKey: 'eventDescription',
+        header: 'Event Description',
         size: 50,
         muiTableHeadCellProps: {
           align: 'center'
@@ -144,8 +165,8 @@ export const Events = () => {
         }
       },
       {
-        accessorKey: 'cityCode',
-        header: 'Code',
+        accessorKey: 'eventType',
+        header: 'Event Type',
         size: 50,
         muiTableHeadCellProps: {
           align: 'center'
@@ -172,7 +193,9 @@ export const Events = () => {
 
   return (
     <>
-      <div>{/* <ToastContainer /> */}</div>
+      <div>
+        <ToastContainer />
+      </div>
       <div className="card w-full p-6 bg-base-100 shadow-xl" style={{ padding: '20px' }}>
         {!listView ? (
           <div className="row d-flex ml">
@@ -203,7 +226,7 @@ export const Events = () => {
 
               <Tooltip title="Clear" placement="top">
                 {' '}
-                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }}>
+                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleClear}>
                   <Avatar
                     variant="rounded"
                     sx={{
@@ -277,57 +300,53 @@ export const Events = () => {
             </div>
             <div className="col-md-4 mb-3">
               <TextField
-                id="outlined-textarea"
-                label="Event ID"
-                placeholder="Placeholder"
+                label="Event Id"
                 variant="outlined"
                 size="small"
-                name="eventID"
                 fullWidth
-                required
-                // value={formData.subChapter}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+                name="eventid"
+                value={formData.eventid}
+                onChange={handleInputChange}
+                error={!!fieldErrors.eventid} // Add error prop
+                helperText={fieldErrors.eventid} // Add helperText prop
               />
             </div>
 
             <div className="col-md-4 mb-3">
               <TextField
-                id="outlined-textarea"
                 label="Event Description"
-                placeholder="Placeholder"
                 variant="outlined"
                 size="small"
                 fullWidth
-                required
                 name="eventDescription"
-                // value={formData.hsnCode}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.hsnCode ? 'This field is required' : ''}</span>}
+                value={formData.eventDescription}
+                onChange={handleInputChange}
+                error={!!fieldErrors.eventDescription} // Add error prop
+                helperText={fieldErrors.eventDescription} // Add helperText prop
               />
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Event Type</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label="Event Type"
-                  required
-                  // value={formData.exempted}
-                  name="eventType"
-                  // onChange={handleInputChange}
-                >
-                  <MenuItem value="0">India</MenuItem>
-                  <MenuItem value="1">America</MenuItem>
+              <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.eventType}>
+                <InputLabel id="eventType">Event Type</InputLabel>
+                <Select labelId="eventType" label="eventType" value={formData.eventType} onChange={handleInputChange} name="eventType">
+                  <MenuItem value="India">India</MenuItem>
+                  <MenuItem value="USA">USA</MenuItem>
                 </Select>
-                {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
+                {fieldErrors.eventType && <FormHelperText>{fieldErrors.eventType}</FormHelperText>}
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
               <FormGroup>
                 <FormControlLabel
-                  control={<Checkbox defaultChecked sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }} />}
+                  control={
+                    <Checkbox
+                      sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                      id="active"
+                      checked={formData.active}
+                      onChange={(e) => handleInputChange({ target: { name: 'active', value: e.target.checked } })}
+                      name="active"
+                    />
+                  }
                   label="Active"
                 />
               </FormGroup>
@@ -335,7 +354,7 @@ export const Events = () => {
           </div>
         ) : (
           <div className="mt-4">
-            <div>
+            <div className="mb-3">
               <Tooltip title="Clear" placement="top">
                 {' '}
                 <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleBackToInput}>

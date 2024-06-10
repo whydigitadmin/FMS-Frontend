@@ -449,7 +449,7 @@ export const CompanyDetails = () => {
               />
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl variant="outlined" fullWidth error={!!fieldErrors.country}>
+              <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.country}>
                 <InputLabel id="country-label">Country</InputLabel>
                 <Select labelId="country-label" label="Country" value={formData.country} onChange={handleInputChange} name="country">
                   <MenuItem value="India">India</MenuItem>
@@ -459,7 +459,7 @@ export const CompanyDetails = () => {
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl variant="outlined" fullWidth error={!!fieldErrors.state}>
+              <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.state}>
                 <InputLabel id="state-label">State</InputLabel>
                 <Select labelId="state-label" label="State" value={formData.state} onChange={handleInputChange} name="state">
                   <MenuItem value="Tamil Nadu">Tamil Nadu</MenuItem>
@@ -469,7 +469,7 @@ export const CompanyDetails = () => {
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl variant="outlined" fullWidth error={!!fieldErrors.city}>
+              <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.city}>
                 <InputLabel id="demo-simple-select-label">City</InputLabel>
                 <Select labelId="state-label" label="State" value={formData.city} onChange={handleInputChange} name="city">
                   <MenuItem value="Salem">Salem</MenuItem>
@@ -543,7 +543,7 @@ export const CompanyDetails = () => {
           </div>
         ) : (
           <div className="mt-4">
-            <div>
+            <div className="mb-3">
               <Tooltip title="Clear" placement="top">
                 {' '}
                 <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleBackToInput}>
