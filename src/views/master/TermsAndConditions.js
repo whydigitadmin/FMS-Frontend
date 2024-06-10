@@ -17,30 +17,29 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import Checkbox from '@mui/material/Checkbox';
 import { FaTrash } from 'react-icons/fa';
-
-// import { ToastContainer, toast } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
+import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const TermsAndConditions = () => {
+  const [orgId, setOrgId] = useState(localStorage.getItem('orgId'));
   const [formData, setFormData] = useState({
-    chapter: '',
-    subChapter: '',
-    hsnCode: '',
-    branchLocation: '',
-    newRate: '',
-    exempted: ''
+    active: true,
+    branch: '',
+    documentType: '',
+    partyType: '',
+    terms: ''
   });
 
   const theme = useTheme();
   const anchorRef = useRef(null);
 
   const [fieldErrors, setFieldErrors] = useState({
-    chapter: false,
-    subChapter: false,
-    hsnCode: false,
-    branchLocation: false,
-    newRate: false,
-    exempted: false
+    branch: '',
+    documentType: '',
+    partyType: '',
+    terms: ''
   });
   const [tableData, setTableData] = useState([]);
   const [listView, setListView] = useState(false);
@@ -51,42 +50,82 @@ export const TermsAndConditions = () => {
     setFieldErrors({ ...fieldErrors, [name]: false });
   };
 
+  const handleClear = () => {
+    setFormData({
+      branch: '',
+      documentType: '',
+      partyType: '',
+      terms: ''
+    });
+    setFieldErrors({
+      branch: '',
+      documentType: '',
+      partyType: '',
+      terms: ''
+    });
+  };
+
   const handleSave = () => {
-    // Check if any field is empty
-    const errors = Object.keys(formData).reduce((acc, key) => {
-      if (!formData[key]) {
-        acc[key] = true;
-      }
-      return acc;
-    }, {});
-    // If there are errors, set the corresponding fieldErrors state to true
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return; // Prevent API call if there are errors
+    const errors = {};
+    if (!formData.branch) {
+      errors.branch = 'Branch is required';
     }
+    if (!formData.documentType) {
+      errors.documentType = 'Document Type is required';
+    }
+    if (!formData.partyType) {
+      errors.partyType = 'Party Type is required';
+    }
+    if (!formData.terms) {
+      errors.terms = 'Terms is required';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      // Set error messages for each field
+      setFieldErrors(errors);
+      return;
+    }
+
     axios
-      .post(`${process.env.REACT_APP_API_URL}/api/master/updateCreateSetTaxRate`, formData)
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateTermsAndCondition`, formData)
       .then((response) => {
         console.log('Response:', response.data);
-        setFormData({
-          chapter: '',
-          subChapter: '',
-          hsnCode: '',
-          branchLocation: '',
-          newRate: '',
-          exempted: ''
-        });
-        toast.success('Set Tax Rate Created Successfully', {
+        toast.success('Terms and Condition created successfully', {
           autoClose: 2000,
           theme: 'colored'
+        });
+        setFormData({
+          active: true,
+          branch: '',
+          documentType: '',
+          partyType: '',
+          terms: ''
         });
       })
       .catch((error) => {
         console.error('Error:', error);
+        toast.error('An error occurred while saving the term and condition');
       });
   };
 
+  const getAllTermsAndConditions = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getTermsAndConditionById`);
+      console.log('API Response:', response);
+
+      if (response.status === 200) {
+        setTableData(response.data.paramObjectsMap.termsAndConditionVO);
+      } else {
+        // Handle error
+        console.error('API Error:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   const handleView = () => {
+    getAllTermsAndConditions();
     setListView(true);
   };
 
@@ -114,26 +153,15 @@ export const TermsAndConditions = () => {
             {/* <IconButton onClick={() => handleViewRow(row)}>
               <VisibilityIcon />
             </IconButton> */}
-            <IconButton onClick={() => handleEditRow(row)}>
+            <IconButton>
               <EditIcon />
             </IconButton>
           </div>
         )
       },
-      // {
-      //   accessorKey: "cityid",
-      //   header: "ID",
-      //   size: 50,
-      //   muiTableHeadCellProps: {
-      //     align: "first",
-      //   },
-      //   muiTableBodyCellProps: {
-      //     align: "first",
-      //   },
-      // },
       {
-        accessorKey: 'cityName',
-        header: 'City',
+        accessorKey: 'branch',
+        header: 'Branch',
         size: 50,
         muiTableHeadCellProps: {
           align: 'center'
@@ -143,8 +171,19 @@ export const TermsAndConditions = () => {
         }
       },
       {
-        accessorKey: 'cityCode',
-        header: 'Code',
+        accessorKey: 'documentType',
+        header: 'Document Type',
+        size: 50,
+        muiTableHeadCellProps: {
+          align: 'center'
+        },
+        muiTableBodyCellProps: {
+          align: 'center'
+        }
+      },
+      {
+        accessorKey: 'partyType',
+        header: 'Party Type',
         size: 50,
         muiTableHeadCellProps: {
           align: 'center'
@@ -171,7 +210,9 @@ export const TermsAndConditions = () => {
 
   return (
     <>
-      <div>{/* <ToastContainer /> */}</div>
+      <div>
+        <ToastContainer />
+      </div>
       <div className="card w-full p-6 bg-base-100 shadow-xl" style={{ padding: '20px' }}>
         {!listView ? (
           <div className="row d-flex ml">
@@ -202,7 +243,7 @@ export const TermsAndConditions = () => {
 
               <Tooltip title="Clear" placement="top">
                 {' '}
-                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }}>
+                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleClear}>
                   <Avatar
                     variant="rounded"
                     sx={{
@@ -275,21 +316,13 @@ export const TermsAndConditions = () => {
               </Tooltip>
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Branch</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label="Branch"
-                  required
-                  // value={formData.exempted}
-                  name="branch"
-                  // onChange={handleInputChange}
-                >
-                  <MenuItem value="0">India</MenuItem>
-                  <MenuItem value="1">America</MenuItem>
+              <FormControl variant="outlined" fullWidth error={!!fieldErrors.branch}>
+                <InputLabel id="branch">Branch</InputLabel>
+                <Select labelId="branch" label="branch" value={formData.branch} onChange={handleInputChange} name="branch">
+                  <MenuItem value="India">India</MenuItem>
+                  <MenuItem value="USA">USA</MenuItem>
                 </Select>
-                {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
+                {fieldErrors.branch && <FormHelperText>{fieldErrors.branch}</FormHelperText>}
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
@@ -302,25 +335,27 @@ export const TermsAndConditions = () => {
                 name="documentType"
                 fullWidth
                 required
-                // value={formData.subChapter}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+                value={formData.documentType}
+                onChange={handleInputChange}
+                error={fieldErrors.documentType}
+                helperText={fieldErrors.documentType}
               />
             </div>
 
             <div className="col-md-4 mb-3">
               <TextField
                 id="outlined-textarea"
-                label="Part Type"
+                label="Party Type"
                 placeholder="Placeholder"
                 variant="outlined"
                 size="small"
                 fullWidth
                 required
-                name="partType"
-                // value={formData.hsnCode}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.hsnCode ? 'This field is required' : ''}</span>}
+                name="partyType"
+                value={formData.partyType}
+                onChange={handleInputChange}
+                error={fieldErrors.partyType}
+                helperText={fieldErrors.partyType}
               />
             </div>
 
@@ -334,9 +369,10 @@ export const TermsAndConditions = () => {
                 fullWidth
                 required
                 name="terms"
-                // value={formData.hsnCode}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.hsnCode ? 'This field is required' : ''}</span>}
+                value={formData.terms}
+                onChange={handleInputChange}
+                error={fieldErrors.terms}
+                helperText={fieldErrors.terms}
               />
             </div>
           </div>

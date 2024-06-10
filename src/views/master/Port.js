@@ -13,33 +13,47 @@ import axios from 'axios';
 import { useRef, useState, useMemo } from 'react';
 import 'react-tabs/style/react-tabs.css';
 import { MaterialReactTable } from 'material-react-table';
-
-// import { ToastContainer, toast } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
 
 export const Port = () => {
+  const [orgId, setOrgId] = useState(localStorage.getItem('orgId'));
   const [formData, setFormData] = useState({
-    chapter: '',
-    subChapter: '',
-    hsnCode: '',
-    branchLocation: '',
-    newRate: '',
-    exempted: ''
+    port: '',
+    code: '',
+    country: '',
+    type: '',
+    orgId: 1
   });
 
   const theme = useTheme();
   const anchorRef = useRef(null);
 
   const [fieldErrors, setFieldErrors] = useState({
-    chapter: false,
-    subChapter: false,
-    hsnCode: false,
-    branchLocation: false,
-    newRate: false,
-    exempted: false
+    port: '',
+    code: '',
+    country: '',
+    type: ''
   });
   const [tableData, setTableData] = useState([]);
   const [listView, setListView] = useState(false);
+
+  const handleClear = () => {
+    setFormData({
+      port: '',
+      code: '',
+      country: '',
+      type: ''
+    });
+    setFieldErrors({
+      port: '',
+      code: '',
+      country: '',
+      type: ''
+    });
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -48,41 +62,67 @@ export const Port = () => {
   };
 
   const handleSave = () => {
-    // Check if any field is empty
-    const errors = Object.keys(formData).reduce((acc, key) => {
-      if (!formData[key]) {
-        acc[key] = true;
-      }
-      return acc;
-    }, {});
-    // If there are errors, set the corresponding fieldErrors state to true
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return; // Prevent API call if there are errors
+    const errors = {};
+    if (!formData.port) {
+      errors.port = 'Port Name is required';
     }
+    if (!formData.code) {
+      errors.code = 'Port Code is required';
+    }
+    if (!formData.country) {
+      errors.country = 'Country is required';
+    }
+    if (!formData.type) {
+      errors.type = 'Type is required';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      // Set error messages for each field
+      setFieldErrors(errors);
+      return;
+    }
+
     axios
-      .post(`${process.env.REACT_APP_API_URL}/api/master/updateCreateSetTaxRate`, formData)
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreatePort`, formData)
       .then((response) => {
         console.log('Response:', response.data);
-        setFormData({
-          chapter: '',
-          subChapter: '',
-          hsnCode: '',
-          branchLocation: '',
-          newRate: '',
-          exempted: ''
-        });
-        toast.success('Set Tax Rate Created Successfully', {
+        toast.success('Port saved successfully', {
           autoClose: 2000,
           theme: 'colored'
+        });
+        setFormData({
+          active: true,
+          port: '',
+          code: '',
+          country: '',
+          type: '',
+          orgId: 1
         });
       })
       .catch((error) => {
         console.error('Error:', error);
+        toast.error('An error occurred while saving port');
       });
   };
 
+  const getAllPort = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getPortById`);
+      console.log('API Response:', response);
+
+      if (response.status === 200) {
+        setTableData(response.data.paramObjectsMap.portVO);
+      } else {
+        // Handle error
+        console.error('API Error:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   const handleView = () => {
+    getAllPort();
     setListView(true);
   };
 
@@ -110,26 +150,26 @@ export const Port = () => {
             {/* <IconButton onClick={() => handleViewRow(row)}>
               <VisibilityIcon />
             </IconButton> */}
-            <IconButton onClick={() => handleEditRow(row)}>
+            <IconButton>
               <EditIcon />
             </IconButton>
           </div>
         )
       },
-      // {
-      //   accessorKey: "cityid",
-      //   header: "ID",
-      //   size: 50,
-      //   muiTableHeadCellProps: {
-      //     align: "first",
-      //   },
-      //   muiTableBodyCellProps: {
-      //     align: "first",
-      //   },
-      // },
       {
-        accessorKey: 'cityName',
-        header: 'City',
+        accessorKey: 'port',
+        header: 'Port Name',
+        size: 50,
+        muiTableHeadCellProps: {
+          align: 'first'
+        },
+        muiTableBodyCellProps: {
+          align: 'first'
+        }
+      },
+      {
+        accessorKey: 'code',
+        header: 'Port Code',
         size: 50,
         muiTableHeadCellProps: {
           align: 'center'
@@ -139,8 +179,8 @@ export const Port = () => {
         }
       },
       {
-        accessorKey: 'cityCode',
-        header: 'Code',
+        accessorKey: 'type',
+        header: 'Type',
         size: 50,
         muiTableHeadCellProps: {
           align: 'center'
@@ -167,7 +207,9 @@ export const Port = () => {
 
   return (
     <>
-      <div>{/* <ToastContainer /> */}</div>
+      <div>
+        <ToastContainer />
+      </div>
       <div className="card w-full p-6 bg-base-100 shadow-xl" style={{ padding: '20px' }}>
         {!listView ? (
           <div className="row d-flex ml">
@@ -272,69 +314,53 @@ export const Port = () => {
             </div>
             <div className="col-md-4 mb-3">
               <TextField
-                id="outlined-textarea"
+                id="portName"
                 label="Port Name"
-                placeholder="Placeholder"
                 variant="outlined"
                 size="small"
-                name="portName"
                 fullWidth
                 required
-                // value={formData.subChapter}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+                name="port"
+                value={formData.port}
+                onChange={handleInputChange}
+                error={fieldErrors.port}
+                helperText={fieldErrors.port}
               />
             </div>
 
             <div className="col-md-4 mb-3">
               <TextField
-                id="outlined-textarea"
+                id="portCode"
                 label="Port Code"
-                placeholder="Placeholder"
                 variant="outlined"
                 size="small"
                 fullWidth
                 required
-                name="portCode"
-                // value={formData.hsnCode}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.hsnCode ? 'This field is required' : ''}</span>}
+                name="code"
+                value={formData.code}
+                onChange={handleInputChange}
+                error={fieldErrors.code}
+                helperText={fieldErrors.code}
               />
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Country</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label="Country"
-                  required
-                  // value={formData.exempted}
-                  name="Country"
-                  // onChange={handleInputChange}
-                >
-                  <MenuItem value="0">India</MenuItem>
-                  <MenuItem value="1">America</MenuItem>
+              <FormControl variant="outlined" fullWidth error={!!fieldErrors.country}>
+                <InputLabel id="country-label">Country</InputLabel>
+                <Select labelId="country-label" label="Country" value={formData.country} onChange={handleInputChange} name="country">
+                  <MenuItem value="India">India</MenuItem>
+                  <MenuItem value="USA">USA</MenuItem>
                 </Select>
-                {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
+                {fieldErrors.country && <FormHelperText>{fieldErrors.country}</FormHelperText>}
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Type</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label="Type"
-                  required
-                  // value={formData.exempted}
-                  name="Type"
-                  // onChange={handleInputChange}
-                >
-                  <MenuItem value="0">Sea</MenuItem>
-                  <MenuItem value="1">Air</MenuItem>
+              <FormControl variant="outlined" fullWidth error={!!fieldErrors.type}>
+                <InputLabel id="type">Type</InputLabel>
+                <Select labelId="type" label="Type" value={formData.type} onChange={handleInputChange} name="type">
+                  <MenuItem value="India">India</MenuItem>
+                  <MenuItem value="USA">USA</MenuItem>
                 </Select>
-                {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
+                {fieldErrors.type && <FormHelperText>{fieldErrors.type}</FormHelperText>}
               </FormControl>
             </div>
           </div>

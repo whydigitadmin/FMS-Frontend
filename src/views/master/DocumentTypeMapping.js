@@ -12,84 +12,45 @@ import { useTheme } from '@mui/material/styles';
 import axios from 'axios';
 import { useRef, useState, useMemo } from 'react';
 import 'react-tabs/style/react-tabs.css';
-import { MaterialReactTable } from 'material-react-table';
 import { FaTrash } from 'react-icons/fa';
-
-// import { ToastContainer, toast } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { MaterialReactTable } from 'material-react-table';
+import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
 
 export const DocumentTypeMapping = () => {
   const [formData, setFormData] = useState({
-    chapter: '',
-    subChapter: '',
-    hsnCode: '',
-    branchLocation: '',
-    newRate: '',
-    exempted: ''
+    branch: '',
+    financialYear: '',
+    active: true
   });
 
   const theme = useTheme();
   const anchorRef = useRef(null);
 
   const [fieldErrors, setFieldErrors] = useState({
-    chapter: false,
-    subChapter: false,
-    hsnCode: false,
-    branchLocation: false,
-    newRate: false,
-    exempted: false
+    branch: '',
+    financialYear: ''
   });
-  //   const [tableData, setTableData] = useState([]);
+
+  const [tableErrors, setTableErrors] = useState([
+    {
+      docType: '',
+      subType: '',
+      subTypeId: '',
+      subTypeCode: '',
+      docName: '',
+      prefix: '',
+      postFinance: true,
+      lastNo: '',
+      resetOnFinYear: true
+    }
+  ]);
+
   const [listView, setListView] = useState(false);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-    setFieldErrors({ ...fieldErrors, [name]: false });
-  };
-
-  const handleSave = () => {
-    // Check if any field is empty
-    const errors = Object.keys(formData).reduce((acc, key) => {
-      if (!formData[key]) {
-        acc[key] = true;
-      }
-      return acc;
-    }, {});
-    // If there are errors, set the corresponding fieldErrors state to true
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return; // Prevent API call if there are errors
-    }
-    axios
-      .post(`${process.env.REACT_APP_API_URL}/api/master/updateCreateSetTaxRate`, formData)
-      .then((response) => {
-        console.log('Response:', response.data);
-        setFormData({
-          chapter: '',
-          subChapter: '',
-          hsnCode: '',
-          branchLocation: '',
-          newRate: '',
-          exempted: ''
-        });
-        toast.success('Set Tax Rate Created Successfully', {
-          autoClose: 2000,
-          theme: 'colored'
-        });
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-  };
-
-  const handleView = () => {
-    setListView(true);
-  };
-
-  const handleBackToInput = () => {
-    setListView(false);
-  };
+  const [tableDataList, setTableDataList] = useState([]);
 
   const [tableData, setTableData] = useState([
     {
@@ -100,9 +61,9 @@ export const DocumentTypeMapping = () => {
       subTypeCode: '',
       docName: '',
       prefix: '',
-      postFinance: '',
+      postFinance: true,
       lastNo: '',
-      resetOnFinYear: ''
+      resetOnFinYear: true
     }
   ]);
 
@@ -133,6 +94,139 @@ export const DocumentTypeMapping = () => {
     }
   };
 
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
+    setFieldErrors({ ...fieldErrors, [name]: false });
+  };
+
+  const handleSave = () => {
+    const errors = {};
+    if (!formData.branch) {
+      errors.branch = 'Branch is required';
+    }
+    if (!formData.financialYear) {
+      errors.financialYear = 'Financial Year is required';
+    }
+
+    let tableDataValid = true;
+    const newTableErrors = tableData.map((row) => {
+      const rowErrors = {};
+      if (!row.docType) {
+        rowErrors.docType = 'Doc Type is required';
+        tableDataValid = false;
+      }
+      if (!row.subType) {
+        rowErrors.subType = 'Sub Type is required';
+        tableDataValid = false;
+      }
+      if (!row.subTypeId) {
+        rowErrors.subTypeId = 'Sub TypeId is required';
+        tableDataValid = false;
+      }
+      if (!row.subTypeCode) {
+        rowErrors.subTypeCode = 'Sub TypeCode is required';
+        tableDataValid = false;
+      }
+      if (!row.docName) {
+        rowErrors.docName = 'Doc Name is required';
+        tableDataValid = false;
+      }
+      if (!row.prefix) {
+        rowErrors.prefix = 'Prefix is required';
+        tableDataValid = false;
+      }
+      if (!row.lastNo) {
+        rowErrors.lastNo = 'Last No is required';
+        tableDataValid = false;
+      }
+      return rowErrors;
+    });
+
+    setFieldErrors(errors);
+    setTableErrors(newTableErrors);
+
+    if (Object.keys(errors).length > 0 || !tableDataValid) {
+      return;
+    }
+
+    const payload = {
+      ...formData,
+      orgId: 1, // Assuming this is a fixed value or you need to set it dynamically
+      mappingDTO: tableData.map((row) => ({
+        // id: 0, // Assuming new rows have id 0
+        docType: row.docType,
+        docName: row.docName,
+        lastNo: row.lastNo,
+        postFinance: row.postFinance,
+        prefix: row.prefix,
+        resetOnFinYear: row.resetOnFinYear,
+        subType: row.subType,
+        subTypeCode: row.subTypeCode,
+        subTypeId: row.subTypeId
+      }))
+    };
+
+    axios
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateDocumentTypeMapping`, payload)
+      .then((response) => {
+        console.log('Response:', response.data);
+        toast.success('Document Type Mapping created successfully', {
+          autoClose: 2000,
+          theme: 'colored'
+        });
+        setFormData({
+          branch: '',
+          financialYear: '',
+          active: true
+        });
+        setTableData([
+          {
+            id: 1,
+            docType: '',
+            subType: '',
+            subTypeId: '',
+            subTypeCode: '',
+            docName: '',
+            prefix: '',
+            postFinance: true,
+            lastNo: '',
+            resetOnFinYear: true
+          }
+        ]);
+        setTableErrors([]);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        toast.error('An error occurred while saving the list of values');
+      });
+  };
+
+  const getAllDocumentTypeMapping = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getDocumentTypeMappingByOrgId`);
+      console.log('API Response:', response);
+
+      if (response.status === 200) {
+        setTableDataList(response.data.paramObjectsMap.documentTypeMappingVO);
+      } else {
+        // Handle error
+        console.error('API Error:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  const handleView = () => {
+    getAllDocumentTypeMapping();
+    setListView(true);
+  };
+
+  const handleBackToInput = () => {
+    setListView(false);
+  };
+
   const columns = useMemo(
     () => [
       {
@@ -153,37 +247,26 @@ export const DocumentTypeMapping = () => {
             {/* <IconButton onClick={() => handleViewRow(row)}>
               <VisibilityIcon />
             </IconButton> */}
-            <IconButton onClick={() => handleEditRow(row)}>
+            <IconButton>
               <EditIcon />
             </IconButton>
           </div>
         )
       },
-      // {
-      //   accessorKey: "cityid",
-      //   header: "ID",
-      //   size: 50,
-      //   muiTableHeadCellProps: {
-      //     align: "first",
-      //   },
-      //   muiTableBodyCellProps: {
-      //     align: "first",
-      //   },
-      // },
       {
-        accessorKey: 'cityName',
-        header: 'City',
+        accessorKey: 'branch',
+        header: 'Branch',
         size: 50,
         muiTableHeadCellProps: {
-          align: 'center'
+          align: 'first'
         },
         muiTableBodyCellProps: {
-          align: 'center'
+          align: 'first'
         }
       },
       {
-        accessorKey: 'cityCode',
-        header: 'Code',
+        accessorKey: 'financialYear',
+        header: 'Financial Year',
         size: 50,
         muiTableHeadCellProps: {
           align: 'center'
@@ -210,148 +293,356 @@ export const DocumentTypeMapping = () => {
 
   return (
     <>
-      <div>{/* <ToastContainer /> */}</div>
-      <div className="card w-full p-6 bg-base-100 shadow-xl" style={{ padding: '20px' }}>
-        {/* {!listView ? ( */}
-        <div className="row d-flex ml">
-          <div className="d-flex flex-wrap justify-content-start mb-4" style={{ marginBottom: '20px' }}>
-            <Tooltip title="Search" placement="top">
-              <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }}>
-                <Avatar
-                  variant="rounded"
-                  sx={{
-                    ...theme.typography.commonAvatar,
-                    ...theme.typography.mediumAvatar,
-                    transition: 'all .2s ease-in-out',
-                    background: theme.palette.secondary.light,
-                    color: theme.palette.secondary.dark,
-                    '&[aria-controls="menu-list-grow"],&:hover': {
-                      background: theme.palette.secondary.dark,
-                      color: theme.palette.secondary.light
-                    }
-                  }}
-                  ref={anchorRef}
-                  aria-haspopup="true"
-                  color="inherit"
-                >
-                  <SearchIcon size="1.3rem" stroke={1.5} />
-                </Avatar>
-              </ButtonBase>
-            </Tooltip>
+      <div>
+        <ToastContainer />
+      </div>
+      {!listView ? (
+        <div className="card w-full p-6 bg-base-100 shadow-xl" style={{ padding: '20px' }}>
+          <div className="row d-flex ml">
+            <div className="d-flex flex-wrap justify-content-start mb-4" style={{ marginBottom: '20px' }}>
+              <Tooltip title="Search" placement="top">
+                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }}>
+                  <Avatar
+                    variant="rounded"
+                    sx={{
+                      ...theme.typography.commonAvatar,
+                      ...theme.typography.mediumAvatar,
+                      transition: 'all .2s ease-in-out',
+                      background: theme.palette.secondary.light,
+                      color: theme.palette.secondary.dark,
+                      '&[aria-controls="menu-list-grow"],&:hover': {
+                        background: theme.palette.secondary.dark,
+                        color: theme.palette.secondary.light
+                      }
+                    }}
+                    ref={anchorRef}
+                    aria-haspopup="true"
+                    color="inherit"
+                  >
+                    <SearchIcon size="1.3rem" stroke={1.5} />
+                  </Avatar>
+                </ButtonBase>
+              </Tooltip>
 
-            <Tooltip title="Clear" placement="top">
-              {' '}
-              <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }}>
-                <Avatar
-                  variant="rounded"
-                  sx={{
-                    ...theme.typography.commonAvatar,
-                    ...theme.typography.mediumAvatar,
-                    transition: 'all .2s ease-in-out',
-                    background: theme.palette.secondary.light,
-                    color: theme.palette.secondary.dark,
-                    '&[aria-controls="menu-list-grow"],&:hover': {
-                      background: theme.palette.secondary.dark,
-                      color: theme.palette.secondary.light
-                    }
-                  }}
-                  ref={anchorRef}
-                  aria-haspopup="true"
-                  color="inherit"
-                >
-                  <ClearIcon size="1.3rem" stroke={1.5} />
-                </Avatar>
-              </ButtonBase>
-            </Tooltip>
+              <Tooltip title="Clear" placement="top">
+                {' '}
+                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }}>
+                  <Avatar
+                    variant="rounded"
+                    sx={{
+                      ...theme.typography.commonAvatar,
+                      ...theme.typography.mediumAvatar,
+                      transition: 'all .2s ease-in-out',
+                      background: theme.palette.secondary.light,
+                      color: theme.palette.secondary.dark,
+                      '&[aria-controls="menu-list-grow"],&:hover': {
+                        background: theme.palette.secondary.dark,
+                        color: theme.palette.secondary.light
+                      }
+                    }}
+                    ref={anchorRef}
+                    aria-haspopup="true"
+                    color="inherit"
+                  >
+                    <ClearIcon size="1.3rem" stroke={1.5} />
+                  </Avatar>
+                </ButtonBase>
+              </Tooltip>
 
-            <Tooltip title="List View" placement="top">
-              {' '}
-              <ButtonBase sx={{ borderRadius: '12px' }} onClick={handleView}>
-                <Avatar
-                  variant="rounded"
-                  sx={{
-                    ...theme.typography.commonAvatar,
-                    ...theme.typography.mediumAvatar,
-                    transition: 'all .2s ease-in-out',
-                    background: theme.palette.secondary.light,
-                    color: theme.palette.secondary.dark,
-                    '&[aria-controls="menu-list-grow"],&:hover': {
-                      background: theme.palette.secondary.dark,
-                      color: theme.palette.secondary.light
-                    }
-                  }}
-                  ref={anchorRef}
-                  aria-haspopup="true"
-                  color="inherit"
+              <Tooltip title="List View" placement="top">
+                {' '}
+                <ButtonBase sx={{ borderRadius: '12px' }} onClick={handleView}>
+                  <Avatar
+                    variant="rounded"
+                    sx={{
+                      ...theme.typography.commonAvatar,
+                      ...theme.typography.mediumAvatar,
+                      transition: 'all .2s ease-in-out',
+                      background: theme.palette.secondary.light,
+                      color: theme.palette.secondary.dark,
+                      '&[aria-controls="menu-list-grow"],&:hover': {
+                        background: theme.palette.secondary.dark,
+                        color: theme.palette.secondary.light
+                      }
+                    }}
+                    ref={anchorRef}
+                    aria-haspopup="true"
+                    color="inherit"
+                  >
+                    <FormatListBulletedTwoToneIcon size="1.3rem" stroke={1.5} />
+                  </Avatar>
+                </ButtonBase>
+              </Tooltip>
+              <Tooltip title="Save" placement="top">
+                {' '}
+                <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={handleSave}>
+                  <Avatar
+                    variant="rounded"
+                    sx={{
+                      ...theme.typography.commonAvatar,
+                      ...theme.typography.mediumAvatar,
+                      transition: 'all .2s ease-in-out',
+                      background: theme.palette.secondary.light,
+                      color: theme.palette.secondary.dark,
+                      '&[aria-controls="menu-list-grow"],&:hover': {
+                        background: theme.palette.secondary.dark,
+                        color: theme.palette.secondary.light
+                      }
+                    }}
+                    ref={anchorRef}
+                    aria-haspopup="true"
+                    color="inherit"
+                  >
+                    <SaveIcon size="1.3rem" stroke={1.5} />
+                  </Avatar>
+                </ButtonBase>
+              </Tooltip>
+            </div>
+            <div className="col-md-4 mb-3">
+              <FormControl variant="outlined" fullWidth error={!!fieldErrors.branch}>
+                <InputLabel id="branch">Branch</InputLabel>
+                <Select labelId="branch" label="Branch" value={formData.branch} onChange={handleInputChange} name="branch">
+                  <MenuItem value="India">India</MenuItem>
+                  <MenuItem value="USA">USA</MenuItem>
+                </Select>
+                {fieldErrors.branch && <FormHelperText>{fieldErrors.branch}</FormHelperText>}
+              </FormControl>
+            </div>
+            <div className="col-md-4 mb-3">
+              <FormControl variant="outlined" fullWidth error={!!fieldErrors.financialYear}>
+                <InputLabel id="financialYear">Financial Year</InputLabel>
+                <Select
+                  labelId="financialYear"
+                  label="Financial Year"
+                  value={formData.financialYear}
+                  onChange={handleInputChange}
+                  name="financialYear"
                 >
-                  <FormatListBulletedTwoToneIcon size="1.3rem" stroke={1.5} />
-                </Avatar>
-              </ButtonBase>
-            </Tooltip>
-            <Tooltip title="Save" placement="top">
-              {' '}
-              <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={handleSave}>
-                <Avatar
-                  variant="rounded"
-                  sx={{
-                    ...theme.typography.commonAvatar,
-                    ...theme.typography.mediumAvatar,
-                    transition: 'all .2s ease-in-out',
-                    background: theme.palette.secondary.light,
-                    color: theme.palette.secondary.dark,
-                    '&[aria-controls="menu-list-grow"],&:hover': {
-                      background: theme.palette.secondary.dark,
-                      color: theme.palette.secondary.light
-                    }
-                  }}
-                  ref={anchorRef}
-                  aria-haspopup="true"
-                  color="inherit"
-                >
-                  <SaveIcon size="1.3rem" stroke={1.5} />
-                </Avatar>
-              </ButtonBase>
-            </Tooltip>
+                  <MenuItem value="0">2023</MenuItem>
+                  <MenuItem value="1">2024</MenuItem>
+                </Select>
+                {fieldErrors.financialYear && <FormHelperText>{fieldErrors.financialYear}</FormHelperText>}
+              </FormControl>
+            </div>
           </div>
-          <div className="col-md-4 mb-3">
-            <FormControl fullWidth size="small">
-              <InputLabel id="demo-simple-select-label">Branch</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                label="Branch"
-                required
-                // value={formData.exempted}
-                name="Branch"
-                // onChange={handleInputChange}
-              >
-                <MenuItem value="0">India</MenuItem>
-                <MenuItem value="1">America</MenuItem>
-              </Select>
-              {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
-            </FormControl>
+
+          <div className="mt-2">
+            <button className="btn-primary" onClick={handleAddRow}>
+              + Add
+            </button>
           </div>
-          <div className="col-md-4 mb-3">
-            <FormControl fullWidth size="small">
-              <InputLabel id="demo-simple-select-label">Financial Year</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                label="Financial Year"
-                required
-                // value={formData.exempted}
-                name="FinancialYear"
-                // onChange={handleInputChange}
-              >
-                <MenuItem value="0">2023</MenuItem>
-                <MenuItem value="1">2024</MenuItem>
-              </Select>
-              {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
-            </FormControl>
+          {/* Table */}
+          <div className="row mt-2">
+            <div className="col-lg-12">
+              <div className="table-responsive">
+                <table className="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th className="px-2 py-2 bg-primary text-white">Action</th>
+                      <th className="px-2 py-2 bg-primary text-white">S.No</th>
+                      <th className="px-2 py-2 bg-primary text-white">Doc Type</th>
+                      <th className="px-2 py-2 bg-primary text-white">Sub Type</th>
+                      <th className="px-2 py-2 bg-primary text-white">Sub Type Id</th>
+                      <th className="px-2 py-2 bg-primary text-white">Subtype Code</th>
+                      <th className="px-2 py-2 bg-primary text-white">Doc. Name</th>
+                      <th className="px-2 py-2 bg-primary text-white">Prefix</th>
+                      <th className="px-2 py-2 bg-primary text-white">Post Finance</th>
+                      <th className="px-2 py-2 bg-primary text-white">LastNo</th>
+                      <th className="px-2 py-2 bg-primary text-white">Reset On Fin.Year</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tableData.map((row, index) => (
+                      <tr key={row.id}>
+                        {/* Table cells */}
+                        <td className="border px-2 py-2">
+                          <button onClick={() => handleDeleteRow(row.id)} className="btn-danger">
+                            <FaTrash style={{ fontSize: '16px' }} />
+                          </button>
+                        </td>
+                        {/* <td className="border px-2 py-2">{index + 1}</td> */}
+                        <td className="border px-2 py-2">
+                          <input
+                            type="text"
+                            value={row.id}
+                            onChange={(e) => setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, id: e.target.value } : r)))}
+                          />
+                        </td>
+
+                        <td className="border px-2 py-2">
+                          <input
+                            type="text"
+                            value={row.docType}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, docType: value } : r)));
+                              setTableErrors((prev) => {
+                                const newErrors = [...prev];
+                                newErrors[index] = { ...newErrors[index], docType: !value ? 'Doc Type is required' : '' };
+                                return newErrors;
+                              });
+                            }}
+                            className={tableErrors[index]?.docType ? 'error' : ''}
+                            style={{ marginBottom: '6px' }}
+                          />
+                          {tableErrors[index]?.docType && (
+                            <div style={{ color: 'red', fontSize: '12px' }}>{tableErrors[index].docType}</div>
+                          )}
+                        </td>
+
+                        <td className="border px-2 py-2">
+                          <input
+                            type="text"
+                            value={row.subType}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, subType: value } : r)));
+                              setTableErrors((prev) => {
+                                const newErrors = [...prev];
+                                newErrors[index] = { ...newErrors[index], subType: !value ? 'Sub Type is required' : '' };
+                                return newErrors;
+                              });
+                            }}
+                            className={tableErrors[index]?.subType ? 'error' : ''}
+                            style={{ marginBottom: '6px' }}
+                          />
+                          {tableErrors[index]?.subType && (
+                            <div style={{ color: 'red', fontSize: '12px' }}>{tableErrors[index].subType}</div>
+                          )}
+                        </td>
+
+                        <td className="border px-2 py-2">
+                          <input
+                            type="text"
+                            value={row.subTypeId}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, subTypeId: value } : r)));
+                              setTableErrors((prev) => {
+                                const newErrors = [...prev];
+                                newErrors[index] = { ...newErrors[index], subTypeId: !value ? 'Sub TypeId is required' : '' };
+                                return newErrors;
+                              });
+                            }}
+                            className={tableErrors[index]?.subTypeId ? 'error' : ''}
+                            style={{ marginBottom: '6px' }}
+                          />
+                          {tableErrors[index]?.subTypeId && (
+                            <div style={{ color: 'red', fontSize: '12px' }}>{tableErrors[index].subTypeId}</div>
+                          )}
+                        </td>
+
+                        <td className="border px-2 py-2">
+                          <input
+                            type="text"
+                            value={row.subTypeCode}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, subTypeCode: value } : r)));
+                              setTableErrors((prev) => {
+                                const newErrors = [...prev];
+                                newErrors[index] = { ...newErrors[index], subTypeCode: !value ? 'Sub TypeCode is required' : '' };
+                                return newErrors;
+                              });
+                            }}
+                            className={tableErrors[index]?.subTypeCode ? 'error' : ''}
+                            style={{ marginBottom: '6px' }}
+                          />
+                          {tableErrors[index]?.subTypeCode && (
+                            <div style={{ color: 'red', fontSize: '12px' }}>{tableErrors[index].subTypeCode}</div>
+                          )}
+                        </td>
+
+                        <td className="border px-2 py-2">
+                          <input
+                            type="text"
+                            value={row.docName}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, docName: value } : r)));
+                              setTableErrors((prev) => {
+                                const newErrors = [...prev];
+                                newErrors[index] = { ...newErrors[index], docName: !value ? 'Doc Name is required' : '' };
+                                return newErrors;
+                              });
+                            }}
+                            className={tableErrors[index]?.docName ? 'error' : ''}
+                            style={{ marginBottom: '6px' }}
+                          />
+                          {tableErrors[index]?.docName && (
+                            <div style={{ color: 'red', fontSize: '12px' }}>{tableErrors[index].docName}</div>
+                          )}
+                        </td>
+
+                        <td className="border px-2 py-2">
+                          <input
+                            type="text"
+                            value={row.prefix}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, prefix: value } : r)));
+                              setTableErrors((prev) => {
+                                const newErrors = [...prev];
+                                newErrors[index] = { ...newErrors[index], prefix: !value ? 'Prefix is required' : '' };
+                                return newErrors;
+                              });
+                            }}
+                            className={tableErrors[index]?.prefix ? 'error' : ''}
+                            style={{ marginBottom: '6px' }}
+                          />
+                          {tableErrors[index]?.prefix && <div style={{ color: 'red', fontSize: '12px' }}>{tableErrors[index].prefix}</div>}
+                        </td>
+
+                        <td className="border px-2 py-2 text-center">
+                          <input
+                            type="checkbox"
+                            value={row.postFinance}
+                            onChange={(e) =>
+                              setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, postFinance: e.target.checked } : r)))
+                            }
+                            onKeyDown={(e) => handleKeyDown(e, row)}
+                          />
+                        </td>
+
+                        <td className="border px-2 py-2">
+                          <input
+                            type="text"
+                            value={row.lastNo}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, lastNo: value } : r)));
+                              setTableErrors((prev) => {
+                                const newErrors = [...prev];
+                                newErrors[index] = { ...newErrors[index], lastNo: !value ? 'Last No is required' : '' };
+                                return newErrors;
+                              });
+                            }}
+                            className={tableErrors[index]?.lastNo ? 'error' : ''}
+                            style={{ marginBottom: '6px' }}
+                          />
+                          {tableErrors[index]?.lastNo && <div style={{ color: 'red', fontSize: '12px' }}>{tableErrors[index].lastNo}</div>}
+                        </td>
+
+                        <td className="border px-2 py-2 text-center">
+                          <input
+                            type="checkbox"
+                            value={row.resetOnFinYear}
+                            onChange={(e) =>
+                              setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, resetOnFinYear: e.target.checked } : r)))
+                            }
+                            onKeyDown={(e) => handleKeyDown(e, row)}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
-        {/* ) : ( */}
-        {/* <div className="mt-4">
+      ) : (
+        <div className="mt-4">
           <div>
             <Tooltip title="Clear" placement="top">
               {' '}
@@ -388,7 +679,7 @@ export const DocumentTypeMapping = () => {
               }
             }}
             columns={columns}
-            data={tableData}
+            data={tableDataList}
             editingMode="modal"
             enableColumnOrdering
             renderRowActions={({ row, table }) => (
@@ -398,8 +689,8 @@ export const DocumentTypeMapping = () => {
                   gap: '1rem',
                   justifyContent: 'flex-end'
                 }}
-              > */}
-        {/* <Tooltip arrow placement="right" title="Edit">
+              >
+                {/* <Tooltip arrow placement="right" title="Edit">
                   <IconButton style={{ color: "blue" }}>
                     <Edit />
                   </IconButton>
@@ -413,147 +704,11 @@ export const DocumentTypeMapping = () => {
                     <VisibilityIcon />
                   </IconButton>
                 </Tooltip> */}
-        {/* </Box> */}
-        {/* )}
+              </Box>
+            )}
           />
-        </div> */}
-        {/* )} */}
-        <div className="mt-2">
-          <button className="btn-primary" onClick={handleAddRow}>
-            + Add
-          </button>
         </div>
-        {/* Table */}
-        <div className="row mt-2">
-          <div className="col-lg-12">
-            <div className="table-responsive">
-              <table className="table table-bordered">
-                <thead>
-                  <tr>
-                    <th className="px-2 py-2 bg-primary text-white">Action</th>
-                    <th className="px-2 py-2 bg-primary text-white">S.No</th>
-                    <th className="px-2 py-2 bg-primary text-white">Doc Type</th>
-                    <th className="px-2 py-2 bg-primary text-white">Sub Type</th>
-                    <th className="px-2 py-2 bg-primary text-white">Sub Type Id</th>
-                    <th className="px-2 py-2 bg-primary text-white">Subtype Code</th>
-                    <th className="px-2 py-2 bg-primary text-white">Doc. Name</th>
-                    <th className="px-2 py-2 bg-primary text-white">Prefix</th>
-                    <th className="px-2 py-2 bg-primary text-white">Post Finance</th>
-                    <th className="px-2 py-2 bg-primary text-white">LastNo</th>
-                    <th className="px-2 py-2 bg-primary text-white">Reset On Fin.Year</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tableData.map((row) => (
-                    <tr key={row.id}>
-                      {/* Table cells */}
-                      <td className="border px-2 py-2">
-                        <button onClick={() => handleDeleteRow(row.id)} className="btn-danger">
-                          <FaTrash style={{ fontSize: '16px' }} />
-                        </button>
-                      </td>
-
-                      <td className="border px-2 py-2">
-                        <input
-                          type="text"
-                          value={row.id}
-                          onChange={(e) => setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, id: e.target.value } : r)))}
-                        />
-                      </td>
-                      <td className="border px-2 py-2">
-                        <input
-                          type="text"
-                          value={row.docType}
-                          onChange={(e) =>
-                            setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, docType: e.target.value } : r)))
-                          }
-                        />
-                      </td>
-                      <td className="border px-2 py-2">
-                        <input
-                          type="text"
-                          value={row.subType}
-                          onChange={(e) =>
-                            setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, subType: e.target.value } : r)))
-                          }
-                        />
-                      </td>
-                      <td className="border px-2 py-2">
-                        <input
-                          type="text"
-                          value={row.subTypeId}
-                          onChange={(e) =>
-                            setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, subTypeId: e.target.value } : r)))
-                          }
-                        />
-                      </td>
-                      <td className="border px-2 py-2">
-                        <input
-                          type="text"
-                          value={row.subTypeCode}
-                          onChange={(e) =>
-                            setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, subTypeCode: e.target.value } : r)))
-                          }
-                        />
-                      </td>
-                      <td className="border px-2 py-2">
-                        <input
-                          type="text"
-                          value={row.docName}
-                          onChange={(e) =>
-                            setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, docName: e.target.value } : r)))
-                          }
-                          onKeyDown={(e) => handleKeyDown(e, row)}
-                        />
-                      </td>
-                      <td className="border px-2 py-2">
-                        <input
-                          type="text"
-                          value={row.prefix}
-                          onChange={(e) =>
-                            setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, prefix: e.target.value } : r)))
-                          }
-                          onKeyDown={(e) => handleKeyDown(e, row)}
-                        />
-                      </td>
-                      <td className="border px-2 py-2 text-center">
-                        <input
-                          type="checkbox"
-                          value={row.postFinance}
-                          onChange={(e) =>
-                            setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, postFinance: e.target.checked } : r)))
-                          }
-                          onKeyDown={(e) => handleKeyDown(e, row)}
-                        />
-                      </td>
-                      <td className="border px-2 py-2">
-                        <input
-                          type="text"
-                          value={row.lastNo}
-                          onChange={(e) =>
-                            setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, lastNo: e.target.value } : r)))
-                          }
-                          onKeyDown={(e) => handleKeyDown(e, row)}
-                        />
-                      </td>
-                      <td className="border px-2 py-2 text-center">
-                        <input
-                          type="checkbox"
-                          value={row.resetOnFinYear}
-                          onChange={(e) =>
-                            setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, resetOnFinYear: e.target.checked } : r)))
-                          }
-                          onKeyDown={(e) => handleKeyDown(e, row)}
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
+      )}
     </>
   );
 };

@@ -16,33 +16,39 @@ import { MaterialReactTable } from 'material-react-table';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import Checkbox from '@mui/material/Checkbox';
-
-// import { ToastContainer, toast } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
 
 export const Region = () => {
   const [formData, setFormData] = useState({
-    chapter: '',
-    subChapter: '',
-    hsnCode: '',
-    branchLocation: '',
-    newRate: '',
-    exempted: ''
+    active: true,
+    regionCode: '',
+    regionName: ''
   });
 
   const theme = useTheme();
   const anchorRef = useRef(null);
 
   const [fieldErrors, setFieldErrors] = useState({
-    chapter: false,
-    subChapter: false,
-    hsnCode: false,
-    branchLocation: false,
-    newRate: false,
-    exempted: false
+    active: true,
+    regionCode: '',
+    regionName: ''
   });
   const [tableData, setTableData] = useState([]);
   const [listView, setListView] = useState(false);
+
+  const handleClear = () => {
+    setFormData({
+      regionCode: '',
+      regionName: ''
+    });
+    setFieldErrors({
+      regionCode: '',
+      regionName: ''
+    });
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -51,41 +57,58 @@ export const Region = () => {
   };
 
   const handleSave = () => {
-    // Check if any field is empty
-    const errors = Object.keys(formData).reduce((acc, key) => {
-      if (!formData[key]) {
-        acc[key] = true;
-      }
-      return acc;
-    }, {});
-    // If there are errors, set the corresponding fieldErrors state to true
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return; // Prevent API call if there are errors
+    const errors = {};
+    if (!formData.regionCode) {
+      errors.regionCode = 'Region Code is required';
     }
+    if (!formData.regionName) {
+      errors.regionName = 'Region Name is required';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      // Set error messages for each field
+      setFieldErrors(errors);
+      return;
+    }
+
     axios
-      .post(`${process.env.REACT_APP_API_URL}/api/master/updateCreateSetTaxRate`, formData)
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateRegion`, formData)
       .then((response) => {
         console.log('Response:', response.data);
-        setFormData({
-          chapter: '',
-          subChapter: '',
-          hsnCode: '',
-          branchLocation: '',
-          newRate: '',
-          exempted: ''
-        });
-        toast.success('Set Tax Rate Created Successfully', {
+        toast.success('Region created successfully', {
           autoClose: 2000,
           theme: 'colored'
+        });
+        setFormData({
+          active: true,
+          regionCode: '',
+          regionName: ''
         });
       })
       .catch((error) => {
         console.error('Error:', error);
+        toast.error('An error occurred while saving the region');
       });
   };
 
+  const getAllRegion = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getRegionById`);
+      console.log('API Response:', response);
+
+      if (response.status === 200) {
+        setTableData(response.data.paramObjectsMap.regionVO);
+      } else {
+        // Handle error
+        console.error('API Error:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   const handleView = () => {
+    getAllRegion();
     setListView(true);
   };
 
@@ -113,26 +136,15 @@ export const Region = () => {
             {/* <IconButton onClick={() => handleViewRow(row)}>
               <VisibilityIcon />
             </IconButton> */}
-            <IconButton onClick={() => handleEditRow(row)}>
+            <IconButton>
               <EditIcon />
             </IconButton>
           </div>
         )
       },
-      // {
-      //   accessorKey: "cityid",
-      //   header: "ID",
-      //   size: 50,
-      //   muiTableHeadCellProps: {
-      //     align: "first",
-      //   },
-      //   muiTableBodyCellProps: {
-      //     align: "first",
-      //   },
-      // },
       {
-        accessorKey: 'cityName',
-        header: 'City',
+        accessorKey: 'regionName',
+        header: 'Region Name',
         size: 50,
         muiTableHeadCellProps: {
           align: 'center'
@@ -142,8 +154,8 @@ export const Region = () => {
         }
       },
       {
-        accessorKey: 'cityCode',
-        header: 'Code',
+        accessorKey: 'regionCode',
+        header: 'Region Code',
         size: 50,
         muiTableHeadCellProps: {
           align: 'center'
@@ -170,7 +182,9 @@ export const Region = () => {
 
   return (
     <>
-      <div>{/* <ToastContainer /> */}</div>
+      <div>
+        <ToastContainer />
+      </div>
       <div className="card w-full p-6 bg-base-100 shadow-xl" style={{ padding: '20px' }}>
         {!listView ? (
           <div className="row d-flex ml">
@@ -201,7 +215,7 @@ export const Region = () => {
 
               <Tooltip title="Clear" placement="top">
                 {' '}
-                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }}>
+                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleClear}>
                   <Avatar
                     variant="rounded"
                     sx={{
@@ -283,9 +297,10 @@ export const Region = () => {
                 name="regionCode"
                 fullWidth
                 required
-                // value={formData.subChapter}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+                value={formData.regionCode}
+                onChange={handleInputChange}
+                error={!!fieldErrors.regionCode} // Add error prop
+                helperText={fieldErrors.regionCode} // Add helperText prop
               />
             </div>
 
@@ -299,15 +314,24 @@ export const Region = () => {
                 fullWidth
                 required
                 name="regionName"
-                // value={formData.hsnCode}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.hsnCode ? 'This field is required' : ''}</span>}
+                value={formData.regionName}
+                onChange={handleInputChange}
+                error={!!fieldErrors.regionName} // Add error prop
+                helperText={fieldErrors.regionName} // Add helperText prop
               />
             </div>
             <div className="col-md-4 mb-3">
               <FormGroup>
                 <FormControlLabel
-                  control={<Checkbox defaultChecked sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }} />}
+                  control={
+                    <Checkbox
+                      sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                      id="active"
+                      checked={formData.active}
+                      onChange={(e) => handleInputChange({ target: { name: 'active', value: e.target.checked } })}
+                      name="active"
+                    />
+                  }
                   label="Active"
                 />
               </FormGroup>

@@ -19,20 +19,25 @@ import Checkbox from '@mui/material/Checkbox';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-// import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { IconButton } from '@mui/material';
-
-// import { ToastContainer, toast } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import EditIcon from '@mui/icons-material/Edit';
 
 export const EmployeeDetails = () => {
   const [formData, setFormData] = useState({
-    chapter: '',
-    subChapter: '',
-    hsnCode: '',
-    branchLocation: '',
-    newRate: '',
-    exempted: ''
+    employeeCode: '',
+    employeeName: '',
+    gender: '',
+    branch: '',
+    active: true,
+    joiningDate: null,
+    department: '',
+    designation: '',
+    appointmentType: '',
+    modeOfEntry: '',
+    dateOfBirth: null,
+    leavingDate: null
   });
   const [listView, setListView] = useState(false);
 
@@ -40,12 +45,18 @@ export const EmployeeDetails = () => {
   const anchorRef = useRef(null);
 
   const [fieldErrors, setFieldErrors] = useState({
-    chapter: false,
-    subChapter: false,
-    hsnCode: false,
-    branchLocation: false,
-    newRate: false,
-    exempted: false
+    employeeCode: '',
+    employeeName: '',
+    gender: '',
+    branch: '',
+    active: true,
+    joiningDate: '',
+    department: '',
+    designation: '',
+    appointmentType: '',
+    modeOfEntry: '',
+    dateOfBirth: '',
+    leavingDate: ''
   });
   const [tableData, setTableData] = useState([]);
 
@@ -55,32 +66,89 @@ export const EmployeeDetails = () => {
     setFieldErrors({ ...fieldErrors, [name]: false });
   };
 
+  const handleDateChange = (name, date) => {
+    setFormData({ ...formData, [name]: date });
+    setFieldErrors({ ...fieldErrors, [name]: false });
+  };
+
+  // const handleSave = () => {
+  //   // Check if any field is empty
+  //   const errors = Object.keys(formData).reduce((acc, key) => {
+  //     if (!formData[key]) {
+  //       acc[key] = true;
+  //     }
+  //     return acc;
+  //   }, {});
+  //   // If there are errors, set the corresponding fieldErrors state to true
+  //   if (Object.keys(errors).length > 0) {
+  //     setFieldErrors(errors);
+  //     return; // Prevent API call if there are errors
+  //   }
+  //   axios
+  //     .post(`${process.env.REACT_APP_API_URL}/api/master/updateCreateSetTaxRate`, formData)
+  //     .then((response) => {
+  //       console.log('Response:', response.data);
+  //       setFormData({
+  //         chapter: '',
+  //         subChapter: '',
+  //         hsnCode: '',
+  //         branchLocation: '',
+  //         newRate: '',
+  //         exempted: ''
+  //       });
+  //       toast.success('Set Tax Rate Created Successfully', {
+  //         autoClose: 2000,
+  //         theme: 'colored'
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       console.error('Error:', error);
+  //     });
+  // };
+
   const handleSave = () => {
-    // Check if any field is empty
     const errors = Object.keys(formData).reduce((acc, key) => {
-      if (!formData[key]) {
+      if (formData[key] === '' || formData[key] === null) {
         acc[key] = true;
       }
       return acc;
     }, {});
-    // If there are errors, set the corresponding fieldErrors state to true
+
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
-      return; // Prevent API call if there are errors
+      return;
     }
+
+    const payload = {
+      ...formData,
+      active: formData.active ? 'true' : 'false',
+      joiningDate: formData.joiningDate?.format('YYYY-MM-DD') || '',
+      dateOfBirth: formData.dateOfBirth?.format('YYYY-MM-DD') || '',
+      leavingDate: formData.leavingDate?.format('YYYY-MM-DD') || '',
+      orgId: 1 // Update with actual orgId if needed
+      // createdBy: 'string', // Update with actual createdBy if needed
+      // updatedBy: 'string' // Update with actual updatedBy if needed
+    };
+
     axios
-      .post(`${process.env.REACT_APP_API_URL}/api/master/updateCreateSetTaxRate`, formData)
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateEmployee`, payload)
       .then((response) => {
         console.log('Response:', response.data);
         setFormData({
-          chapter: '',
-          subChapter: '',
-          hsnCode: '',
-          branchLocation: '',
-          newRate: '',
-          exempted: ''
+          employeeCode: '',
+          employeeName: '',
+          gender: '',
+          branch: '',
+          active: true,
+          joiningDate: null,
+          department: '',
+          designation: '',
+          appointmentType: '',
+          modeOfEntry: '',
+          dateOfBirth: null,
+          leavingDate: null
         });
-        toast.success('Set Tax Rate Created Successfully', {
+        toast.success('Employee Created Successfully', {
           autoClose: 2000,
           theme: 'colored'
         });
@@ -90,7 +158,24 @@ export const EmployeeDetails = () => {
       });
   };
 
+  const getAllEmployeeDetails = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getEmployeeById`);
+      console.log('API Response:', response);
+
+      if (response.status === 200) {
+        setTableData(response.data.paramObjectsMap.employeeVO);
+      } else {
+        // Handle error
+        console.error('API Error:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   const handleView = () => {
+    getAllEmployeeDetails();
     setListView(true);
   };
 
@@ -124,20 +209,20 @@ export const EmployeeDetails = () => {
           </div>
         )
       },
-      // {
-      //   accessorKey: "cityid",
-      //   header: "ID",
-      //   size: 50,
-      //   muiTableHeadCellProps: {
-      //     align: "first",
-      //   },
-      //   muiTableBodyCellProps: {
-      //     align: "first",
-      //   },
-      // },
       {
-        accessorKey: 'cityName',
-        header: 'City',
+        accessorKey: 'employeeName',
+        header: 'Employee Name',
+        size: 50,
+        muiTableHeadCellProps: {
+          align: 'first'
+        },
+        muiTableBodyCellProps: {
+          align: 'first'
+        }
+      },
+      {
+        accessorKey: 'branch',
+        header: 'Branch',
         size: 50,
         muiTableHeadCellProps: {
           align: 'center'
@@ -147,8 +232,19 @@ export const EmployeeDetails = () => {
         }
       },
       {
-        accessorKey: 'cityCode',
-        header: 'Code',
+        accessorKey: 'department',
+        header: 'Department',
+        size: 50,
+        muiTableHeadCellProps: {
+          align: 'center'
+        },
+        muiTableBodyCellProps: {
+          align: 'center'
+        }
+      },
+      {
+        accessorKey: 'modeOfEntry',
+        header: 'Mode of Entry',
         size: 50,
         muiTableHeadCellProps: {
           align: 'center'
@@ -175,7 +271,9 @@ export const EmployeeDetails = () => {
 
   return (
     <>
-      <div>{/* <ToastContainer /> */}</div>
+      <div>
+        <ToastContainer />
+      </div>
       <div className="card w-full p-6 bg-base-100 shadow-xl" style={{ padding: '20px' }}>
         {!listView ? (
           <>
@@ -281,77 +379,59 @@ export const EmployeeDetails = () => {
             <div className="row d-flex ml">
               <div className="col-md-4 mb-3">
                 <TextField
-                  id="outlined-textarea"
-                  label="Employee Code"
-                  placeholder="Placeholder"
-                  variant="outlined"
-                  size="small"
-                  name="employeeCode"
                   fullWidth
-                  required
-                  // value={formData.subChapter}
-                  // onChange={handleInputChange}
-                  // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+                  name="employeeCode"
+                  label="Employee Code"
+                  size="small"
+                  value={formData.employeeCode}
+                  onChange={handleInputChange}
+                  error={fieldErrors.employeeCode}
+                  helperText={fieldErrors.employeeCode && 'Employee Code is required'}
                 />
               </div>
               <div className="col-md-4 mb-3">
                 <TextField
-                  id="outlined-textarea"
-                  label="Employee Name"
-                  placeholder="Placeholder"
-                  variant="outlined"
-                  size="small"
-                  name="employeeName"
                   fullWidth
-                  required
-                  // value={formData.subChapter}
-                  // onChange={handleInputChange}
-                  // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+                  name="employeeName"
+                  label="Employee Name"
+                  size="small"
+                  value={formData.employeeName}
+                  onChange={handleInputChange}
+                  error={fieldErrors.employeeName}
+                  helperText={fieldErrors.employeeName && 'Employee Name is required'}
                 />
               </div>
               <div className="col-md-4 mb-3">
-                <FormControl fullWidth size="small">
-                  <InputLabel id="demo-simple-select-label">Gender</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    label="Gender"
-                    required
-                    // value={formData.exempted}
-                    name="gender"
-                    // onChange={handleInputChange}
-                  >
-                    <MenuItem value="0">Male</MenuItem>
-                    <MenuItem value="1">Female</MenuItem>
-                    <MenuItem value="2">Others</MenuItem>
+                <FormControl fullWidth size="small" error={fieldErrors.gender}>
+                  <InputLabel>Gender</InputLabel>
+                  <Select name="gender" value={formData.gender} onChange={handleInputChange}>
+                    <MenuItem value="male">Male</MenuItem>
+                    <MenuItem value="female">Female</MenuItem>
                   </Select>
-                  {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
+                  {fieldErrors.gender && <FormHelperText>Gender is required</FormHelperText>}
                 </FormControl>
               </div>
               <div className="col-md-4 mb-3">
-                <FormControl fullWidth size="small">
-                  <InputLabel id="demo-simple-select-label">Branch</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    label="Branch"
-                    required
-                    // value={formData.exempted}
-                    name="branch"
-                    // onChange={handleInputChange}
-                  >
-                    <MenuItem value="0">Chennai</MenuItem>
-                    <MenuItem value="1">Bangalore</MenuItem>
-                    <MenuItem value="2">Hyderabad</MenuItem>
+                <FormControl fullWidth size="small" error={fieldErrors.branch}>
+                  <InputLabel>Branch</InputLabel>
+                  <Select name="branch" value={formData.branch} onChange={handleInputChange}>
+                    <MenuItem value="branch1">Branch 1</MenuItem>
+                    <MenuItem value="branch2">Branch 2</MenuItem>
                   </Select>
-                  {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
+                  {fieldErrors.branch && <FormHelperText>Branch is required</FormHelperText>}
                 </FormControl>
               </div>
               <div className="col-md-4 mb-3">
                 <FormGroup>
                   <FormControlLabel
-                    control={<Checkbox defaultChecked sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }} />}
-                    label="Status"
+                    control={
+                      <Checkbox
+                        name="active"
+                        checked={formData.active}
+                        onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                      />
+                    }
+                    label="Active"
                   />
                 </FormGroup>
               </div>
@@ -360,51 +440,38 @@ export const EmployeeDetails = () => {
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
                       label="Joining Date"
-                      slotProps={{
-                        textField: { size: 'small', clearable: true }
-                      }}
-                      //value={boDate}
-                      //onChange={(newValue) => setBoDate(newValue)}
+                      value={formData.joiningDate}
+                      onChange={(date) => handleDateChange('joiningDate', date)}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          fullWidth
+                          error={fieldErrors.joiningDate}
+                          helperText={fieldErrors.joiningDate && 'Joining Date is required'}
+                        />
+                      )}
                     />
                   </LocalizationProvider>
                 </FormControl>
               </div>
               <div className="col-md-4 mb-3">
-                <FormControl fullWidth size="small">
-                  <InputLabel id="demo-simple-select-label">Department</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    label="Department"
-                    required
-                    // value={formData.exempted}
-                    name="department"
-                    // onChange={handleInputChange}
-                  >
-                    <MenuItem value="0">Chennai</MenuItem>
-                    <MenuItem value="1">Bangalore</MenuItem>
-                    <MenuItem value="2">Hyderabad</MenuItem>
+                <FormControl size="small" fullWidth error={fieldErrors.department}>
+                  <InputLabel>Department</InputLabel>
+                  <Select name="department" value={formData.department} onChange={handleInputChange}>
+                    <MenuItem value="dept1">Department 1</MenuItem>
+                    <MenuItem value="dept2">Department 2</MenuItem>
                   </Select>
-                  {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
+                  {fieldErrors.department && <FormHelperText>Department is required</FormHelperText>}
                 </FormControl>
               </div>
               <div className="col-md-4 mb-3">
-                <FormControl fullWidth size="small">
-                  <InputLabel id="demo-simple-select-label">Designation</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    label="Designation"
-                    required
-                    // value={formData.exempted}
-                    name="designation"
-                    // onChange={handleInputChange}
-                  >
-                    <MenuItem value="0">Chennai</MenuItem>
-                    <MenuItem value="1">Bangalore</MenuItem>
-                    <MenuItem value="2">Hyderabad</MenuItem>
+                <FormControl size="small" fullWidth error={fieldErrors.designation}>
+                  <InputLabel>Designation</InputLabel>
+                  <Select name="designation" value={formData.designation} onChange={handleInputChange}>
+                    <MenuItem value="desig1">Designation 1</MenuItem>
+                    <MenuItem value="desig2">Designation 2</MenuItem>
                   </Select>
-                  {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
+                  {fieldErrors.designation && <FormHelperText>Designation is required</FormHelperText>}
                 </FormControl>
               </div>
               <div className="col-md-4 mb-3">
@@ -417,9 +484,10 @@ export const EmployeeDetails = () => {
                   name="appointmentType"
                   fullWidth
                   required
-                  // value={formData.subChapter}
-                  // onChange={handleInputChange}
-                  // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+                  value={formData.appointmentType}
+                  onChange={handleInputChange}
+                  error={fieldErrors.appointmentType}
+                  helperText={fieldErrors.appointmentType && 'Appointment Type is required'}
                 />
               </div>
               <div className="col-md-4 mb-3">
@@ -432,21 +500,27 @@ export const EmployeeDetails = () => {
                   name="modeOfEntry"
                   fullWidth
                   required
-                  // value={formData.subChapter}
-                  // onChange={handleInputChange}
-                  // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+                  value={formData.modeOfEntry}
+                  onChange={handleInputChange}
+                  error={fieldErrors.modeOfEntry}
+                  helperText={fieldErrors.modeOfEntry && 'Mode Of Entry is required'}
                 />
               </div>
               <div className="col-md-4 mb-3">
                 <FormControl fullWidth>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
-                      label="Date of Birth"
-                      slotProps={{
-                        textField: { size: 'small', clearable: true }
-                      }}
-                      //value={boDate}
-                      //onChange={(newValue) => setBoDate(newValue)}
+                      label="Date Of Birth"
+                      value={formData.dateOfBirth}
+                      onChange={(date) => handleDateChange('dateOfBirth', date)}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          fullWidth
+                          error={fieldErrors.dateOfBirth}
+                          helperText={fieldErrors.dateOfBirth && 'Date Of Birth is required'}
+                        />
+                      )}
                     />
                   </LocalizationProvider>
                 </FormControl>
@@ -456,11 +530,9 @@ export const EmployeeDetails = () => {
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
                       label="Leaving Date"
-                      slotProps={{
-                        textField: { size: 'small', clearable: true }
-                      }}
-                      //value={boDate}
-                      //onChange={(newValue) => setBoDate(newValue)}
+                      value={formData.leavingDate}
+                      onChange={(date) => handleDateChange('leavingDate', date)}
+                      renderInput={(params) => <TextField {...params} fullWidth />}
                     />
                   </LocalizationProvider>
                 </FormControl>

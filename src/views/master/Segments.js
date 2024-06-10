@@ -13,33 +13,39 @@ import axios from 'axios';
 import { useRef, useState, useMemo } from 'react';
 import 'react-tabs/style/react-tabs.css';
 import { MaterialReactTable } from 'material-react-table';
-
-// import { ToastContainer, toast } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
 
 export const Segments = () => {
   const [formData, setFormData] = useState({
-    chapter: '',
-    subChapter: '',
-    hsnCode: '',
-    branchLocation: '',
-    newRate: '',
-    exempted: ''
+    active: true,
+    segmentName: '',
+    segmentDescription: '',
+    orgId: 1
   });
 
   const theme = useTheme();
   const anchorRef = useRef(null);
 
   const [fieldErrors, setFieldErrors] = useState({
-    chapter: false,
-    subChapter: false,
-    hsnCode: false,
-    branchLocation: false,
-    newRate: false,
-    exempted: false
+    segmentName: '',
+    segmentDescription: ''
   });
   const [tableData, setTableData] = useState([]);
   const [listView, setListView] = useState(false);
+
+  const handleClear = () => {
+    setFormData({
+      segmentName: '',
+      segmentDescription: ''
+    });
+    setFieldErrors({
+      segmentName: '',
+      segmentDescription: ''
+    });
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -47,42 +53,59 @@ export const Segments = () => {
     setFieldErrors({ ...fieldErrors, [name]: false });
   };
 
-  const handleSave = () => {
-    // Check if any field is empty
-    const errors = Object.keys(formData).reduce((acc, key) => {
-      if (!formData[key]) {
-        acc[key] = true;
+  const getAllSegments = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getSegmentsById`);
+      console.log('API Response:', response);
+
+      if (response.status === 200) {
+        setTableData(response.data.paramObjectsMap.segmentsVO);
+      } else {
+        // Handle error
+        console.error('API Error:', response.data);
       }
-      return acc;
-    }, {});
-    // If there are errors, set the corresponding fieldErrors state to true
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return; // Prevent API call if there are errors
+    } catch (error) {
+      console.error('Error fetching data:', error);
     }
+  };
+
+  const handleSave = () => {
+    const errors = {};
+    if (!formData.segmentName) {
+      errors.segmentName = 'Segment Name is required';
+    }
+    if (!formData.segmentDescription) {
+      errors.segmentDescription = 'Segment Description is required';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      // Set error messages for each field
+      setFieldErrors(errors);
+      return;
+    }
+
     axios
-      .post(`${process.env.REACT_APP_API_URL}/api/master/updateCreateSetTaxRate`, formData)
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateSegments`, formData)
       .then((response) => {
         console.log('Response:', response.data);
-        setFormData({
-          chapter: '',
-          subChapter: '',
-          hsnCode: '',
-          branchLocation: '',
-          newRate: '',
-          exempted: ''
-        });
-        toast.success('Set Tax Rate Created Successfully', {
+        toast.success('Segments created successfully', {
           autoClose: 2000,
           theme: 'colored'
+        });
+        setFormData({
+          active: true,
+          segmentName: '',
+          segmentDescription: ''
         });
       })
       .catch((error) => {
         console.error('Error:', error);
+        toast.error('An error occurred while saving the segments');
       });
   };
 
   const handleView = () => {
+    getAllSegments();
     setListView(true);
   };
 
@@ -110,26 +133,15 @@ export const Segments = () => {
             {/* <IconButton onClick={() => handleViewRow(row)}>
               <VisibilityIcon />
             </IconButton> */}
-            <IconButton onClick={() => handleEditRow(row)}>
+            <IconButton>
               <EditIcon />
             </IconButton>
           </div>
         )
       },
-      // {
-      //   accessorKey: "cityid",
-      //   header: "ID",
-      //   size: 50,
-      //   muiTableHeadCellProps: {
-      //     align: "first",
-      //   },
-      //   muiTableBodyCellProps: {
-      //     align: "first",
-      //   },
-      // },
       {
-        accessorKey: 'cityName',
-        header: 'City',
+        accessorKey: 'segmentName',
+        header: 'Segment Name',
         size: 50,
         muiTableHeadCellProps: {
           align: 'center'
@@ -139,8 +151,8 @@ export const Segments = () => {
         }
       },
       {
-        accessorKey: 'cityCode',
-        header: 'Code',
+        accessorKey: 'segmentDescription',
+        header: 'Segment Description',
         size: 50,
         muiTableHeadCellProps: {
           align: 'center'
@@ -167,7 +179,9 @@ export const Segments = () => {
 
   return (
     <>
-      <div>{/* <ToastContainer /> */}</div>
+      <div>
+        <ToastContainer />
+      </div>
       <div className="card w-full p-6 bg-base-100 shadow-xl" style={{ padding: '20px' }}>
         {!listView ? (
           <div className="row d-flex ml">
@@ -198,7 +212,7 @@ export const Segments = () => {
 
               <Tooltip title="Clear" placement="top">
                 {' '}
-                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }}>
+                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleClear}>
                   <Avatar
                     variant="rounded"
                     sx={{
@@ -280,9 +294,10 @@ export const Segments = () => {
                 name="segmentName"
                 fullWidth
                 required
-                // value={formData.subChapter}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+                value={formData.segmentName}
+                onChange={handleInputChange}
+                error={!!fieldErrors.segmentName} // Add error prop
+                helperText={fieldErrors.segmentName} // Add helperText prop
               />
             </div>
 
@@ -296,9 +311,10 @@ export const Segments = () => {
                 fullWidth
                 required
                 name="segmentDescription"
-                // value={formData.hsnCode}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.hsnCode ? 'This field is required' : ''}</span>}
+                value={formData.segmentDescription}
+                onChange={handleInputChange}
+                error={!!fieldErrors.segmentDescription} // Add error prop
+                helperText={fieldErrors.segmentDescription} // Add helperText prop
               />
             </div>
           </div>

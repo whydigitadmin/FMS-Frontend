@@ -13,30 +13,32 @@ import axios from 'axios';
 import { useRef, useState, useMemo } from 'react';
 import 'react-tabs/style/react-tabs.css';
 import { MaterialReactTable } from 'material-react-table';
-
-// import { ToastContainer, toast } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
+import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const PartyScreening = () => {
   const [formData, setFormData] = useState({
-    chapter: '',
-    subChapter: '',
-    hsnCode: '',
-    branchLocation: '',
-    newRate: '',
-    exempted: ''
+    active: true,
+    partyType: '',
+    entityName: '',
+    alternativeEntityNames: '',
+    uniqueId: '',
+    includeAlias: '',
+    screeningstatus: ''
   });
 
   const theme = useTheme();
   const anchorRef = useRef(null);
 
   const [fieldErrors, setFieldErrors] = useState({
-    chapter: false,
-    subChapter: false,
-    hsnCode: false,
-    branchLocation: false,
-    newRate: false,
-    exempted: false
+    partyType: '',
+    entityName: '',
+    alternativeEntityNames: '',
+    uniqueId: '',
+    includeAlias: '',
+    screeningstatus: ''
   });
   const [tableData, setTableData] = useState([]);
   const [listView, setListView] = useState(false);
@@ -47,42 +49,94 @@ export const PartyScreening = () => {
     setFieldErrors({ ...fieldErrors, [name]: false });
   };
 
+  const handleClear = () => {
+    setFormData({
+      partyType: '',
+      entityName: '',
+      alternativeEntityNames: '',
+      uniqueId: '',
+      includeAlias: '',
+      screeningstatus: ''
+    });
+    setFieldErrors({
+      partyType: '',
+      entityName: '',
+      alternativeEntityNames: '',
+      uniqueId: '',
+      includeAlias: '',
+      screeningstatus: ''
+    });
+  };
+
   const handleSave = () => {
-    // Check if any field is empty
-    const errors = Object.keys(formData).reduce((acc, key) => {
-      if (!formData[key]) {
-        acc[key] = true;
-      }
-      return acc;
-    }, {});
-    // If there are errors, set the corresponding fieldErrors state to true
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return; // Prevent API call if there are errors
+    const errors = {};
+    if (!formData.partyType) {
+      errors.partyType = 'Party Type is required';
     }
+    if (!formData.entityName) {
+      errors.entityName = 'Entity Name is required';
+    }
+    if (!formData.alternativeEntityNames) {
+      errors.alternativeEntityNames = 'Alternative Entity Names is required';
+    }
+    if (!formData.uniqueId) {
+      errors.uniqueId = 'Id is required';
+    }
+    if (!formData.includeAlias) {
+      errors.includeAlias = 'Include Alias is required';
+    }
+    if (!formData.screeningstatus) {
+      errors.screeningstatus = 'Screening status is required';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      // Set error messages for each field
+      setFieldErrors(errors);
+      return;
+    }
+
     axios
-      .post(`${process.env.REACT_APP_API_URL}/api/master/updateCreateSetTaxRate`, formData)
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreatePartyScreening`, formData)
       .then((response) => {
         console.log('Response:', response.data);
-        setFormData({
-          chapter: '',
-          subChapter: '',
-          hsnCode: '',
-          branchLocation: '',
-          newRate: '',
-          exempted: ''
-        });
-        toast.success('Set Tax Rate Created Successfully', {
+        toast.success('Party Screening created successfully', {
           autoClose: 2000,
           theme: 'colored'
+        });
+        setFormData({
+          active: true,
+          partyType: '',
+          entityName: '',
+          alternativeEntityNames: '',
+          uniqueId: '',
+          includeAlias: '',
+          screeningstatus: ''
         });
       })
       .catch((error) => {
         console.error('Error:', error);
+        toast.error('An error occurred while saving the party screening');
       });
   };
 
+  const getAllPartyScreening = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getPartyScreeningById`);
+      console.log('API Response:', response);
+
+      if (response.status === 200) {
+        setTableData(response.data.paramObjectsMap.partyScreeningVO);
+      } else {
+        // Handle error
+        console.error('API Error:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   const handleView = () => {
+    getAllPartyScreening();
     setListView(true);
   };
 
@@ -110,26 +164,26 @@ export const PartyScreening = () => {
             {/* <IconButton onClick={() => handleViewRow(row)}>
               <VisibilityIcon />
             </IconButton> */}
-            <IconButton onClick={() => handleEditRow(row)}>
+            <IconButton>
               <EditIcon />
             </IconButton>
           </div>
         )
       },
-      // {
-      //   accessorKey: "cityid",
-      //   header: "ID",
-      //   size: 50,
-      //   muiTableHeadCellProps: {
-      //     align: "first",
-      //   },
-      //   muiTableBodyCellProps: {
-      //     align: "first",
-      //   },
-      // },
       {
-        accessorKey: 'cityName',
-        header: 'City',
+        accessorKey: 'partyType',
+        header: 'Party Type',
+        size: 50,
+        muiTableHeadCellProps: {
+          align: 'first'
+        },
+        muiTableBodyCellProps: {
+          align: 'first'
+        }
+      },
+      {
+        accessorKey: 'entityName',
+        header: 'Entity Name',
         size: 50,
         muiTableHeadCellProps: {
           align: 'center'
@@ -139,8 +193,19 @@ export const PartyScreening = () => {
         }
       },
       {
-        accessorKey: 'cityCode',
-        header: 'Code',
+        accessorKey: 'alternativeEntityNames',
+        header: 'Alternative Entity Names',
+        size: 50,
+        muiTableHeadCellProps: {
+          align: 'center'
+        },
+        muiTableBodyCellProps: {
+          align: 'center'
+        }
+      },
+      {
+        accessorKey: 'includeAlias',
+        header: 'Include Alias',
         size: 50,
         muiTableHeadCellProps: {
           align: 'center'
@@ -167,7 +232,9 @@ export const PartyScreening = () => {
 
   return (
     <>
-      <div>{/* <ToastContainer /> */}</div>
+      <div>
+        <ToastContainer />
+      </div>
       <div className="card w-full p-6 bg-base-100 shadow-xl" style={{ padding: '20px' }}>
         {!listView ? (
           <div className="row d-flex ml">
@@ -198,7 +265,7 @@ export const PartyScreening = () => {
 
               <Tooltip title="Clear" placement="top">
                 {' '}
-                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }}>
+                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleClear}>
                   <Avatar
                     variant="rounded"
                     sx={{
@@ -271,21 +338,13 @@ export const PartyScreening = () => {
               </Tooltip>
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Party Type</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label="Party Type"
-                  required
-                  // value={formData.exempted}
-                  name="partyType"
-                  // onChange={handleInputChange}
-                >
-                  <MenuItem value="0">India</MenuItem>
-                  <MenuItem value="1">America</MenuItem>
+              <FormControl variant="outlined" fullWidth error={!!fieldErrors.partyType}>
+                <InputLabel id="partyType">Party Type</InputLabel>
+                <Select labelId="partyType" label="partyType" value={formData.partyType} onChange={handleInputChange} name="partyType">
+                  <MenuItem value="India">Type 1</MenuItem>
+                  <MenuItem value="USA">Type 2</MenuItem>
                 </Select>
-                {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
+                {fieldErrors.partyType && <FormHelperText>{fieldErrors.partyType}</FormHelperText>}
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
@@ -298,9 +357,10 @@ export const PartyScreening = () => {
                 name="entityName"
                 fullWidth
                 required
-                // value={formData.subChapter}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+                value={formData.entityName}
+                onChange={handleInputChange}
+                error={fieldErrors.entityName}
+                helperText={fieldErrors.entityName}
               />
             </div>
 
@@ -311,12 +371,13 @@ export const PartyScreening = () => {
                 placeholder="Placeholder"
                 variant="outlined"
                 size="small"
-                name="alternative"
+                name="alternativeEntityNames"
                 fullWidth
                 required
-                // value={formData.subChapter}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+                value={formData.alternativeEntityNames}
+                onChange={handleInputChange}
+                error={fieldErrors.alternativeEntityNames}
+                helperText={fieldErrors.alternativeEntityNames}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -326,12 +387,13 @@ export const PartyScreening = () => {
                 placeholder="Placeholder"
                 variant="outlined"
                 size="small"
-                name="id"
+                name="uniqueId"
                 fullWidth
                 required
-                // value={formData.subChapter}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+                value={formData.uniqueId}
+                onChange={handleInputChange}
+                error={fieldErrors.uniqueId}
+                helperText={fieldErrors.uniqueId}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -344,9 +406,10 @@ export const PartyScreening = () => {
                 name="includeAlias"
                 fullWidth
                 required
-                // value={formData.subChapter}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+                value={formData.includeAlias}
+                onChange={handleInputChange}
+                error={fieldErrors.includeAlias}
+                helperText={fieldErrors.includeAlias}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -356,12 +419,13 @@ export const PartyScreening = () => {
                 placeholder="Placeholder"
                 variant="outlined"
                 size="small"
-                name="screeningStatus"
+                name="screeningstatus"
                 fullWidth
                 required
-                // value={formData.subChapter}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+                value={formData.screeningstatus}
+                onChange={handleInputChange}
+                error={fieldErrors.screeningstatus}
+                helperText={fieldErrors.screeningstatus}
               />
             </div>
           </div>

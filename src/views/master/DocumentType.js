@@ -18,8 +18,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import { FaStarOfLife, FaTrash } from 'react-icons/fa';
 
-// import { ToastContainer, toast } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const DocumentType = () => {
   const [formData, setFormData] = useState({
@@ -185,7 +185,9 @@ export const DocumentType = () => {
 
   return (
     <>
-      <div>{/* <ToastContainer /> */}</div>
+      <div>
+        <ToastContainer />
+      </div>
       <div className="card w-full p-6 bg-base-100 shadow-xl" style={{ padding: '20px' }}>
         <div className="row d-flex ml">
           <div className="d-flex flex-wrap justify-content-start mb-4" style={{ marginBottom: '20px' }}>
@@ -431,7 +433,7 @@ export const DocumentType = () => {
           <h5 className="mb-3">
             <u>Prefix Orders</u>
           </h5>
-          <div className="col-md-1 mb-3">
+          <div className="col-md-4 mb-3">
             <TextField
               id="outlined-textarea"
               label="CODE"
@@ -446,7 +448,7 @@ export const DocumentType = () => {
               // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
             />
           </div>
-          <div className="col-md-1 mb-3">
+          <div className="col-md-4 mb-3">
             <TextField
               id="outlined-textarea"
               label="FINYR"
@@ -461,7 +463,7 @@ export const DocumentType = () => {
               // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
             />
           </div>
-          <div className="col-md-1 mb-3">
+          <div className="col-md-4 mb-3">
             <TextField
               id="outlined-textarea"
               label="BRANCH"

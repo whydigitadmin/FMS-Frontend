@@ -529,11 +529,11 @@ export const CompanyDetails = () => {
                 <FormControlLabel
                   control={
                     <Checkbox
+                      sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
                       id="active"
                       checked={formData.active}
                       onChange={(e) => handleInputChange({ target: { name: 'active', value: e.target.checked } })}
                       name="active"
-                      color="primary"
                     />
                   }
                   label="Active"

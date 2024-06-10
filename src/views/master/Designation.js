@@ -13,29 +13,21 @@ import { useRef, useState, useMemo } from 'react';
 import 'react-tabs/style/react-tabs.css';
 import { MaterialReactTable } from 'material-react-table';
 
-// import { ToastContainer, toast } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-export const Department = () => {
+export const Designation = () => {
   const [formData, setFormData] = useState({
-    chapter: '',
-    subChapter: '',
-    hsnCode: '',
-    branchLocation: '',
-    newRate: '',
-    exempted: ''
+    active: true,
+    designation: '',
+    orgId: 1
   });
 
   const theme = useTheme();
   const anchorRef = useRef(null);
 
   const [fieldErrors, setFieldErrors] = useState({
-    chapter: false,
-    subChapter: false,
-    hsnCode: false,
-    branchLocation: false,
-    newRate: false,
-    exempted: false
+    designation: ''
   });
   const [tableData, setTableData] = useState([]);
 
@@ -45,38 +37,43 @@ export const Department = () => {
     setFieldErrors({ ...fieldErrors, [name]: false });
   };
 
+  const handleClear = () => {
+    setFormData({
+      designation: ''
+    });
+    setFieldErrors({
+      designation: ''
+    });
+  };
+
   const handleSave = () => {
-    // Check if any field is empty
-    const errors = Object.keys(formData).reduce((acc, key) => {
-      if (!formData[key]) {
-        acc[key] = true;
-      }
-      return acc;
-    }, {});
-    // If there are errors, set the corresponding fieldErrors state to true
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return; // Prevent API call if there are errors
+    const errors = {};
+    if (!formData.designation) {
+      errors.designation = 'Designation is required';
     }
+
+    if (Object.keys(errors).length > 0) {
+      // Set error messages for each field
+      setFieldErrors(errors);
+      return;
+    }
+
     axios
-      .post(`${process.env.REACT_APP_API_URL}/api/master/updateCreateSetTaxRate`, formData)
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateDesignation`, formData)
       .then((response) => {
         console.log('Response:', response.data);
-        setFormData({
-          chapter: '',
-          subChapter: '',
-          hsnCode: '',
-          branchLocation: '',
-          newRate: '',
-          exempted: ''
-        });
-        toast.success('Set Tax Rate Created Successfully', {
+        toast.success('Designation created successfully', {
           autoClose: 2000,
           theme: 'colored'
+        });
+        setFormData({
+          active: true,
+          designation: ''
         });
       })
       .catch((error) => {
         console.error('Error:', error);
+        toast.error('An error occurred while saving the designation');
       });
   };
 
@@ -157,7 +154,9 @@ export const Department = () => {
 
   return (
     <>
-      <div>{/* <ToastContainer /> */}</div>
+      <div>
+        <ToastContainer />
+      </div>
       <div className="card w-full p-6 bg-base-100 shadow-xl" style={{ padding: '20px' }}>
         <div className="row d-flex ml">
           <div className="d-flex flex-wrap justify-content-start mb-4" style={{ marginBottom: '20px' }}>
@@ -187,7 +186,7 @@ export const Department = () => {
 
             <Tooltip title="Clear" placement="top">
               {' '}
-              <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }}>
+              <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleClear}>
                 <Avatar
                   variant="rounded"
                   sx={{
@@ -261,17 +260,14 @@ export const Department = () => {
           </div>
           <div className="col-md-4 mb-3">
             <TextField
-              id="outlined-textarea"
               label="Designation"
-              placeholder="Placeholder"
               variant="outlined"
-              size="small"
-              name="designation"
               fullWidth
-              required
-              // value={formData.subChapter}
-              // onChange={handleInputChange}
-              // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+              name="designation"
+              value={formData.designation}
+              onChange={handleInputChange}
+              error={!!fieldErrors.designation} // Add error prop
+              helperText={fieldErrors.designation} // Add helperText prop
             />
           </div>
         </div>
@@ -319,4 +315,4 @@ export const Department = () => {
     </>
   );
 };
-export default Department;
+export default Designation;

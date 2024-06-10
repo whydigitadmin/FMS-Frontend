@@ -13,33 +13,60 @@ import axios from 'axios';
 import { useRef, useState, useMemo } from 'react';
 import 'react-tabs/style/react-tabs.css';
 import { MaterialReactTable } from 'material-react-table';
-
-// import { ToastContainer, toast } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
 
 export const Container = () => {
   const [formData, setFormData] = useState({
-    chapter: '',
-    subChapter: '',
-    hsnCode: '',
-    branchLocation: '',
-    newRate: '',
-    exempted: ''
+    active: true,
+    containerType: '',
+    category: '',
+    length: '',
+    width: '',
+    height: '',
+    weight: '',
+    volume: '',
+    orgId: 1
   });
 
   const theme = useTheme();
   const anchorRef = useRef(null);
 
   const [fieldErrors, setFieldErrors] = useState({
-    chapter: false,
-    subChapter: false,
-    hsnCode: false,
-    branchLocation: false,
-    newRate: false,
-    exempted: false
+    active: true,
+    containerType: '',
+    category: '',
+    length: '',
+    width: '',
+    height: '',
+    weight: '',
+    volume: ''
   });
   const [tableData, setTableData] = useState([]);
   const [listView, setListView] = useState(false);
+
+  const handleClear = () => {
+    setFormData({
+      containerType: '',
+      category: '',
+      length: '',
+      width: '',
+      height: '',
+      weight: '',
+      volume: ''
+    });
+    setFieldErrors({
+      containerType: '',
+      category: '',
+      length: '',
+      width: '',
+      height: '',
+      weight: '',
+      volume: ''
+    });
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -48,41 +75,78 @@ export const Container = () => {
   };
 
   const handleSave = () => {
-    // Check if any field is empty
-    const errors = Object.keys(formData).reduce((acc, key) => {
-      if (!formData[key]) {
-        acc[key] = true;
-      }
-      return acc;
-    }, {});
-    // If there are errors, set the corresponding fieldErrors state to true
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return; // Prevent API call if there are errors
+    const errors = {};
+    if (!formData.containerType) {
+      errors.containerType = 'Container Type is required';
     }
+    if (!formData.category) {
+      errors.category = 'Category is required';
+    }
+    if (!formData.length) {
+      errors.length = 'Length is required';
+    }
+    if (!formData.width) {
+      errors.width = 'Width is required';
+    }
+    if (!formData.height) {
+      errors.height = 'Height is required';
+    }
+    if (!formData.weight) {
+      errors.weight = 'Weight is required';
+    }
+    if (!formData.volume) {
+      errors.volume = 'Volume is required';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      // Set error messages for each field
+      setFieldErrors(errors);
+      return;
+    }
+
     axios
-      .post(`${process.env.REACT_APP_API_URL}/api/master/updateCreateSetTaxRate`, formData)
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateContainer`, formData)
       .then((response) => {
         console.log('Response:', response.data);
-        setFormData({
-          chapter: '',
-          subChapter: '',
-          hsnCode: '',
-          branchLocation: '',
-          newRate: '',
-          exempted: ''
-        });
-        toast.success('Set Tax Rate Created Successfully', {
+        toast.success('Container created successfully', {
           autoClose: 2000,
           theme: 'colored'
+        });
+        setFormData({
+          active: true,
+          containerType: '',
+          category: '',
+          length: '',
+          width: '',
+          height: '',
+          weight: '',
+          volume: ''
         });
       })
       .catch((error) => {
         console.error('Error:', error);
+        toast.error('An error occurred while saving the container');
       });
   };
 
+  const getAllContainer = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getContainerById`);
+      console.log('API Response:', response);
+
+      if (response.status === 200) {
+        setTableData(response.data.paramObjectsMap.containerVO);
+      } else {
+        // Handle error
+        console.error('API Error:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   const handleView = () => {
+    getAllContainer();
     setListView(true);
   };
 
@@ -110,7 +174,7 @@ export const Container = () => {
             {/* <IconButton onClick={() => handleViewRow(row)}>
               <VisibilityIcon />
             </IconButton> */}
-            <IconButton onClick={() => handleEditRow(row)}>
+            <IconButton>
               <EditIcon />
             </IconButton>
           </div>
@@ -128,8 +192,8 @@ export const Container = () => {
       //   },
       // },
       {
-        accessorKey: 'cityName',
-        header: 'City',
+        accessorKey: 'containerType',
+        header: 'Container Type',
         size: 50,
         muiTableHeadCellProps: {
           align: 'center'
@@ -139,8 +203,30 @@ export const Container = () => {
         }
       },
       {
-        accessorKey: 'cityCode',
-        header: 'Code',
+        accessorKey: 'category',
+        header: 'Category',
+        size: 50,
+        muiTableHeadCellProps: {
+          align: 'center'
+        },
+        muiTableBodyCellProps: {
+          align: 'center'
+        }
+      },
+      {
+        accessorKey: 'height',
+        header: 'Height',
+        size: 50,
+        muiTableHeadCellProps: {
+          align: 'center'
+        },
+        muiTableBodyCellProps: {
+          align: 'center'
+        }
+      },
+      {
+        accessorKey: 'volume',
+        header: 'Volume',
         size: 50,
         muiTableHeadCellProps: {
           align: 'center'
@@ -167,7 +253,9 @@ export const Container = () => {
 
   return (
     <>
-      <div>{/* <ToastContainer /> */}</div>
+      <div>
+        <ToastContainer />
+      </div>
       <div className="card w-full p-6 bg-base-100 shadow-xl" style={{ padding: '20px' }}>
         {!listView ? (
           <div className="row d-flex ml">
@@ -198,7 +286,7 @@ export const Container = () => {
 
               <Tooltip title="Clear" placement="top">
                 {' '}
-                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }}>
+                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleClear}>
                   <Avatar
                     variant="rounded"
                     sx={{
@@ -280,28 +368,29 @@ export const Container = () => {
                 name="containerType"
                 fullWidth
                 required
-                // value={formData.subChapter}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+                value={formData.containerType}
+                onChange={handleInputChange}
+                error={!!fieldErrors.containerType} // Add error prop
+                helperText={fieldErrors.containerType} // Add helperText prop
               />
             </div>
 
             <div className="col-md-4 mb-3">
-              <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Category</InputLabel>
+              <FormControl fullWidth size="small" error={!!fieldErrors.category}>
+                <InputLabel id="category">Category</InputLabel>
                 <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
+                  labelId="category"
+                  id="category"
                   label="Category"
                   required
-                  // value={formData.exempted}
-                  name="Country"
-                  // onChange={handleInputChange}
+                  value={formData.category}
+                  name="category"
+                  onChange={handleInputChange}
                 >
                   <MenuItem value="0">India</MenuItem>
                   <MenuItem value="1">America</MenuItem>
                 </Select>
-                {/* {fieldErrors.exempted && <FormHelperText style={{ color: 'red' }}>This field is required</FormHelperText>} */}
+                {fieldErrors.category && <FormHelperText>{fieldErrors.category}</FormHelperText>}
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
@@ -314,9 +403,10 @@ export const Container = () => {
                 name="length"
                 fullWidth
                 required
-                // value={formData.subChapter}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+                value={formData.length}
+                onChange={handleInputChange}
+                error={fieldErrors.length}
+                helperText={fieldErrors.length}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -329,9 +419,10 @@ export const Container = () => {
                 name="width"
                 fullWidth
                 required
-                // value={formData.subChapter}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+                value={formData.width}
+                onChange={handleInputChange}
+                error={fieldErrors.width}
+                helperText={fieldErrors.width}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -344,9 +435,10 @@ export const Container = () => {
                 name="height"
                 fullWidth
                 required
-                // value={formData.subChapter}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+                value={formData.height}
+                onChange={handleInputChange}
+                error={fieldErrors.height}
+                helperText={fieldErrors.height}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -359,9 +451,10 @@ export const Container = () => {
                 name="weight"
                 fullWidth
                 required
-                // value={formData.subChapter}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+                value={formData.weight}
+                onChange={handleInputChange}
+                error={fieldErrors.weight}
+                helperText={fieldErrors.weight}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -374,9 +467,10 @@ export const Container = () => {
                 name="volume"
                 fullWidth
                 required
-                // value={formData.subChapter}
-                // onChange={handleInputChange}
-                // helperText={<span style={{ color: 'red' }}>{fieldErrors.subChapter ? 'This field is required' : ''}</span>}
+                value={formData.volume}
+                onChange={handleInputChange}
+                error={fieldErrors.volume}
+                helperText={fieldErrors.volume}
               />
             </div>
           </div>
