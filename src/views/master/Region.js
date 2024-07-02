@@ -2,7 +2,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import FormatListBulletedTwoToneIcon from '@mui/icons-material/FormatListBulletedTwoTone';
 import SaveIcon from '@mui/icons-material/Save';
 import SearchIcon from '@mui/icons-material/Search';
-import { Avatar, ButtonBase, FormHelperText, Tooltip } from '@mui/material';
+import { Avatar, ButtonBase, FormHelperText, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -38,6 +38,10 @@ export const Region = () => {
   });
   const [tableData, setTableData] = useState([]);
   const [listView, setListView] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [currentRowData, setCurrentRowData] = useState(null);
+
+  const [id, setId] = useState('');
 
   const handleClear = () => {
     setFormData({
@@ -91,6 +95,48 @@ export const Region = () => {
       });
   };
 
+  const handleEditSave = () => {
+    const errors = {};
+    if (!formData.regionCode) {
+      errors.regionCode = 'Region Code is required';
+    }
+    if (!formData.regionName) {
+      errors.regionName = 'Region Name is required';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      // Set error messages for each field
+      setFieldErrors(errors);
+      return;
+    }
+
+    const updatedFormData = {
+      ...formData,
+      id: currentRowData?.id // Ensure the id from the current row data is included
+    };
+
+    axios
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateRegion`, updatedFormData)
+      .then((response) => {
+        console.log('Response:', response.data);
+        toast.success('Region Updated successfully', {
+          autoClose: 2000,
+          theme: 'colored'
+        });
+        setFormData({
+          active: true,
+          regionCode: '',
+          regionName: ''
+        });
+        getAllRegion();
+        setEditMode(false); // Close the dialog after saving
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        toast.error('An error occurred while updating the region');
+      });
+  };
+
   const getAllRegion = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getRegionById`);
@@ -98,6 +144,7 @@ export const Region = () => {
 
       if (response.status === 200) {
         setTableData(response.data.paramObjectsMap.regionVO);
+        setId(response.data.paramObjectsMap.regionVO.id);
       } else {
         // Handle error
         console.error('API Error:', response.data);
@@ -114,6 +161,21 @@ export const Region = () => {
 
   const handleBackToInput = () => {
     setListView(false);
+  };
+
+  const handleEdit = (row) => {
+    setCurrentRowData(row.original);
+    setFormData(row.original);
+    setEditMode(true);
+  };
+
+  const handleClose = () => {
+    setEditMode(false);
+    setFormData({
+      active: true,
+      regionCode: '',
+      regionName: ''
+    });
   };
 
   const columns = useMemo(
@@ -133,10 +195,7 @@ export const Region = () => {
         enableEditing: false,
         Cell: ({ row }) => (
           <div>
-            {/* <IconButton onClick={() => handleViewRow(row)}>
-              <VisibilityIcon />
-            </IconButton> */}
-            <IconButton>
+            <IconButton onClick={() => handleEdit(row)}>
               <EditIcon />
             </IconButton>
           </div>
@@ -406,6 +465,68 @@ export const Region = () => {
           </div>
         )}
       </div>
+      <Dialog open={editMode} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle style={{ fontSize: '20px' }}>Edit Region</DialogTitle>
+        <DialogContent>
+          <div className="col-md-8 mt-2 mb-3">
+            <TextField
+              id="outlined-textarea"
+              label="Region Code"
+              placeholder="Placeholder"
+              variant="outlined"
+              size="small"
+              name="regionCode"
+              fullWidth
+              required
+              value={formData.regionCode}
+              onChange={handleInputChange}
+              error={!!fieldErrors.regionCode} // Add error prop
+              helperText={fieldErrors.regionCode} // Add helperText prop
+            />
+          </div>
+
+          <div className="col-md-8 mb-3">
+            <TextField
+              id="outlined-textarea"
+              label="Region Name"
+              placeholder="Placeholder"
+              variant="outlined"
+              size="small"
+              fullWidth
+              required
+              name="regionName"
+              value={formData.regionName}
+              onChange={handleInputChange}
+              error={!!fieldErrors.regionName} // Add error prop
+              helperText={fieldErrors.regionName} // Add helperText prop
+            />
+          </div>
+          <div className="col-md-8 mb-3">
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                    id="active"
+                    checked={formData.active}
+                    onChange={(e) => handleInputChange({ target: { name: 'active', value: e.target.checked } })}
+                    name="active"
+                  />
+                }
+                label="Active"
+              />
+            </FormGroup>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleEditSave} color="primary">
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

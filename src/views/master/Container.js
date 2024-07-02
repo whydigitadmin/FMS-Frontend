@@ -2,7 +2,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import FormatListBulletedTwoToneIcon from '@mui/icons-material/FormatListBulletedTwoTone';
 import SaveIcon from '@mui/icons-material/Save';
 import SearchIcon from '@mui/icons-material/Search';
-import { Avatar, ButtonBase, FormHelperText, Tooltip } from '@mui/material';
+import { Avatar, ButtonBase, FormHelperText, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -46,6 +46,10 @@ export const Container = () => {
   });
   const [tableData, setTableData] = useState([]);
   const [listView, setListView] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [currentRowData, setCurrentRowData] = useState(null);
+
+  const [id, setId] = useState('');
 
   const handleClear = () => {
     setFormData({
@@ -129,6 +133,68 @@ export const Container = () => {
       });
   };
 
+  const handleEditSave = () => {
+    const errors = {};
+    if (!formData.containerType) {
+      errors.containerType = 'Container Type is required';
+    }
+    if (!formData.category) {
+      errors.category = 'Category is required';
+    }
+    if (!formData.length) {
+      errors.length = 'Length is required';
+    }
+    if (!formData.width) {
+      errors.width = 'Width is required';
+    }
+    if (!formData.height) {
+      errors.height = 'Height is required';
+    }
+    if (!formData.weight) {
+      errors.weight = 'Weight is required';
+    }
+    if (!formData.volume) {
+      errors.volume = 'Volume is required';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      // Set error messages for each field
+      setFieldErrors(errors);
+      return;
+    }
+
+    const updatedFormData = {
+      ...formData,
+      id: currentRowData?.id // Ensure the id from the current row data is included
+    };
+
+    axios
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateContainer`, updatedFormData)
+      .then((response) => {
+        console.log('Response:', response.data);
+        toast.success('Container Updated successfully', {
+          autoClose: 2000,
+          theme: 'colored'
+        });
+        setFormData({
+          active: true,
+          containerType: '',
+          category: '',
+          length: '',
+          width: '',
+          height: '',
+          weight: '',
+          volume: ''
+        });
+        getAllContainer();
+        setEditMode(false); // Close the dialog after saving
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        toast.error('An error occurred while updating the container');
+      });
+  };
+
   const getAllContainer = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getContainerById`);
@@ -136,6 +202,7 @@ export const Container = () => {
 
       if (response.status === 200) {
         setTableData(response.data.paramObjectsMap.containerVO);
+        setId(response.data.paramObjectsMap.containerVO.id);
       } else {
         // Handle error
         console.error('API Error:', response.data);
@@ -152,6 +219,25 @@ export const Container = () => {
 
   const handleBackToInput = () => {
     setListView(false);
+  };
+
+  const handleEdit = (row) => {
+    setCurrentRowData(row.original);
+    setFormData(row.original);
+    setEditMode(true);
+  };
+
+  const handleClose = () => {
+    setEditMode(false);
+    setFormData({
+      containerType: '',
+      category: '',
+      length: '',
+      width: '',
+      height: '',
+      weight: '',
+      volume: ''
+    });
   };
 
   const columns = useMemo(
@@ -174,7 +260,7 @@ export const Container = () => {
             {/* <IconButton onClick={() => handleViewRow(row)}>
               <VisibilityIcon />
             </IconButton> */}
-            <IconButton>
+            <IconButton onClick={() => handleEdit(row)}>
               <EditIcon />
             </IconButton>
           </div>
@@ -387,8 +473,8 @@ export const Container = () => {
                   name="category"
                   onChange={handleInputChange}
                 >
-                  <MenuItem value="0">India</MenuItem>
-                  <MenuItem value="1">America</MenuItem>
+                  <MenuItem value="India">India</MenuItem>
+                  <MenuItem value="America">America</MenuItem>
                 </Select>
                 {fieldErrors.category && <FormHelperText>{fieldErrors.category}</FormHelperText>}
               </FormControl>
@@ -543,6 +629,134 @@ export const Container = () => {
           </div>
         )}
       </div>
+      <Dialog open={editMode} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle style={{ fontSize: '20px' }}>Edit Container</DialogTitle>
+        <DialogContent>
+          <div className="col-md-8 mt-2 mb-3">
+            <TextField
+              id="outlined-textarea"
+              label="Container Type"
+              placeholder="Placeholder"
+              variant="outlined"
+              size="small"
+              name="containerType"
+              fullWidth
+              required
+              value={formData.containerType}
+              onChange={handleInputChange}
+              error={!!fieldErrors.containerType} // Add error prop
+              helperText={fieldErrors.containerType} // Add helperText prop
+            />
+          </div>
+
+          <div className="col-md-8 mb-3">
+            <FormControl fullWidth size="small" error={!!fieldErrors.category}>
+              <InputLabel id="category">Category</InputLabel>
+              <Select
+                labelId="category"
+                id="category"
+                label="Category"
+                required
+                value={formData.category}
+                name="category"
+                onChange={handleInputChange}
+              >
+                <MenuItem value="India">India</MenuItem>
+                <MenuItem value="America">America</MenuItem>
+              </Select>
+              {fieldErrors.category && <FormHelperText>{fieldErrors.category}</FormHelperText>}
+            </FormControl>
+          </div>
+          <div className="col-md-8 mb-3">
+            <TextField
+              id="outlined-textarea"
+              label="Length"
+              placeholder="Placeholder"
+              variant="outlined"
+              size="small"
+              name="length"
+              fullWidth
+              required
+              value={formData.length}
+              onChange={handleInputChange}
+              error={fieldErrors.length}
+              helperText={fieldErrors.length}
+            />
+          </div>
+          <div className="col-md-8 mb-3">
+            <TextField
+              id="outlined-textarea"
+              label="Width"
+              placeholder="Placeholder"
+              variant="outlined"
+              size="small"
+              name="width"
+              fullWidth
+              required
+              value={formData.width}
+              onChange={handleInputChange}
+              error={fieldErrors.width}
+              helperText={fieldErrors.width}
+            />
+          </div>
+          <div className="col-md-8 mb-3">
+            <TextField
+              id="outlined-textarea"
+              label="Height"
+              placeholder="Placeholder"
+              variant="outlined"
+              size="small"
+              name="height"
+              fullWidth
+              required
+              value={formData.height}
+              onChange={handleInputChange}
+              error={fieldErrors.height}
+              helperText={fieldErrors.height}
+            />
+          </div>
+          <div className="col-md-8 mb-3">
+            <TextField
+              id="outlined-textarea"
+              label="Weight"
+              placeholder="Placeholder"
+              variant="outlined"
+              size="small"
+              name="weight"
+              fullWidth
+              required
+              value={formData.weight}
+              onChange={handleInputChange}
+              error={fieldErrors.weight}
+              helperText={fieldErrors.weight}
+            />
+          </div>
+          <div className="col-md-8 mb-3">
+            <TextField
+              id="outlined-textarea"
+              label="Volume"
+              placeholder="Placeholder"
+              variant="outlined"
+              size="small"
+              name="volume"
+              fullWidth
+              required
+              value={formData.volume}
+              onChange={handleInputChange}
+              error={fieldErrors.volume}
+              helperText={fieldErrors.volume}
+            />
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleEditSave} color="primary">
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

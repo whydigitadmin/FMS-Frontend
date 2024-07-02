@@ -2,7 +2,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import FormatListBulletedTwoToneIcon from '@mui/icons-material/FormatListBulletedTwoTone';
 import SaveIcon from '@mui/icons-material/Save';
 import SearchIcon from '@mui/icons-material/Search';
-import { Avatar, ButtonBase, FormHelperText, Tooltip } from '@mui/material';
+import { Avatar, ButtonBase, FormHelperText, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -39,6 +39,10 @@ export const Port = () => {
   });
   const [tableData, setTableData] = useState([]);
   const [listView, setListView] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [currentRowData, setCurrentRowData] = useState(null);
+
+  const [id, setId] = useState('');
 
   const handleClear = () => {
     setFormData({
@@ -105,6 +109,56 @@ export const Port = () => {
       });
   };
 
+  const handleEditSave = () => {
+    const errors = {};
+    if (!formData.port) {
+      errors.port = 'Port Name is required';
+    }
+    if (!formData.code) {
+      errors.code = 'Port Code is required';
+    }
+    if (!formData.country) {
+      errors.country = 'Country is required';
+    }
+    if (!formData.type) {
+      errors.type = 'Type is required';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      // Set error messages for each field
+      setFieldErrors(errors);
+      return;
+    }
+
+    const updatedFormData = {
+      ...formData,
+      id: currentRowData?.id // Ensure the id from the current row data is included
+    };
+
+    axios
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreatePort`, updatedFormData)
+      .then((response) => {
+        console.log('Response:', response.data);
+        toast.success('Port Updated successfully', {
+          autoClose: 2000,
+          theme: 'colored'
+        });
+        setFormData({
+          active: true,
+          port: '',
+          code: '',
+          country: '',
+          type: ''
+        });
+        getAllPort();
+        setEditMode(false); // Close the dialog after saving
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        toast.error('An error occurred while updating port');
+      });
+  };
+
   const getAllPort = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getPortById`);
@@ -112,6 +166,7 @@ export const Port = () => {
 
       if (response.status === 200) {
         setTableData(response.data.paramObjectsMap.portVO);
+        setId(response.data.paramObjectsMap.portVO.id);
       } else {
         // Handle error
         console.error('API Error:', response.data);
@@ -128,6 +183,22 @@ export const Port = () => {
 
   const handleBackToInput = () => {
     setListView(false);
+  };
+
+  const handleEdit = (row) => {
+    setCurrentRowData(row.original);
+    setFormData(row.original);
+    setEditMode(true);
+  };
+
+  const handleClose = () => {
+    setEditMode(false);
+    setFormData({
+      port: '',
+      code: '',
+      country: '',
+      type: ''
+    });
   };
 
   const columns = useMemo(
@@ -147,10 +218,7 @@ export const Port = () => {
         enableEditing: false,
         Cell: ({ row }) => (
           <div>
-            {/* <IconButton onClick={() => handleViewRow(row)}>
-              <VisibilityIcon />
-            </IconButton> */}
-            <IconButton>
+            <IconButton onClick={() => handleEdit(row)}>
               <EditIcon />
             </IconButton>
           </div>
@@ -240,7 +308,7 @@ export const Port = () => {
 
               <Tooltip title="Clear" placement="top">
                 {' '}
-                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }}>
+                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleClear}>
                   <Avatar
                     variant="rounded"
                     sx={{
@@ -433,6 +501,70 @@ export const Port = () => {
           </div>
         )}
       </div>
+      <Dialog open={editMode} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle style={{ fontSize: '20px' }}>Edit Port</DialogTitle>
+        <DialogContent>
+          <div className="col-md-8 mt-2 mb-3">
+            <TextField
+              id="portName"
+              label="Port Name"
+              variant="outlined"
+              size="small"
+              fullWidth
+              required
+              name="port"
+              value={formData.port}
+              onChange={handleInputChange}
+              error={fieldErrors.port}
+              helperText={fieldErrors.port}
+            />
+          </div>
+
+          <div className="col-md-8 mb-3">
+            <TextField
+              id="portCode"
+              label="Port Code"
+              variant="outlined"
+              size="small"
+              fullWidth
+              required
+              name="code"
+              value={formData.code}
+              onChange={handleInputChange}
+              error={fieldErrors.code}
+              helperText={fieldErrors.code}
+            />
+          </div>
+          <div className="col-md-8 mb-3">
+            <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.country}>
+              <InputLabel id="country-label">Country</InputLabel>
+              <Select labelId="country-label" label="Country" value={formData.country} onChange={handleInputChange} name="country">
+                <MenuItem value="India">India</MenuItem>
+                <MenuItem value="USA">USA</MenuItem>
+              </Select>
+              {fieldErrors.country && <FormHelperText>{fieldErrors.country}</FormHelperText>}
+            </FormControl>
+          </div>
+          <div className="col-md-8 mb-3">
+            <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.type}>
+              <InputLabel id="type">Type</InputLabel>
+              <Select labelId="type" label="Type" value={formData.type} onChange={handleInputChange} name="type">
+                <MenuItem value="India">India</MenuItem>
+                <MenuItem value="USA">USA</MenuItem>
+              </Select>
+              {fieldErrors.type && <FormHelperText>{fieldErrors.type}</FormHelperText>}
+            </FormControl>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleEditSave} color="primary">
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

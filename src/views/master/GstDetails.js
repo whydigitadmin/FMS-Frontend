@@ -24,6 +24,7 @@ import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import BrowserUpdatedIcon from '@mui/icons-material/BrowserUpdated';
 
 export const GstDetails = () => {
   const [formData, setFormData] = useState({
@@ -82,6 +83,9 @@ export const GstDetails = () => {
 
   const [listView, setListView] = useState(false);
 
+  const [editMode, setEditMode] = useState(false);
+  const [currentRowData, setCurrentRowData] = useState(null);
+
   const handleClear = () => {
     setFormData({
       pan: '',
@@ -127,7 +131,7 @@ export const GstDetails = () => {
 
   const handleAddRow = () => {
     const newRow = {
-      id: tableData.length + 1,
+      id: Date.now(),
       state: '',
       gstIn: '',
       stateCode: '',
@@ -165,7 +169,7 @@ export const GstDetails = () => {
 
   const handleAddRow1 = () => {
     const newRow = {
-      id: tableData1.length + 1,
+      id: Date.now(),
       state: '',
       buisnessPlace: '',
       cityName: '',
@@ -328,7 +332,7 @@ export const GstDetails = () => {
     };
 
     axios
-      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateGstIn`, payload)
+      .post(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateGstIn`, payload)
       .then((response) => {
         console.log('Response:', response.data);
 
@@ -367,7 +371,243 @@ export const GstDetails = () => {
       });
   };
 
-  const getAllGstDetails = async () => {
+  const handleEditSave = () => {
+    const errors = {};
+    if (!formData.pan) {
+      errors.pan = 'Pan is required';
+    }
+    if (!formData.panName) {
+      errors.panName = 'Pan Name is required';
+    }
+    if (!formData.partyName) {
+      errors.partyName = 'Party Name is required';
+    }
+    if (!formData.bussinessType) {
+      errors.bussinessType = 'Bussiness Type is required';
+    }
+    if (!formData.accountType) {
+      errors.accountType = 'Account Type is required';
+    }
+    if (!formData.businessCategory) {
+      errors.businessCategory = 'Business Category is required';
+    }
+
+    let tableDataValid = true;
+    const newTableErrors = tableData.map((row) => {
+      const rowErrors = {};
+      if (!row.state) {
+        rowErrors.state = 'State is required';
+        tableDataValid = false;
+      }
+      if (!row.gstIn) {
+        rowErrors.gstIn = 'Gst In is required';
+        tableDataValid = false;
+      }
+      if (!row.stateCode) {
+        rowErrors.stateCode = 'State Code is required';
+        tableDataValid = false;
+      }
+      if (!row.contactPerson) {
+        rowErrors.contactPerson = 'Contact Person is required';
+        tableDataValid = false;
+      }
+      if (!row.contactPhoneNo) {
+        rowErrors.contactPhoneNo = 'Contact PhoneNo is required';
+        tableDataValid = false;
+      }
+      if (!row.contactEmail) {
+        rowErrors.contactEmail = 'Contact Email is required';
+        tableDataValid = false;
+      }
+
+      return rowErrors;
+    });
+    setFieldErrors(errors);
+
+    setTableErrors(newTableErrors);
+
+    let tableDataValid1 = true;
+    const newTableErrors1 = tableData1.map((row) => {
+      const rowErrors1 = {};
+      if (!row.state) {
+        rowErrors1.state = 'State is required';
+        tableDataValid1 = false;
+      }
+      if (!row.businessPlace) {
+        rowErrors1.businessPlace = 'Business Place is required';
+        tableDataValid1 = false;
+      }
+      if (!row.cityName) {
+        rowErrors1.cityName = 'City Name is required';
+        tableDataValid1 = false;
+      }
+      if (!row.address1) {
+        rowErrors1.address1 = 'Address1 is required';
+        tableDataValid1 = false;
+      }
+      if (!row.address2) {
+        rowErrors1.address2 = 'Address2 is required';
+        tableDataValid1 = false;
+      }
+      if (!row.contactPerson) {
+        rowErrors1.contactPerson = 'Contact Person is required';
+        tableDataValid1 = false;
+      }
+      if (!row.contactPhoneNo) {
+        rowErrors1.contactPhoneNo = 'Contact PhoneNo is required';
+        tableDataValid1 = false;
+      }
+      if (!row.contactEmail) {
+        rowErrors1.contactEmail = 'Contact Email is required';
+        tableDataValid1 = false;
+      }
+
+      return rowErrors1;
+    });
+
+    setTableErrors1(newTableErrors1);
+
+    if (Object.keys(errors).length > 0 || !tableDataValid || !tableDataValid1) {
+      return;
+    }
+
+    // const payload = {
+    //   ...formData,
+    //   stateGstDTO: tableData.map((row) => ({
+    //     contactEmail: row.contactEmail,
+    //     contactPerson: row.contactPerson,
+    //     contactPhoneNo: row.contactPhoneNo,
+    //     gstIn: row.gstIn,
+    //     // id: row.id,
+    //     stateCode: row.stateCode,
+    //     stateGst: row.state
+    //   })),
+    //   businessAddressDTO: tableData1.map((row) => ({
+    //     address1: row.address1,
+    //     address2: row.address2,
+    //     businessPlace: row.businessPlace,
+    //     cityName: row.cityName,
+    //     contactEmail: row.contactEmail,
+    //     contactPerson: row.contactPerson,
+    //     contactPhoneNo: row.contactPhoneNo,
+    //     // id: row.id,
+    //     state: row.state
+    //   }))
+    // };
+
+    const payload = {
+      ...formData,
+      stateGstDTO: tableData
+        .filter((row) => row.contactEmail || row.contactPerson || row.contactPhoneNo || row.gstIn || row.stateCode || row.state)
+        .map((row) => {
+          const stateGstDTO = {
+            contactEmail: row.contactEmail,
+            contactPerson: row.contactPerson,
+            contactPhoneNo: row.contactPhoneNo,
+            gstIn: row.gstIn,
+            stateCode: row.stateCode,
+            stateGst: row.state
+          };
+
+          // Only include 'id' if it exists
+          if (row.id && (row.contactEmail || row.contactPerson || row.contactPhoneNo || row.gstIn || row.stateCode || row.state)) {
+            stateGstDTO.id = row.id;
+          }
+
+          return stateGstDTO;
+        }),
+      businessAddressDTO: tableData1
+        .filter(
+          (row) =>
+            row.address1 ||
+            row.address2 ||
+            row.businessPlace ||
+            row.cityName ||
+            row.contactEmail ||
+            row.contactPerson ||
+            row.contactPhoneNo ||
+            row.state
+        )
+        .map((row) => {
+          const businessAddressDTO = {
+            address1: row.address1,
+            address2: row.address2,
+            businessPlace: row.businessPlace,
+            cityName: row.cityName,
+            contactEmail: row.contactEmail,
+            contactPerson: row.contactPerson,
+            contactPhoneNo: row.contactPhoneNo,
+            state: row.state
+          };
+
+          // Only include 'id' if it exists
+          if (
+            row.id &&
+            (row.address1 ||
+              row.address2 ||
+              row.businessPlace ||
+              row.cityName ||
+              row.contactEmail ||
+              row.contactPerson ||
+              row.contactPhoneNo ||
+              row.state)
+          ) {
+            businessAddressDTO.id = row.id;
+          }
+
+          return businessAddressDTO;
+        })
+    };
+
+    const updatedPayload = {
+      ...payload,
+      id: currentRowData?.id
+    };
+
+    axios
+      .post(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateGstIn`, updatedPayload)
+      .then((response) => {
+        console.log('Response:', response.data);
+
+        setFormData({
+          pan: '',
+          panName: '',
+          partyName: '',
+          bussinessType: '',
+          accountType: '',
+          businessCategory: '',
+          active: true,
+          orgId: 1
+        });
+        setTableData([{ id: Date.now(), state: '', gstIn: '', stateCode: '', contactPerson: '', contactPhoneNo: '', contactEmail: '' }]);
+        setTableData1([
+          {
+            id: Date.now(),
+            state: '',
+            businessPlace: '',
+            cityName: '',
+            address1: '',
+            address2: '',
+            contactPerson: '',
+            contactPhoneNo: '',
+            contactEmail: ''
+          }
+        ]);
+        toast.success('Gst Details Updated successfully', {
+          autoClose: 2000,
+          theme: 'colored'
+        });
+        setEditMode(false);
+        setTableErrors([]);
+        setTableErrors1([]);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        toast.error('An error occurred while updating the gst details');
+      });
+  };
+
+  const getAllGstDetails1 = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getGstInById`);
       console.log('API Response:', response);
@@ -383,12 +623,83 @@ export const GstDetails = () => {
     }
   };
 
+  const getAllGstDetails = async (selectedDocumentId) => {
+    try {
+      // Update the URL to use query parameter instead of path parameter
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getGstInById`, {
+        params: {
+          id: selectedDocumentId
+        }
+      });
+      console.log('API Response:', response);
+
+      if (response.status === 200) {
+        setTableDataList(response.data.paramObjectsMap.gstInVO);
+      } else {
+        // Handle error
+        console.error('API Error:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   const handleView = () => {
-    getAllGstDetails();
+    getAllGstDetails1();
     setListView(true);
   };
 
   const handleBackToInput = () => {
+    setListView(false);
+  };
+
+  const handleEditBack = () => {
+    handleClear();
+    // setListView(true);
+    setEditMode(false);
+  };
+
+  const handleEdit = (row) => {
+    console.log('first', row.original);
+    getAllGstDetails(row.original.id);
+    setCurrentRowData(row.original);
+    setFormData({
+      pan: row.original.pan,
+      panName: row.original.panName,
+      partyName: row.original.partyName,
+      bussinessType: row.original.bussinessType,
+      accountType: row.original.accountType,
+      businessCategory: row.original.businessCategory,
+      active: row.original.active
+    });
+
+    setTableData(
+      row.original.stateGstVO?.map((state) => ({
+        id: state.id || Date.now(),
+        state: state.stateGst,
+        gstIn: state.gstIn,
+        stateCode: state.stateCode,
+        contactPerson: state.contactPerson,
+        contactPhoneNo: state.contactPhoneNo,
+        contactEmail: state.contactEmail
+      })) || []
+    );
+
+    setTableData1(
+      row.original.businessAddressVO?.map((state) => ({
+        id: state.id || Date.now(),
+        state: state.state,
+        businessPlace: state.businessPlace,
+        cityName: state.cityName,
+        address1: state.address1,
+        address2: state.address2,
+        contactPerson: state.contactPerson,
+        contactPhoneNo: state.contactPhoneNo,
+        contactEmail: state.contactEmail
+      })) || []
+    );
+
+    setEditMode(true);
     setListView(false);
   };
 
@@ -412,7 +723,7 @@ export const GstDetails = () => {
             {/* <IconButton onClick={() => handleViewRow(row)}>
               <VisibilityIcon />
             </IconButton> */}
-            <IconButton>
+            <IconButton onClick={() => handleEdit(row)}>
               <EditIcon />
             </IconButton>
           </div>
@@ -511,30 +822,57 @@ export const GstDetails = () => {
                 </ButtonBase>
               </Tooltip>
 
-              <Tooltip title="Clear" placement="top">
-                {' '}
-                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleClear}>
-                  <Avatar
-                    variant="rounded"
-                    sx={{
-                      ...theme.typography.commonAvatar,
-                      ...theme.typography.mediumAvatar,
-                      transition: 'all .2s ease-in-out',
-                      background: theme.palette.secondary.light,
-                      color: theme.palette.secondary.dark,
-                      '&[aria-controls="menu-list-grow"],&:hover': {
-                        background: theme.palette.secondary.dark,
-                        color: theme.palette.secondary.light
-                      }
-                    }}
-                    ref={anchorRef}
-                    aria-haspopup="true"
-                    color="inherit"
-                  >
-                    <ClearIcon size="1.3rem" stroke={1.5} />
-                  </Avatar>
-                </ButtonBase>
-              </Tooltip>
+              {editMode ? (
+                <Tooltip title="Clear" placement="top">
+                  {' '}
+                  <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleEditBack}>
+                    <Avatar
+                      variant="rounded"
+                      sx={{
+                        ...theme.typography.commonAvatar,
+                        ...theme.typography.mediumAvatar,
+                        transition: 'all .2s ease-in-out',
+                        background: theme.palette.secondary.light,
+                        color: theme.palette.secondary.dark,
+                        '&[aria-controls="menu-list-grow"],&:hover': {
+                          background: theme.palette.secondary.dark,
+                          color: theme.palette.secondary.light
+                        }
+                      }}
+                      ref={anchorRef}
+                      aria-haspopup="true"
+                      color="inherit"
+                    >
+                      <ClearIcon size="1.3rem" stroke={1.5} />
+                    </Avatar>
+                  </ButtonBase>
+                </Tooltip>
+              ) : (
+                <Tooltip title="Clear" placement="top">
+                  {' '}
+                  <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleClear}>
+                    <Avatar
+                      variant="rounded"
+                      sx={{
+                        ...theme.typography.commonAvatar,
+                        ...theme.typography.mediumAvatar,
+                        transition: 'all .2s ease-in-out',
+                        background: theme.palette.secondary.light,
+                        color: theme.palette.secondary.dark,
+                        '&[aria-controls="menu-list-grow"],&:hover': {
+                          background: theme.palette.secondary.dark,
+                          color: theme.palette.secondary.light
+                        }
+                      }}
+                      ref={anchorRef}
+                      aria-haspopup="true"
+                      color="inherit"
+                    >
+                      <ClearIcon size="1.3rem" stroke={1.5} />
+                    </Avatar>
+                  </ButtonBase>
+                </Tooltip>
+              )}
 
               <Tooltip title="List View" placement="top">
                 {' '}
@@ -560,30 +898,57 @@ export const GstDetails = () => {
                   </Avatar>
                 </ButtonBase>
               </Tooltip>
-              <Tooltip title="Save" placement="top">
-                {' '}
-                <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={handleSave}>
-                  <Avatar
-                    variant="rounded"
-                    sx={{
-                      ...theme.typography.commonAvatar,
-                      ...theme.typography.mediumAvatar,
-                      transition: 'all .2s ease-in-out',
-                      background: theme.palette.secondary.light,
-                      color: theme.palette.secondary.dark,
-                      '&[aria-controls="menu-list-grow"],&:hover': {
-                        background: theme.palette.secondary.dark,
-                        color: theme.palette.secondary.light
-                      }
-                    }}
-                    ref={anchorRef}
-                    aria-haspopup="true"
-                    color="inherit"
-                  >
-                    <SaveIcon size="1.3rem" stroke={1.5} />
-                  </Avatar>
-                </ButtonBase>
-              </Tooltip>
+              {editMode ? (
+                <Tooltip title="Update" placement="top">
+                  {' '}
+                  <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={handleEditSave}>
+                    <Avatar
+                      variant="rounded"
+                      sx={{
+                        ...theme.typography.commonAvatar,
+                        ...theme.typography.mediumAvatar,
+                        transition: 'all .2s ease-in-out',
+                        background: theme.palette.secondary.light,
+                        color: theme.palette.secondary.dark,
+                        '&[aria-controls="menu-list-grow"],&:hover': {
+                          background: theme.palette.secondary.dark,
+                          color: theme.palette.secondary.light
+                        }
+                      }}
+                      ref={anchorRef}
+                      aria-haspopup="true"
+                      color="inherit"
+                    >
+                      <BrowserUpdatedIcon size="1.3rem" stroke={1.5} />
+                    </Avatar>
+                  </ButtonBase>
+                </Tooltip>
+              ) : (
+                <Tooltip title="Save" placement="top">
+                  {' '}
+                  <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={handleSave}>
+                    <Avatar
+                      variant="rounded"
+                      sx={{
+                        ...theme.typography.commonAvatar,
+                        ...theme.typography.mediumAvatar,
+                        transition: 'all .2s ease-in-out',
+                        background: theme.palette.secondary.light,
+                        color: theme.palette.secondary.dark,
+                        '&[aria-controls="menu-list-grow"],&:hover': {
+                          background: theme.palette.secondary.dark,
+                          color: theme.palette.secondary.light
+                        }
+                      }}
+                      ref={anchorRef}
+                      aria-haspopup="true"
+                      color="inherit"
+                    >
+                      <SaveIcon size="1.3rem" stroke={1.5} />
+                    </Avatar>
+                  </ButtonBase>
+                </Tooltip>
+              )}
             </div>
             <div className="col-md-4 mb-3">
               <TextField
@@ -745,7 +1110,9 @@ export const GstDetails = () => {
                         <thead>
                           <tr style={{ backgroundColor: '#434AA8' }}>
                             <th className="px-2 py-2 text-white">Action</th>
-                            <th className="px-2 py-2 text-white">S.No</th>
+                            <th className="px-2 py-2 text-white" style={{ width: '50px' }}>
+                              S.No
+                            </th>
                             <th className="px-2 py-2 text-white">State</th>
                             <th className="px-2 py-2 text-white">GST IN</th>
                             <th className="px-2 py-2 text-white">State Code</th>
@@ -788,7 +1155,7 @@ export const GstDetails = () => {
                                 {/* </button> */}
                               </td>
 
-                              <td className="border px-2 py-2">
+                              {/* <td className="border px-2 py-2">
                                 <input
                                   type="text"
                                   value={row.id}
@@ -796,6 +1163,10 @@ export const GstDetails = () => {
                                     setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, id: e.target.value } : r)))
                                   }
                                 />
+                              </td> */}
+
+                              <td className="border px-2 py-2" style={{ width: '50px' }}>
+                                <input type="text" value={`${index + 1}`} readOnly style={{ width: '100%' }} />
                               </td>
 
                               <td className="border px-2 py-2">
@@ -936,11 +1307,11 @@ export const GstDetails = () => {
                 </div>
               </div>
             ) : (
-              <div className="mt-4">
+              <div className="">
                 <div className="row d-flex ml">
                   <div className="mt-2">
                     <Tooltip title="Add" placement="top">
-                      <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={handleAddRow}>
+                      <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={handleAddRow1}>
                         <Avatar
                           variant="rounded"
                           sx={{
@@ -971,7 +1342,9 @@ export const GstDetails = () => {
                           <thead>
                             <tr style={{ backgroundColor: '#434AA8' }}>
                               <th className="px-2 py-2 text-white">Action</th>
-                              <th className="px-2 py-2 text-white">S.No</th>
+                              <th className="px-2 py-2 text-white" style={{ width: '50px' }}>
+                                S.No
+                              </th>
                               <th className="px-2 py-2 text-white">State</th>
                               <th className="px-2 py-2 text-white">Business Place</th>
                               <th className="px-2 py-2 text-white">City Name</th>
@@ -1011,7 +1384,7 @@ export const GstDetails = () => {
                                     </ButtonBase>
                                   </Tooltip>
                                 </td>
-
+                                {/* 
                                 <td className="border px-2 py-2">
                                   <input
                                     type="text"
@@ -1020,6 +1393,9 @@ export const GstDetails = () => {
                                       setTableData1((prev) => prev.map((r) => (r.id === row.id ? { ...r, id: e.target.value } : r)))
                                     }
                                   />
+                                </td> */}
+                                <td className="border px-2 py-2" style={{ width: '50px' }}>
+                                  <input type="text" value={`${index + 1}`} readOnly style={{ width: '100%' }} />
                                 </td>
                                 <td className="border px-2 py-2">
                                   <input

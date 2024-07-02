@@ -20,6 +20,7 @@ import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import BrowserUpdatedIcon from '@mui/icons-material/BrowserUpdated';
 
 export const DocumentTypeMapping = () => {
   const [formData, setFormData] = useState({
@@ -42,7 +43,7 @@ export const DocumentTypeMapping = () => {
       subType: '',
       subTypeId: '',
       subTypeCode: '',
-      docName: '',
+      docname: '',
       prefix: '',
       postFinance: true,
       lastNo: '',
@@ -61,7 +62,7 @@ export const DocumentTypeMapping = () => {
       subType: '',
       subTypeId: '',
       subTypeCode: '',
-      docName: '',
+      docname: '',
       prefix: '',
       postFinance: true,
       lastNo: '',
@@ -69,14 +70,17 @@ export const DocumentTypeMapping = () => {
     }
   ]);
 
+  const [editMode, setEditMode] = useState(false);
+  const [currentRowData, setCurrentRowData] = useState(null);
+
   const handleAddRow = () => {
     const newRow = {
-      id: tableData.length + 1,
+      // id: tableData.length + 1,
       docType: '',
       subType: '',
       subTypeId: '',
       subTypeCode: '',
-      docName: '',
+      docname: '',
       prefix: '',
       postFinance: '',
       lastNo: '',
@@ -118,7 +122,7 @@ export const DocumentTypeMapping = () => {
         subType: '',
         subTypeId: '',
         subTypeCode: '',
-        docName: '',
+        docname: '',
         prefix: '',
         postFinance: '',
         lastNo: '',
@@ -155,8 +159,8 @@ export const DocumentTypeMapping = () => {
         rowErrors.subTypeCode = 'Sub TypeCode is required';
         tableDataValid = false;
       }
-      if (!row.docName) {
-        rowErrors.docName = 'Doc Name is required';
+      if (!row.docname) {
+        rowErrors.docname = 'Doc Name is required';
         tableDataValid = false;
       }
       if (!row.prefix) {
@@ -183,11 +187,11 @@ export const DocumentTypeMapping = () => {
       mappingDTO: tableData.map((row) => ({
         // id: 0, // Assuming new rows have id 0
         docType: row.docType,
-        docName: row.docName,
+        docname: row.docname,
         lastNo: row.lastNo,
-        postFinance: row.postFinance,
+        postFinance: row.postFinance !== undefined ? row.postFinance : false,
         prefix: row.prefix,
-        resetOnFinYear: row.resetOnFinYear,
+        resetOnFinYear: row.resetOnFinYear !== undefined ? row.resetOnFinYear : false,
         subType: row.subType,
         subTypeCode: row.subTypeCode,
         subTypeId: row.subTypeId
@@ -195,7 +199,7 @@ export const DocumentTypeMapping = () => {
     };
 
     axios
-      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateDocumentTypeMapping`, payload)
+      .post(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateDocumentTypeMapping`, payload)
       .then((response) => {
         console.log('Response:', response.data);
         toast.success('Document Type Mapping created successfully', {
@@ -214,7 +218,7 @@ export const DocumentTypeMapping = () => {
             subType: '',
             subTypeId: '',
             subTypeCode: '',
-            docName: '',
+            docname: '',
             prefix: '',
             postFinance: true,
             lastNo: '',
@@ -229,9 +233,152 @@ export const DocumentTypeMapping = () => {
       });
   };
 
-  const getAllDocumentTypeMapping = async () => {
+  const handleEditSave = () => {
+    const errors = {};
+    if (!formData.branch) {
+      errors.branch = 'Branch is required';
+    }
+    if (!formData.financialYear) {
+      errors.financialYear = 'Financial Year is required';
+    }
+
+    let tableDataValid = true;
+    const newTableErrors = tableData.map((row) => {
+      const rowErrors = {};
+      if (!row.docType) {
+        rowErrors.docType = 'Doc Type is required';
+        tableDataValid = false;
+      }
+      if (!row.subType) {
+        rowErrors.subType = 'Sub Type is required';
+        tableDataValid = false;
+      }
+      if (!row.subTypeId) {
+        rowErrors.subTypeId = 'Sub TypeId is required';
+        tableDataValid = false;
+      }
+      if (!row.subTypeCode) {
+        rowErrors.subTypeCode = 'Sub TypeCode is required';
+        tableDataValid = false;
+      }
+      if (!row.docname) {
+        rowErrors.docname = 'Doc Name is required';
+        tableDataValid = false;
+      }
+      if (!row.prefix) {
+        rowErrors.prefix = 'Prefix is required';
+        tableDataValid = false;
+      }
+      if (!row.lastNo) {
+        rowErrors.lastNo = 'Last No is required';
+        tableDataValid = false;
+      }
+      return rowErrors;
+    });
+
+    setFieldErrors(errors);
+    setTableErrors(newTableErrors);
+
+    if (Object.keys(errors).length > 0) {
+      setTableErrors(errors);
+
+      return;
+    }
+
+    if (!Array.isArray(tableData)) {
+      console.error('tableData is not an array or is undefined', tableData);
+      return;
+    }
+
+    const payload = {
+      ...formData,
+      mappingDTO: tableData.map((row) => {
+        const mappingDTO = {
+          docType: row.docType,
+          docname: row.docname,
+          lastNo: row.lastNo,
+          postFinance: row.postFinance !== undefined ? row.postFinance : false,
+          prefix: row.prefix,
+          resetOnFinYear: row.resetOnFinYear !== undefined ? row.resetOnFinYear : false,
+          subType: row.subType,
+          subTypeCode: row.subTypeCode,
+          subTypeId: row.subTypeId
+        };
+
+        // Only include 'id' if it exists
+        if (row.id) {
+          mappingDTO.id = row.id;
+        }
+
+        return mappingDTO;
+      })
+    };
+
+    const updatedPayload = {
+      ...payload,
+      id: currentRowData?.id
+    };
+
+    axios
+      .post(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateDocumentTypeMapping`, updatedPayload)
+      .then((response) => {
+        console.log('Response:', response.data);
+        toast.success('Document Type Mapping Updated successfully', {
+          autoClose: 2000,
+          theme: 'colored'
+        });
+        setFormData({
+          branch: '',
+          financialYear: '',
+          active: true
+        });
+        setTableData([
+          {
+            id: 1,
+            docType: '',
+            subType: '',
+            subTypeId: '',
+            subTypeCode: '',
+            docname: '',
+            prefix: '',
+            postFinance: true,
+            lastNo: '',
+            resetOnFinYear: true
+          }
+        ]);
+        setEditMode(false);
+        setTableErrors([]);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        toast.error('An error occurred while updating the documentType Mapping');
+      });
+  };
+
+  const getAllDocumentTypeMapping1 = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getDocumentTypeMappingByOrgId`);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getDocumentTypeMappingById`);
+      console.log('API Response:', response);
+
+      if (response.status === 200) {
+        setTableDataList(response.data.paramObjectsMap.documentTypeMappingVO);
+      } else {
+        // Handle error
+        console.error('API Error:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  const getAllDocumentTypeMapping = async (selectedDocumentId) => {
+    try {
+      // Update the URL to use query parameter instead of path parameter
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getDocumentTypeMappingById`, {
+        params: {
+          id: selectedDocumentId
+        }
+      });
       console.log('API Response:', response);
 
       if (response.status === 200) {
@@ -246,11 +393,46 @@ export const DocumentTypeMapping = () => {
   };
 
   const handleView = () => {
-    getAllDocumentTypeMapping();
+    getAllDocumentTypeMapping1();
     setListView(true);
   };
 
   const handleBackToInput = () => {
+    setListView(false);
+  };
+
+  const handleEditBack = () => {
+    handleClear();
+    // setListView(true);
+    setEditMode(false);
+  };
+
+  const handleEdit = (row) => {
+    console.log('first', row.original);
+    getAllDocumentTypeMapping(row.original.id);
+    setCurrentRowData(row.original);
+    setFormData({
+      branch: row.original.branch,
+      financialYear: row.original.financialYear,
+      active: row.original.active
+    });
+
+    setTableData(
+      row.original.mappingVO?.map((mapping) => ({
+        id: mapping.id,
+        docType: mapping.docType,
+        subType: mapping.subType,
+        subTypeId: mapping.subTypeId,
+        subTypeCode: mapping.subTypeCode,
+        docname: mapping.docname,
+        prefix: mapping.prefix,
+        postFinance: mapping.postFinance ? true : false,
+        lastNo: mapping.lastNo,
+        resetOnFinYear: mapping.resetOnFinYear ? true : false
+      })) || []
+    );
+
+    setEditMode(true);
     setListView(false);
   };
 
@@ -274,7 +456,7 @@ export const DocumentTypeMapping = () => {
             {/* <IconButton onClick={() => handleViewRow(row)}>
               <VisibilityIcon />
             </IconButton> */}
-            <IconButton>
+            <IconButton onClick={() => handleEdit(row)}>
               <EditIcon />
             </IconButton>
           </div>
@@ -351,30 +533,57 @@ export const DocumentTypeMapping = () => {
                 </ButtonBase>
               </Tooltip>
 
-              <Tooltip title="Clear" placement="top">
-                {' '}
-                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleClear}>
-                  <Avatar
-                    variant="rounded"
-                    sx={{
-                      ...theme.typography.commonAvatar,
-                      ...theme.typography.mediumAvatar,
-                      transition: 'all .2s ease-in-out',
-                      background: theme.palette.secondary.light,
-                      color: theme.palette.secondary.dark,
-                      '&[aria-controls="menu-list-grow"],&:hover': {
-                        background: theme.palette.secondary.dark,
-                        color: theme.palette.secondary.light
-                      }
-                    }}
-                    ref={anchorRef}
-                    aria-haspopup="true"
-                    color="inherit"
-                  >
-                    <ClearIcon size="1.3rem" stroke={1.5} />
-                  </Avatar>
-                </ButtonBase>
-              </Tooltip>
+              {editMode ? (
+                <Tooltip title="Clear" placement="top">
+                  {' '}
+                  <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleEditBack}>
+                    <Avatar
+                      variant="rounded"
+                      sx={{
+                        ...theme.typography.commonAvatar,
+                        ...theme.typography.mediumAvatar,
+                        transition: 'all .2s ease-in-out',
+                        background: theme.palette.secondary.light,
+                        color: theme.palette.secondary.dark,
+                        '&[aria-controls="menu-list-grow"],&:hover': {
+                          background: theme.palette.secondary.dark,
+                          color: theme.palette.secondary.light
+                        }
+                      }}
+                      ref={anchorRef}
+                      aria-haspopup="true"
+                      color="inherit"
+                    >
+                      <ClearIcon size="1.3rem" stroke={1.5} />
+                    </Avatar>
+                  </ButtonBase>
+                </Tooltip>
+              ) : (
+                <Tooltip title="Clear" placement="top">
+                  {' '}
+                  <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleClear}>
+                    <Avatar
+                      variant="rounded"
+                      sx={{
+                        ...theme.typography.commonAvatar,
+                        ...theme.typography.mediumAvatar,
+                        transition: 'all .2s ease-in-out',
+                        background: theme.palette.secondary.light,
+                        color: theme.palette.secondary.dark,
+                        '&[aria-controls="menu-list-grow"],&:hover': {
+                          background: theme.palette.secondary.dark,
+                          color: theme.palette.secondary.light
+                        }
+                      }}
+                      ref={anchorRef}
+                      aria-haspopup="true"
+                      color="inherit"
+                    >
+                      <ClearIcon size="1.3rem" stroke={1.5} />
+                    </Avatar>
+                  </ButtonBase>
+                </Tooltip>
+              )}
 
               <Tooltip title="List View" placement="top">
                 {' '}
@@ -400,30 +609,57 @@ export const DocumentTypeMapping = () => {
                   </Avatar>
                 </ButtonBase>
               </Tooltip>
-              <Tooltip title="Save" placement="top">
-                {' '}
-                <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={handleSave}>
-                  <Avatar
-                    variant="rounded"
-                    sx={{
-                      ...theme.typography.commonAvatar,
-                      ...theme.typography.mediumAvatar,
-                      transition: 'all .2s ease-in-out',
-                      background: theme.palette.secondary.light,
-                      color: theme.palette.secondary.dark,
-                      '&[aria-controls="menu-list-grow"],&:hover': {
-                        background: theme.palette.secondary.dark,
-                        color: theme.palette.secondary.light
-                      }
-                    }}
-                    ref={anchorRef}
-                    aria-haspopup="true"
-                    color="inherit"
-                  >
-                    <SaveIcon size="1.3rem" stroke={1.5} />
-                  </Avatar>
-                </ButtonBase>
-              </Tooltip>
+              {editMode ? (
+                <Tooltip title="Update" placement="top">
+                  {' '}
+                  <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={handleEditSave}>
+                    <Avatar
+                      variant="rounded"
+                      sx={{
+                        ...theme.typography.commonAvatar,
+                        ...theme.typography.mediumAvatar,
+                        transition: 'all .2s ease-in-out',
+                        background: theme.palette.secondary.light,
+                        color: theme.palette.secondary.dark,
+                        '&[aria-controls="menu-list-grow"],&:hover': {
+                          background: theme.palette.secondary.dark,
+                          color: theme.palette.secondary.light
+                        }
+                      }}
+                      ref={anchorRef}
+                      aria-haspopup="true"
+                      color="inherit"
+                    >
+                      <BrowserUpdatedIcon size="1.3rem" stroke={1.5} />
+                    </Avatar>
+                  </ButtonBase>
+                </Tooltip>
+              ) : (
+                <Tooltip title="Save" placement="top">
+                  {' '}
+                  <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={handleSave}>
+                    <Avatar
+                      variant="rounded"
+                      sx={{
+                        ...theme.typography.commonAvatar,
+                        ...theme.typography.mediumAvatar,
+                        transition: 'all .2s ease-in-out',
+                        background: theme.palette.secondary.light,
+                        color: theme.palette.secondary.dark,
+                        '&[aria-controls="menu-list-grow"],&:hover': {
+                          background: theme.palette.secondary.dark,
+                          color: theme.palette.secondary.light
+                        }
+                      }}
+                      ref={anchorRef}
+                      aria-haspopup="true"
+                      color="inherit"
+                    >
+                      <SaveIcon size="1.3rem" stroke={1.5} />
+                    </Avatar>
+                  </ButtonBase>
+                </Tooltip>
+              )}
             </div>
             <div className="col-md-4 mb-3">
               <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.branch}>
@@ -445,8 +681,8 @@ export const DocumentTypeMapping = () => {
                   onChange={handleInputChange}
                   name="financialYear"
                 >
-                  <MenuItem value="0">2023</MenuItem>
-                  <MenuItem value="1">2024</MenuItem>
+                  <MenuItem value="2023">2023</MenuItem>
+                  <MenuItem value="2024">2024</MenuItem>
                 </Select>
                 {fieldErrors.financialYear && <FormHelperText>{fieldErrors.financialYear}</FormHelperText>}
               </FormControl>
@@ -493,12 +729,14 @@ export const DocumentTypeMapping = () => {
                   <thead>
                     <tr style={{ backgroundColor: '#434AA8' }}>
                       <th className="px-2 py-2 text-white">Action</th>
-                      <th className="px-2 py-2 text-white">S.No</th>
+                      <th className="px-2 py-2 text-white" style={{ width: '50px' }}>
+                        S.No
+                      </th>
                       <th className="px-2 py-2 text-white">Doc Type</th>
                       <th className="px-2 py-2 text-white">Sub Type</th>
                       <th className="px-2 py-2 text-white">Sub Type Id</th>
                       <th className="px-2 py-2 text-white">Subtype Code</th>
-                      <th className="px-2 py-2 text-white">Doc. Name</th>
+                      <th className="px-2 py-2 text-white">Doc Name</th>
                       <th className="px-2 py-2 text-white">Prefix</th>
                       <th className="px-2 py-2 text-white">Post Finance</th>
                       <th className="px-2 py-2 text-white">LastNo</th>
@@ -538,12 +776,16 @@ export const DocumentTypeMapping = () => {
                           </Tooltip>
                         </td>
                         {/* <td className="border px-2 py-2">{index + 1}</td> */}
-                        <td className="border px-2 py-2">
+                        {/* <td className="border px-2 py-2">
                           <input
                             type="text"
                             value={row.id}
                             onChange={(e) => setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, id: e.target.value } : r)))}
                           />
+                        </td> */}
+
+                        <td className="border px-2 py-2" style={{ width: '50px' }}>
+                          <input type="text" value={`${index + 1}`} readOnly style={{ width: '100%' }} />
                         </td>
 
                         <td className="border px-2 py-2">
@@ -633,21 +875,21 @@ export const DocumentTypeMapping = () => {
                         <td className="border px-2 py-2">
                           <input
                             type="text"
-                            value={row.docName}
+                            value={row.docname}
                             onChange={(e) => {
                               const value = e.target.value;
-                              setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, docName: value } : r)));
+                              setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, docname: value } : r)));
                               setTableErrors((prev) => {
                                 const newErrors = [...prev];
-                                newErrors[index] = { ...newErrors[index], docName: !value ? 'Doc Name is required' : '' };
+                                newErrors[index] = { ...newErrors[index], docname: !value ? 'Doc Name is required' : '' };
                                 return newErrors;
                               });
                             }}
-                            className={tableErrors[index]?.docName ? 'error' : ''}
+                            className={tableErrors[index]?.docname ? 'error' : ''}
                             style={{ marginBottom: '6px' }}
                           />
-                          {tableErrors[index]?.docName && (
-                            <div style={{ color: 'red', fontSize: '12px' }}>{tableErrors[index].docName}</div>
+                          {tableErrors[index]?.docname && (
+                            <div style={{ color: 'red', fontSize: '12px' }}>{tableErrors[index].docname}</div>
                           )}
                         </td>
 
@@ -677,7 +919,6 @@ export const DocumentTypeMapping = () => {
                             onChange={(e) =>
                               setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, postFinance: e.target.checked } : r)))
                             }
-                            onKeyDown={(e) => handleKeyDown(e, row)}
                           />
                         </td>
 

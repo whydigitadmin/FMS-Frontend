@@ -2,7 +2,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import FormatListBulletedTwoToneIcon from '@mui/icons-material/FormatListBulletedTwoTone';
 import SaveIcon from '@mui/icons-material/Save';
 import SearchIcon from '@mui/icons-material/Search';
-import { Avatar, ButtonBase, FormHelperText, Tooltip } from '@mui/material';
+import { Avatar, ButtonBase, FormHelperText, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -43,6 +43,10 @@ export const TermsAndConditions = () => {
   });
   const [tableData, setTableData] = useState([]);
   const [listView, setListView] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [currentRowData, setCurrentRowData] = useState(null);
+
+  const [id, setId] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -108,6 +112,56 @@ export const TermsAndConditions = () => {
       });
   };
 
+  const handleEditSave = () => {
+    const errors = {};
+    if (!formData.branch) {
+      errors.branch = 'Branch is required';
+    }
+    if (!formData.documentType) {
+      errors.documentType = 'Document Type is required';
+    }
+    if (!formData.partyType) {
+      errors.partyType = 'Party Type is required';
+    }
+    if (!formData.terms) {
+      errors.terms = 'Terms is required';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      // Set error messages for each field
+      setFieldErrors(errors);
+      return;
+    }
+
+    const updatedFormData = {
+      ...formData,
+      id: currentRowData?.id // Ensure the id from the current row data is included
+    };
+
+    axios
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateTermsAndCondition`, updatedFormData)
+      .then((response) => {
+        console.log('Response:', response.data);
+        toast.success('Terms and Condition Updated successfully', {
+          autoClose: 2000,
+          theme: 'colored'
+        });
+        setFormData({
+          active: true,
+          branch: '',
+          documentType: '',
+          partyType: '',
+          terms: ''
+        });
+        getAllTermsAndConditions();
+        setEditMode(false); // Close the dialog after saving
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        toast.error('An error occurred while updating the term and condition');
+      });
+  };
+
   const getAllTermsAndConditions = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getTermsAndConditionById`);
@@ -115,6 +169,7 @@ export const TermsAndConditions = () => {
 
       if (response.status === 200) {
         setTableData(response.data.paramObjectsMap.termsAndConditionVO);
+        setId(response.data.paramObjectsMap.termsAndConditionVO.id);
       } else {
         // Handle error
         console.error('API Error:', response.data);
@@ -131,6 +186,23 @@ export const TermsAndConditions = () => {
 
   const handleBackToInput = () => {
     setListView(false);
+  };
+
+  const handleEdit = (row) => {
+    setCurrentRowData(row.original);
+    setFormData(row.original);
+    setEditMode(true);
+  };
+
+  const handleClose = () => {
+    setEditMode(false);
+    setFormData({
+      active: true,
+      branch: '',
+      documentType: '',
+      partyType: '',
+      terms: ''
+    });
   };
 
   const columns = useMemo(
@@ -150,10 +222,7 @@ export const TermsAndConditions = () => {
         enableEditing: false,
         Cell: ({ row }) => (
           <div>
-            {/* <IconButton onClick={() => handleViewRow(row)}>
-              <VisibilityIcon />
-            </IconButton> */}
-            <IconButton>
+            <IconButton onClick={() => handleEdit(row)}>
               <EditIcon />
             </IconButton>
           </div>
@@ -445,6 +514,79 @@ export const TermsAndConditions = () => {
           </div>
         )}
       </div>
+      <Dialog open={editMode} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle style={{ fontSize: '20px' }}>Edit Terms and Conditions</DialogTitle>
+        <DialogContent>
+          <div className="col-md-8 mt-3 mb-3">
+            <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.branch}>
+              <InputLabel id="branch">Branch</InputLabel>
+              <Select labelId="branch" label="branch" value={formData.branch} onChange={handleInputChange} name="branch">
+                <MenuItem value="India">India</MenuItem>
+                <MenuItem value="USA">USA</MenuItem>
+              </Select>
+              {fieldErrors.branch && <FormHelperText>{fieldErrors.branch}</FormHelperText>}
+            </FormControl>
+          </div>
+          <div className="col-md-8 mb-3">
+            <TextField
+              id="outlined-textarea"
+              label="Document Type"
+              placeholder="Placeholder"
+              variant="outlined"
+              size="small"
+              name="documentType"
+              fullWidth
+              required
+              value={formData.documentType}
+              onChange={handleInputChange}
+              error={fieldErrors.documentType}
+              helperText={fieldErrors.documentType}
+            />
+          </div>
+
+          <div className="col-md-8 mb-3">
+            <TextField
+              id="outlined-textarea"
+              label="Party Type"
+              placeholder="Placeholder"
+              variant="outlined"
+              size="small"
+              fullWidth
+              required
+              name="partyType"
+              value={formData.partyType}
+              onChange={handleInputChange}
+              error={fieldErrors.partyType}
+              helperText={fieldErrors.partyType}
+            />
+          </div>
+
+          <div className="col-md-8 mb-3">
+            <TextField
+              id="outlined-textarea"
+              label="Terms"
+              placeholder="Placeholder"
+              variant="outlined"
+              size="small"
+              fullWidth
+              required
+              name="terms"
+              value={formData.terms}
+              onChange={handleInputChange}
+              error={fieldErrors.terms}
+              helperText={fieldErrors.terms}
+            />
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleEditSave} color="primary">
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

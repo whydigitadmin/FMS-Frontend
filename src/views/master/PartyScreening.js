@@ -2,7 +2,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import FormatListBulletedTwoToneIcon from '@mui/icons-material/FormatListBulletedTwoTone';
 import SaveIcon from '@mui/icons-material/Save';
 import SearchIcon from '@mui/icons-material/Search';
-import { Avatar, ButtonBase, FormHelperText, Tooltip } from '@mui/material';
+import { Avatar, ButtonBase, FormHelperText, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -42,6 +42,10 @@ export const PartyScreening = () => {
   });
   const [tableData, setTableData] = useState([]);
   const [listView, setListView] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [currentRowData, setCurrentRowData] = useState(null);
+
+  const [id, setId] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -119,6 +123,64 @@ export const PartyScreening = () => {
       });
   };
 
+  const handleEditSave = () => {
+    const errors = {};
+    if (!formData.partyType) {
+      errors.partyType = 'Party Type is required';
+    }
+    if (!formData.entityName) {
+      errors.entityName = 'Entity Name is required';
+    }
+    if (!formData.alternativeEntityNames) {
+      errors.alternativeEntityNames = 'Alternative Entity Names is required';
+    }
+    if (!formData.uniqueId) {
+      errors.uniqueId = 'Id is required';
+    }
+    if (!formData.includeAlias) {
+      errors.includeAlias = 'Include Alias is required';
+    }
+    if (!formData.screeningstatus) {
+      errors.screeningstatus = 'Screening status is required';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      // Set error messages for each field
+      setFieldErrors(errors);
+      return;
+    }
+
+    const updatedFormData = {
+      ...formData,
+      id: currentRowData?.id // Ensure the id from the current row data is included
+    };
+
+    axios
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreatePartyScreening`, updatedFormData)
+      .then((response) => {
+        console.log('Response:', response.data);
+        toast.success('Party Screening Updated successfully', {
+          autoClose: 2000,
+          theme: 'colored'
+        });
+        setFormData({
+          active: true,
+          partyType: '',
+          entityName: '',
+          alternativeEntityNames: '',
+          uniqueId: '',
+          includeAlias: '',
+          screeningstatus: ''
+        });
+        getAllPartyScreening();
+        setEditMode(false); // Close the dialog after saving
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        toast.error('An error occurred while updating the party screening');
+      });
+  };
+
   const getAllPartyScreening = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getPartyScreeningById`);
@@ -126,6 +188,7 @@ export const PartyScreening = () => {
 
       if (response.status === 200) {
         setTableData(response.data.paramObjectsMap.partyScreeningVO);
+        setId(response.data.paramObjectsMap.partyScreeningVO.id);
       } else {
         // Handle error
         console.error('API Error:', response.data);
@@ -142,6 +205,25 @@ export const PartyScreening = () => {
 
   const handleBackToInput = () => {
     setListView(false);
+  };
+
+  const handleEdit = (row) => {
+    setCurrentRowData(row.original);
+    setFormData(row.original);
+    setEditMode(true);
+  };
+
+  const handleClose = () => {
+    setEditMode(false);
+    setFormData({
+      active: true,
+      partyType: '',
+      entityName: '',
+      alternativeEntityNames: '',
+      uniqueId: '',
+      includeAlias: '',
+      screeningstatus: ''
+    });
   };
 
   const columns = useMemo(
@@ -161,10 +243,7 @@ export const PartyScreening = () => {
         enableEditing: false,
         Cell: ({ row }) => (
           <div>
-            {/* <IconButton onClick={() => handleViewRow(row)}>
-              <VisibilityIcon />
-            </IconButton> */}
-            <IconButton>
+            <IconButton onClick={() => handleEdit(row)}>
               <EditIcon />
             </IconButton>
           </div>
@@ -192,17 +271,17 @@ export const PartyScreening = () => {
           align: 'center'
         }
       },
-      {
-        accessorKey: 'alternativeEntityNames',
-        header: 'Alternative Entity Names',
-        size: 50,
-        muiTableHeadCellProps: {
-          align: 'center'
-        },
-        muiTableBodyCellProps: {
-          align: 'center'
-        }
-      },
+      // {
+      //   accessorKey: 'alternativeEntityNames',
+      //   header: 'Alternative Entity Names',
+      //   size: 50,
+      //   muiTableHeadCellProps: {
+      //     align: 'center'
+      //   },
+      //   muiTableBodyCellProps: {
+      //     align: 'center'
+      //   }
+      // },
       {
         accessorKey: 'includeAlias',
         header: 'Include Alias',
@@ -498,6 +577,110 @@ export const PartyScreening = () => {
           </div>
         )}
       </div>
+      <Dialog open={editMode} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle style={{ fontSize: '20px' }}>Edit Party Screening</DialogTitle>
+        <DialogContent>
+          <div className="col-md-8 mt-2 mb-3">
+            <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.partyType}>
+              <InputLabel id="partyType">Party Type</InputLabel>
+              <Select labelId="partyType" label="partyType" value={formData.partyType} onChange={handleInputChange} name="partyType">
+                <MenuItem value="India">Type 1</MenuItem>
+                <MenuItem value="USA">Type 2</MenuItem>
+              </Select>
+              {fieldErrors.partyType && <FormHelperText>{fieldErrors.partyType}</FormHelperText>}
+            </FormControl>
+          </div>
+          <div className="col-md-8 mb-3">
+            <TextField
+              id="outlined-textarea"
+              label="Entity Name"
+              placeholder="Placeholder"
+              variant="outlined"
+              size="small"
+              name="entityName"
+              fullWidth
+              required
+              value={formData.entityName}
+              onChange={handleInputChange}
+              error={fieldErrors.entityName}
+              helperText={fieldErrors.entityName}
+            />
+          </div>
+
+          <div className="col-md-8 mb-3">
+            <TextField
+              id="outlined-textarea"
+              label="Alternative Entity Names"
+              placeholder="Placeholder"
+              variant="outlined"
+              size="small"
+              name="alternativeEntityNames"
+              fullWidth
+              required
+              value={formData.alternativeEntityNames}
+              onChange={handleInputChange}
+              error={fieldErrors.alternativeEntityNames}
+              helperText={fieldErrors.alternativeEntityNames}
+            />
+          </div>
+          <div className="col-md-8 mb-3">
+            <TextField
+              id="outlined-textarea"
+              label="ID"
+              placeholder="Placeholder"
+              variant="outlined"
+              size="small"
+              name="uniqueId"
+              fullWidth
+              required
+              value={formData.uniqueId}
+              onChange={handleInputChange}
+              error={fieldErrors.uniqueId}
+              helperText={fieldErrors.uniqueId}
+            />
+          </div>
+          <div className="col-md-8 mb-3">
+            <TextField
+              id="outlined-textarea"
+              label="Include Alias"
+              placeholder="Placeholder"
+              variant="outlined"
+              size="small"
+              name="includeAlias"
+              fullWidth
+              required
+              value={formData.includeAlias}
+              onChange={handleInputChange}
+              error={fieldErrors.includeAlias}
+              helperText={fieldErrors.includeAlias}
+            />
+          </div>
+          <div className="col-md-8 mb-3">
+            <TextField
+              id="outlined-textarea"
+              label="Screening Status"
+              placeholder="Placeholder"
+              variant="outlined"
+              size="small"
+              name="screeningstatus"
+              fullWidth
+              required
+              value={formData.screeningstatus}
+              onChange={handleInputChange}
+              error={fieldErrors.screeningstatus}
+              helperText={fieldErrors.screeningstatus}
+            />
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleEditSave} color="primary">
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

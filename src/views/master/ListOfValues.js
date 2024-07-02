@@ -18,6 +18,7 @@ import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import BrowserUpdatedIcon from '@mui/icons-material/BrowserUpdated';
 
 export const ListOfValues = () => {
   const [formData, setFormData] = useState({
@@ -54,7 +55,7 @@ export const ListOfValues = () => {
 
   const handleAddRow = () => {
     const newRow = {
-      id: tableData.length + 1,
+      id: Date.now(),
       valueCode: '',
       valueDescription: '',
       active: 'Yes'
@@ -76,6 +77,8 @@ export const ListOfValues = () => {
   };
 
   const [listView, setListView] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [currentRowData, setCurrentRowData] = useState(null);
 
   const handleClear = () => {
     setFormData({
@@ -140,7 +143,7 @@ export const ListOfValues = () => {
       updatedBy: 'string', // Assuming this is a placeholder or you need to set it dynamically
       listOfValues1DTO: tableData.map((row) => ({
         // id: 0, // Assuming new rows have id 0
-        sno: tableData.indexOf(row) + 1, // Using index + 1 for sno
+        // sno: tableData.indexOf(row) + 1, // Using index + 1 for sno
         valueCode: row.valueCode,
         valueDescription: row.valueDescription,
         active: row.active === 'Yes'
@@ -148,7 +151,7 @@ export const ListOfValues = () => {
     };
 
     axios
-      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateListOfValues`, payload)
+      .post(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateListOfValues`, payload)
       .then((response) => {
         console.log('Response:', response.data);
         toast.success('List of Values created successfully', {
@@ -158,7 +161,8 @@ export const ListOfValues = () => {
         setFormData({
           listCode: '',
           listDescription: '',
-          active: true
+          active: true,
+          orgId: 1
         });
         setTableData([
           {
@@ -176,7 +180,87 @@ export const ListOfValues = () => {
       });
   };
 
-  const getAllListOfValues = async () => {
+  const handleEditSave = () => {
+    const errors = {};
+    if (!formData.listCode) {
+      errors.listCode = 'List Code is required';
+    }
+    if (!formData.listDescription) {
+      errors.listDescription = 'List Description is required';
+    }
+
+    let tableDataValid = true;
+    const newTableErrors = tableData.map((row) => {
+      const rowErrors = {};
+      if (!row.valueCode) {
+        rowErrors.valueCode = 'Value Code is required';
+        tableDataValid = false;
+      }
+      if (!row.valueDescription) {
+        rowErrors.valueDescription = 'Value Description is required';
+        tableDataValid = false;
+      }
+      return rowErrors;
+    });
+
+    setFieldErrors(errors);
+    setTableErrors(newTableErrors);
+
+    if (Object.keys(errors).length > 0 || !tableDataValid) {
+      return;
+    }
+
+    const payload = {
+      ...formData,
+      orgId: 0, // Assuming this is a fixed value or you need to set it dynamically
+      createdBy: 'string', // Assuming this is a placeholder or you need to set it dynamically
+      updatedBy: 'string', // Assuming this is a placeholder or you need to set it dynamically
+      listOfValues1DTO: tableData.map((row) => ({
+        // id: 0, // Assuming new rows have id 0
+        // sno: tableData.indexOf(row) + 1, // Using index + 1 for sno
+        valueCode: row.valueCode,
+        valueDescription: row.valueDescription,
+        active: row.active === 'Yes'
+      }))
+    };
+
+    const updatedPayload = {
+      ...payload,
+      id: currentRowData?.id
+    };
+
+    axios
+      .post(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateListOfValues`, updatedPayload)
+      .then((response) => {
+        console.log('Response:', response.data);
+        toast.success('List of Values Updated successfully', {
+          autoClose: 2000,
+          theme: 'colored'
+        });
+        setFormData({
+          listCode: '',
+          listDescription: '',
+          active: true,
+          orgId: 1
+        });
+        setTableData([
+          {
+            id: Date.now(),
+            valueCode: '',
+            valueDescription: '',
+            active: 'Yes'
+          }
+        ]);
+        setEditMode(false);
+        setTableErrors([]);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        toast.error('An error occurred while updating the list of values');
+      });
+  };
+
+  const getAllListOfValues1 = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getListOfValuesById`);
       console.log('API Response:', response);
@@ -192,12 +276,62 @@ export const ListOfValues = () => {
     }
   };
 
+  const getAllListOfValues = async (selectedDocumentId) => {
+    try {
+      // Update the URL to use query parameter instead of path parameter
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getListOfValuesById`, {
+        params: {
+          id: selectedDocumentId
+        }
+      });
+      console.log('API Response:', response);
+
+      if (response.status === 200) {
+        setTableDataList(response.data.paramObjectsMap.listOfValuesVO);
+      } else {
+        // Handle error
+        console.error('API Error:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   const handleView = () => {
-    getAllListOfValues();
+    getAllListOfValues1();
     setListView(true);
   };
 
   const handleBackToInput = () => {
+    setListView(false);
+  };
+
+  const handleEditBack = () => {
+    handleClear();
+    // setListView(true);
+    setEditMode(false);
+  };
+
+  const handleEdit = (row) => {
+    console.log('first', row.original);
+    getAllListOfValues(row.original.id);
+    setCurrentRowData(row.original);
+    setFormData({
+      listCode: row.original.listCode,
+      listDescription: row.original.listDescription,
+      active: row.original.active
+    });
+
+    setTableData(
+      row.original.listOfValues1VO?.map(() => ({
+        id: Date.now(),
+        valueCode: list.valueCode,
+        valueDescription: list.valueDescription,
+        active: list.active ? 'Yes' : 'No'
+      })) || []
+    );
+
+    setEditMode(true);
     setListView(false);
   };
 
@@ -221,7 +355,7 @@ export const ListOfValues = () => {
             {/* <IconButton onClick={() => handleViewRow(row)}>
               <VisibilityIcon />
             </IconButton> */}
-            <IconButton>
+            <IconButton onClick={() => handleEdit(row)}>
               <EditIcon />
             </IconButton>
           </div>
@@ -298,29 +432,57 @@ export const ListOfValues = () => {
                 </ButtonBase>
               </Tooltip>
 
-              <Tooltip title="Clear" placement="top">
-                <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleClear}>
-                  <Avatar
-                    variant="rounded"
-                    sx={{
-                      ...theme.typography.commonAvatar,
-                      ...theme.typography.mediumAvatar,
-                      transition: 'all .2s ease-in-out',
-                      background: theme.palette.secondary.light,
-                      color: theme.palette.secondary.dark,
-                      '&[aria-controls="menu-list-grow"],&:hover': {
-                        background: theme.palette.secondary.dark,
-                        color: theme.palette.secondary.light
-                      }
-                    }}
-                    ref={anchorRef}
-                    aria-haspopup="true"
-                    color="inherit"
-                  >
-                    <ClearIcon size="1.3rem" stroke={1.5} />
-                  </Avatar>
-                </ButtonBase>
-              </Tooltip>
+              {editMode ? (
+                <Tooltip title="Clear" placement="top">
+                  {' '}
+                  <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleEditBack}>
+                    <Avatar
+                      variant="rounded"
+                      sx={{
+                        ...theme.typography.commonAvatar,
+                        ...theme.typography.mediumAvatar,
+                        transition: 'all .2s ease-in-out',
+                        background: theme.palette.secondary.light,
+                        color: theme.palette.secondary.dark,
+                        '&[aria-controls="menu-list-grow"],&:hover': {
+                          background: theme.palette.secondary.dark,
+                          color: theme.palette.secondary.light
+                        }
+                      }}
+                      ref={anchorRef}
+                      aria-haspopup="true"
+                      color="inherit"
+                    >
+                      <ClearIcon size="1.3rem" stroke={1.5} />
+                    </Avatar>
+                  </ButtonBase>
+                </Tooltip>
+              ) : (
+                <Tooltip title="Clear" placement="top">
+                  {' '}
+                  <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleClear}>
+                    <Avatar
+                      variant="rounded"
+                      sx={{
+                        ...theme.typography.commonAvatar,
+                        ...theme.typography.mediumAvatar,
+                        transition: 'all .2s ease-in-out',
+                        background: theme.palette.secondary.light,
+                        color: theme.palette.secondary.dark,
+                        '&[aria-controls="menu-list-grow"],&:hover': {
+                          background: theme.palette.secondary.dark,
+                          color: theme.palette.secondary.light
+                        }
+                      }}
+                      ref={anchorRef}
+                      aria-haspopup="true"
+                      color="inherit"
+                    >
+                      <ClearIcon size="1.3rem" stroke={1.5} />
+                    </Avatar>
+                  </ButtonBase>
+                </Tooltip>
+              )}
 
               <Tooltip title="List View" placement="top">
                 <ButtonBase sx={{ borderRadius: '12px' }} onClick={handleView}>
@@ -346,29 +508,57 @@ export const ListOfValues = () => {
                 </ButtonBase>
               </Tooltip>
 
-              <Tooltip title="Save" placement="top">
-                <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={handleSave}>
-                  <Avatar
-                    variant="rounded"
-                    sx={{
-                      ...theme.typography.commonAvatar,
-                      ...theme.typography.mediumAvatar,
-                      transition: 'all .2s ease-in-out',
-                      background: theme.palette.secondary.light,
-                      color: theme.palette.secondary.dark,
-                      '&[aria-controls="menu-list-grow"],&:hover': {
-                        background: theme.palette.secondary.dark,
-                        color: theme.palette.secondary.light
-                      }
-                    }}
-                    ref={anchorRef}
-                    aria-haspopup="true"
-                    color="inherit"
-                  >
-                    <SaveIcon size="1.3rem" stroke={1.5} />
-                  </Avatar>
-                </ButtonBase>
-              </Tooltip>
+              {editMode ? (
+                <Tooltip title="Update" placement="top">
+                  {' '}
+                  <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={handleEditSave}>
+                    <Avatar
+                      variant="rounded"
+                      sx={{
+                        ...theme.typography.commonAvatar,
+                        ...theme.typography.mediumAvatar,
+                        transition: 'all .2s ease-in-out',
+                        background: theme.palette.secondary.light,
+                        color: theme.palette.secondary.dark,
+                        '&[aria-controls="menu-list-grow"],&:hover': {
+                          background: theme.palette.secondary.dark,
+                          color: theme.palette.secondary.light
+                        }
+                      }}
+                      ref={anchorRef}
+                      aria-haspopup="true"
+                      color="inherit"
+                    >
+                      <BrowserUpdatedIcon size="1.3rem" stroke={1.5} />
+                    </Avatar>
+                  </ButtonBase>
+                </Tooltip>
+              ) : (
+                <Tooltip title="Save" placement="top">
+                  {' '}
+                  <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={handleSave}>
+                    <Avatar
+                      variant="rounded"
+                      sx={{
+                        ...theme.typography.commonAvatar,
+                        ...theme.typography.mediumAvatar,
+                        transition: 'all .2s ease-in-out',
+                        background: theme.palette.secondary.light,
+                        color: theme.palette.secondary.dark,
+                        '&[aria-controls="menu-list-grow"],&:hover': {
+                          background: theme.palette.secondary.dark,
+                          color: theme.palette.secondary.light
+                        }
+                      }}
+                      ref={anchorRef}
+                      aria-haspopup="true"
+                      color="inherit"
+                    >
+                      <SaveIcon size="1.3rem" stroke={1.5} />
+                    </Avatar>
+                  </ButtonBase>
+                </Tooltip>
+              )}
             </div>
 
             <div className="col-md-4 mb-3">
@@ -454,7 +644,9 @@ export const ListOfValues = () => {
                     <thead>
                       <tr style={{ backgroundColor: '#434AA8' }}>
                         <th className="px-2 py-2 text-white">Action</th>
-                        <th className="px-2 py-2 text-white">S.No</th>
+                        <th className="px-2 py-2 text-white" style={{ width: '50px' }}>
+                          S.No
+                        </th>
                         <th className="px-2 py-2 text-white">Value Code</th>
                         <th className="px-2 py-2 text-white">Value Description</th>
                         <th className="px-2 py-2 text-white">Active</th>
@@ -488,7 +680,12 @@ export const ListOfValues = () => {
                               </ButtonBase>
                             </Tooltip>
                           </td>
-                          <td className="border px-2 py-2">{index + 1}</td>
+                          {/* <td className="border px-2 py-2">{index + 1}</td> */}
+
+                          <td className="border px-2 py-2" style={{ width: '50px' }}>
+                            <input type="text" value={`${index + 1}`} readOnly style={{ width: '100%' }} />
+                          </td>
+
                           <td className="border px-2 py-2">
                             <input
                               type="text"
@@ -503,8 +700,11 @@ export const ListOfValues = () => {
                                 });
                               }}
                               className={tableErrors[index]?.valueCode ? 'error' : ''}
+                              style={{ marginBottom: '6px' }}
                             />
-                            {tableErrors[index]?.valueCode && <div style={{ color: 'red' }}>{tableErrors[index].valueCode}</div>}
+                            {tableErrors[index]?.valueCode && (
+                              <div style={{ color: 'red', fontSize: '12px' }}>{tableErrors[index].valueCode}</div>
+                            )}
                           </td>
                           <td className="border px-2 py-2">
                             <input
@@ -523,9 +723,10 @@ export const ListOfValues = () => {
                                 });
                               }}
                               className={tableErrors[index]?.valueDescription ? 'error' : ''}
+                              style={{ marginBottom: '6px' }}
                             />
                             {tableErrors[index]?.valueDescription && (
-                              <div style={{ color: 'red' }}>{tableErrors[index].valueDescription}</div>
+                              <div style={{ color: 'red', fontSize: '12px' }}>{tableErrors[index].valueDescription}</div>
                             )}
                           </td>
                           <td className="border px-2 py-2">

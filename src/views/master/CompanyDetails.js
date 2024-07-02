@@ -2,7 +2,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import FormatListBulletedTwoToneIcon from '@mui/icons-material/FormatListBulletedTwoTone';
 import SaveIcon from '@mui/icons-material/Save';
 import SearchIcon from '@mui/icons-material/Search';
-import { Avatar, ButtonBase, FormHelperText, Tooltip } from '@mui/material';
+import { Avatar, ButtonBase, FormHelperText, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -58,6 +58,10 @@ export const CompanyDetails = () => {
   });
   const [tableData, setTableData] = useState([]);
   const [listView, setListView] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [currentRowData, setCurrentRowData] = useState(null);
+
+  const [id, setId] = useState('');
 
   const handleClear = () => {
     setFormData({
@@ -166,6 +170,85 @@ export const CompanyDetails = () => {
       });
   };
 
+  const handleEditSave = () => {
+    const errors = {};
+    if (!formData.companyCode) {
+      errors.companyCode = 'Company Code is required';
+    }
+    if (!formData.companyName) {
+      errors.companyName = 'Company Name is required';
+    }
+    if (!formData.country) {
+      errors.country = 'Country is required';
+    }
+    if (!formData.state) {
+      errors.state = 'State is required';
+    }
+    if (!formData.city) {
+      errors.city = 'City is required';
+    }
+    if (!formData.address) {
+      errors.address = 'Address is required';
+    }
+    if (!formData.email) {
+      errors.email = 'Email is required';
+    }
+    if (!formData.adminEmail) {
+      errors.adminEmail = 'Admin Email is required';
+    }
+    if (!formData.phoneNo) {
+      errors.phoneNo = 'Phone Number is required';
+    }
+    if (!formData.pinCode) {
+      errors.pinCode = 'Pin Code is required';
+    }
+    if (!formData.passport) {
+      errors.passport = 'Passport is required';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      // Set error messages for each field
+      setFieldErrors(errors);
+      return;
+    }
+
+    const updatedFormData = {
+      ...formData,
+      id: currentRowData?.id // Ensure the id from the current row data is included
+    };
+
+    axios
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateCompany`, updatedFormData)
+      .then((response) => {
+        console.log('Response:', response.data);
+        toast.success('Company details Updated successfully', {
+          autoClose: 2000,
+          theme: 'colored'
+        });
+        setFormData({
+          active: true,
+          address: '',
+          adminEmail: '',
+          city: '',
+          companyCode: '',
+          companyName: '',
+          country: '',
+          email: '',
+          orgId: 1,
+          passport: '',
+          phoneNo: '',
+          pinCode: '',
+          state: ''
+        });
+        getAllCompany();
+        setEditMode(false); // Close the dialog after saving
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        toast.error('An error occurred while Updating company details');
+      });
+  };
+
   const getAllCompany = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getCompanyById`);
@@ -173,6 +256,7 @@ export const CompanyDetails = () => {
 
       if (response.status === 200) {
         setTableData(response.data.paramObjectsMap.companyVO);
+        setId(response.data.paramObjectsMap.companyVO.id);
       } else {
         // Handle error
         console.error('API Error:', response.data);
@@ -189,6 +273,29 @@ export const CompanyDetails = () => {
 
   const handleBackToInput = () => {
     setListView(false);
+  };
+
+  const handleEdit = (row) => {
+    setCurrentRowData(row.original);
+    setFormData(row.original);
+    setEditMode(true);
+  };
+
+  const handleClose = () => {
+    setEditMode(false);
+    setFormData({
+      address: '',
+      adminEmail: '',
+      city: '',
+      companyCode: '',
+      companyName: '',
+      country: '',
+      email: '',
+      passport: '',
+      phoneNo: '',
+      pinCode: '',
+      state: ''
+    });
   };
 
   const columns = useMemo(
@@ -208,10 +315,7 @@ export const CompanyDetails = () => {
         enableEditing: false,
         Cell: ({ row }) => (
           <div>
-            {/* <IconButton onClick={() => handleViewRow(row)}>
-              <VisibilityIcon />
-            </IconButton> */}
-            <IconButton>
+            <IconButton onClick={() => handleEdit(row)}>
               <EditIcon />
             </IconButton>
           </div>
@@ -610,6 +714,186 @@ export const CompanyDetails = () => {
           </div>
         )}
       </div>
+      <Dialog open={editMode} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle style={{ fontSize: '20px' }}>Edit Company Details</DialogTitle>
+        <DialogContent>
+          <div className="col-md-8 mt-3 mb-3">
+            <TextField
+              id="company-code"
+              label="Company Code"
+              variant="outlined"
+              size="small"
+              fullWidth
+              required
+              name="companyCode"
+              value={formData.companyCode}
+              onChange={handleInputChange}
+              error={fieldErrors.companyCode}
+              helperText={fieldErrors.companyCode}
+            />
+          </div>
+          <div className="col-md-8 mb-3">
+            <TextField
+              id="company-name"
+              label="Company Name"
+              variant="outlined"
+              size="small"
+              fullWidth
+              required
+              name="companyName"
+              value={formData.companyName}
+              onChange={handleInputChange}
+              error={fieldErrors.companyName}
+              helperText={fieldErrors.companyName}
+            />
+          </div>
+          <div className="col-md-8 mb-3">
+            <TextField
+              id="email"
+              label="Email"
+              variant="outlined"
+              size="small"
+              fullWidth
+              required
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              error={fieldErrors.email}
+              helperText={fieldErrors.email}
+            />
+          </div>
+          <div className="col-md-8 mb-3">
+            <TextField
+              id="phone-no"
+              label="Phone No"
+              variant="outlined"
+              size="small"
+              fullWidth
+              required
+              name="phoneNo"
+              value={formData.phoneNo}
+              onChange={handleInputChange}
+              error={fieldErrors.phoneNo}
+              helperText={fieldErrors.phoneNo}
+            />
+          </div>
+          <div className="col-md-8 mb-3">
+            <TextField
+              id="address"
+              label="Address"
+              variant="outlined"
+              size="small"
+              fullWidth
+              required
+              name="address"
+              value={formData.address}
+              onChange={handleInputChange}
+              error={fieldErrors.address}
+              helperText={fieldErrors.address}
+            />
+          </div>
+          <div className="col-md-8 mb-3">
+            <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.country}>
+              <InputLabel id="country-label">Country</InputLabel>
+              <Select labelId="country-label" label="Country" value={formData.country} onChange={handleInputChange} name="country">
+                <MenuItem value="India">India</MenuItem>
+                <MenuItem value="USA">USA</MenuItem>
+              </Select>
+              {fieldErrors.country && <FormHelperText>{fieldErrors.country}</FormHelperText>}
+            </FormControl>
+          </div>
+          <div className="col-md-8 mb-3">
+            <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.state}>
+              <InputLabel id="state-label">State</InputLabel>
+              <Select labelId="state-label" label="State" value={formData.state} onChange={handleInputChange} name="state">
+                <MenuItem value="Tamil Nadu">Tamil Nadu</MenuItem>
+                <MenuItem value="Karnataka">Karnataka</MenuItem>
+              </Select>
+              {fieldErrors.state && <FormHelperText>{fieldErrors.state}</FormHelperText>}
+            </FormControl>
+          </div>
+          <div className="col-md-8 mb-3">
+            <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.city}>
+              <InputLabel id="demo-simple-select-label">City</InputLabel>
+              <Select labelId="state-label" label="State" value={formData.city} onChange={handleInputChange} name="city">
+                <MenuItem value="Salem">Salem</MenuItem>
+                <MenuItem value="Erode">Erode</MenuItem>
+              </Select>
+              {fieldErrors.city && <FormHelperText>{fieldErrors.city}</FormHelperText>}
+            </FormControl>
+          </div>
+
+          <div className="col-md-8 mb-3">
+            <TextField
+              id="pin-code"
+              label="Pin Code"
+              variant="outlined"
+              size="small"
+              fullWidth
+              required
+              name="pinCode"
+              value={formData.pinCode}
+              onChange={handleInputChange}
+              error={fieldErrors.pinCode}
+              helperText={fieldErrors.pinCode}
+            />
+          </div>
+          <div className="col-md-8 mb-3">
+            <TextField
+              id="admin-email"
+              label="Admin Email"
+              variant="outlined"
+              size="small"
+              fullWidth
+              required
+              name="adminEmail"
+              value={formData.adminEmail}
+              onChange={handleInputChange}
+              error={fieldErrors.adminEmail}
+              helperText={fieldErrors.adminEmail}
+            />
+          </div>
+          <div className="col-md-8 mb-3">
+            <TextField
+              id="passport"
+              label="Passport"
+              variant="outlined"
+              size="small"
+              fullWidth
+              required
+              name="passport"
+              value={formData.passport}
+              onChange={handleInputChange}
+              error={fieldErrors.passport}
+              helperText={fieldErrors.passport}
+            />
+          </div>
+          <div className="col-md-8 mb-3">
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                    id="active"
+                    checked={formData.active}
+                    onChange={(e) => handleInputChange({ target: { name: 'active', value: e.target.checked } })}
+                    name="active"
+                  />
+                }
+                label="Active"
+              />
+            </FormGroup>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleEditSave} color="primary">
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

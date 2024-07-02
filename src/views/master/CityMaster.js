@@ -2,7 +2,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import FormatListBulletedTwoToneIcon from '@mui/icons-material/FormatListBulletedTwoTone';
 import SaveIcon from '@mui/icons-material/Save';
 import SearchIcon from '@mui/icons-material/Search';
-import { Avatar, ButtonBase, FormHelperText, Tooltip } from '@mui/material';
+import { Avatar, ButtonBase, FormHelperText, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -10,10 +10,9 @@ import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import { useTheme } from '@mui/material/styles';
 import axios from 'axios';
-import { useRef, useState, useMemo, useEffect } from 'react';
+import { useRef, useState, useMemo } from 'react';
 import 'react-tabs/style/react-tabs.css';
 import { MaterialReactTable } from 'material-react-table';
-import { Box } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import IconButton from '@mui/material/IconButton';
@@ -38,16 +37,17 @@ export const CityMaster = () => {
   });
 
   const [listView, setListView] = useState(false);
-
+  const [editMode, setEditMode] = useState(false);
+  const [currentRowData, setCurrentRowData] = useState(null);
   const theme = useTheme();
   const anchorRef = useRef(null);
 
   const [tableData, setTableData] = useState([]);
+  const [id, setId] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    // Clear error message when user starts typing
     setFieldErrors({ ...fieldErrors, [name]: '' });
   };
 
@@ -82,7 +82,6 @@ export const CityMaster = () => {
     }
 
     if (Object.keys(errors).length > 0) {
-      // Set error messages for each field
       setFieldErrors(errors);
       return;
     }
@@ -108,6 +107,55 @@ export const CityMaster = () => {
       });
   };
 
+  const handleEditSave = () => {
+    const errors = {};
+    if (!formData.cityCode) {
+      errors.cityCode = 'City Code is required';
+    }
+    if (!formData.cityName) {
+      errors.cityName = 'City Name is required';
+    }
+    if (!formData.country) {
+      errors.country = 'Country is required';
+    }
+    if (!formData.state) {
+      errors.state = 'State is required';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+
+    // Assume formData has an id field for the city ID
+    const updatedFormData = {
+      ...formData,
+      id: currentRowData?.id // Ensure the id from the current row data is included
+    };
+
+    axios
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateCity`, updatedFormData)
+      .then((response) => {
+        console.log('Response:', response.data);
+        toast.success('City updated successfully', {
+          autoClose: 2000,
+          theme: 'colored'
+        });
+        setFormData({
+          cityCode: '',
+          cityName: '',
+          country: '',
+          state: ''
+        });
+        getAllCity();
+        setEditMode(false); // Close the dialog after saving
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        toast.error('An error occurred while updating the city');
+      });
+  };
+
   const getAllCity = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getCityById`);
@@ -115,8 +163,8 @@ export const CityMaster = () => {
 
       if (response.status === 200) {
         setTableData(response.data.paramObjectsMap.cityVO);
+        setId(response.data.paramObjectsMap.cityVO.id);
       } else {
-        // Handle error
         console.error('API Error:', response.data);
       }
     } catch (error) {
@@ -124,18 +172,29 @@ export const CityMaster = () => {
     }
   };
 
-  // useEffect(() => {
-  //   getAllCity();
-  // });
-
   const handleView = () => {
     getAllCity();
-
     setListView(true);
   };
 
   const handleBackToInput = () => {
     setListView(false);
+  };
+
+  const handleEdit = (row) => {
+    setCurrentRowData(row.original);
+    setFormData(row.original);
+    setEditMode(true);
+  };
+
+  const handleClose = () => {
+    setEditMode(false);
+    setFormData({
+      cityCode: '',
+      cityName: '',
+      country: '',
+      state: ''
+    });
   };
 
   const columns = useMemo(
@@ -155,10 +214,7 @@ export const CityMaster = () => {
         enableEditing: false,
         Cell: ({ row }) => (
           <div>
-            {/* <IconButton onClick={() => handleViewRow(row)}>
-              <VisibilityIcon />
-            </IconButton> */}
-            <IconButton>
+            <IconButton onClick={() => handleEdit(row)}>
               <EditIcon />
             </IconButton>
           </div>
@@ -196,7 +252,7 @@ export const CityMaster = () => {
         muiTableBodyCellProps: {
           align: 'center'
         },
-        Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
+        Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Inactive'}</span>
       }
     ],
     []
@@ -360,7 +416,7 @@ export const CityMaster = () => {
         ) : (
           <div className="mt-4">
             <div className="mb-3">
-              <Tooltip title="Clear" placement="top">
+              <Tooltip title="Back" placement="top">
                 {' '}
                 <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleBackToInput}>
                   <Avatar
@@ -406,27 +462,80 @@ export const CityMaster = () => {
                     justifyContent: 'flex-end'
                   }}
                 >
-                  {/* <Tooltip arrow placement="right" title="Edit">
-                  <IconButton style={{ color: "blue" }}>
-                    <Edit />
-                  </IconButton>
-                </Tooltip>
-
-                <Tooltip arrow placement="right" title="View">
-                  <IconButton
-                    color="primary"
-                    // onClick={() => handleView(row.original)}
-                  >
-                    <VisibilityIcon />
-                  </IconButton>
-                </Tooltip> */}
+                  <Tooltip arrow placement="right" title="Edit">
+                    <IconButton onClick={() => handleEdit(row)} style={{ color: 'blue' }}>
+                      <EditIcon />
+                    </IconButton>
+                  </Tooltip>
                 </Box>
               )}
             />
           </div>
         )}
       </div>
+
+      <Dialog open={editMode} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle style={{ fontSize: '20px' }}>Edit City</DialogTitle>
+        <DialogContent>
+          <div className="col-md-8 mb-3 mt-2">
+            <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.country}>
+              <InputLabel id="country-label">Country</InputLabel>
+              <Select labelId="country-label" label="Country" value={formData.country} onChange={handleInputChange} name="country">
+                <MenuItem value="India">India</MenuItem>
+                <MenuItem value="USA">USA</MenuItem>
+              </Select>
+              {fieldErrors.country && <FormHelperText>{fieldErrors.country}</FormHelperText>}
+            </FormControl>
+          </div>
+          <div className="col-md-8 mb-3">
+            <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.state}>
+              <InputLabel id="state-label">State</InputLabel>
+              <Select labelId="state-label" label="State" value={formData.state} onChange={handleInputChange} name="state">
+                <MenuItem value="Tamil Nadu">Tamil Nadu</MenuItem>
+                <MenuItem value="Karnataka">Karnataka</MenuItem>
+              </Select>
+              {fieldErrors.state && <FormHelperText>{fieldErrors.state}</FormHelperText>}
+            </FormControl>
+          </div>
+          <div className="col-md-8 mb-3">
+            <TextField
+              label="City Code"
+              variant="outlined"
+              size="small"
+              fullWidth
+              name="cityCode"
+              value={formData.cityCode}
+              onChange={handleInputChange}
+              error={!!fieldErrors.cityCode}
+              helperText={fieldErrors.cityCode}
+            />
+          </div>
+
+          <div className="col-md-8 mb-3">
+            <TextField
+              label="City Name"
+              variant="outlined"
+              size="small"
+              fullWidth
+              name="cityName"
+              value={formData.cityName}
+              onChange={handleInputChange}
+              error={!!fieldErrors.cityName}
+              helperText={fieldErrors.cityName}
+            />
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleEditSave} color="primary">
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
+
 export default CityMaster;

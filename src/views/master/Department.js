@@ -2,7 +2,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import FormatListBulletedTwoToneIcon from '@mui/icons-material/FormatListBulletedTwoTone';
 import SaveIcon from '@mui/icons-material/Save';
 import SearchIcon from '@mui/icons-material/Search';
-import { Avatar, ButtonBase, FormHelperText, Tooltip } from '@mui/material';
+import { Avatar, ButtonBase, FormHelperText, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -41,6 +41,10 @@ export const Department = () => {
 
   const [tableData, setTableData] = useState([]);
   const [listView, setListView] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [currentRowData, setCurrentRowData] = useState(null);
+
+  const [id, setId] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -94,6 +98,48 @@ export const Department = () => {
       });
   };
 
+  const handleEditSave = () => {
+    const errors = {};
+    if (!formData.departmentCode) {
+      errors.departmentCode = 'Department Code is required';
+    }
+    if (!formData.department) {
+      errors.department = 'Department Name is required';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      // Set error messages for each field
+      setFieldErrors(errors);
+      return;
+    }
+
+    const updatedFormData = {
+      ...formData,
+      id: currentRowData?.id // Ensure the id from the current row data is included
+    };
+
+    axios
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateDepartment`, updatedFormData)
+      .then((response) => {
+        console.log('Response:', response.data);
+        toast.success('Department Updated successfully', {
+          autoClose: 2000,
+          theme: 'colored'
+        });
+        setFormData({
+          active: true,
+          departmentCode: '',
+          department: ''
+        });
+        getAllDepartment();
+        setEditMode(false); // Close the dialog after saving
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        toast.error('An error occurred while updating the department');
+      });
+  };
+
   const getAllDepartment = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getDepartmentById`);
@@ -119,6 +165,20 @@ export const Department = () => {
     setListView(false);
   };
 
+  const handleEdit = (row) => {
+    setCurrentRowData(row.original);
+    setFormData(row.original);
+    setEditMode(true);
+  };
+
+  const handleClose = () => {
+    setEditMode(false);
+    setFormData({
+      departmentCode: '',
+      department: ''
+    });
+  };
+
   const columns = useMemo(
     () => [
       {
@@ -136,10 +196,7 @@ export const Department = () => {
         enableEditing: false,
         Cell: ({ row }) => (
           <div>
-            {/* <IconButton onClick={() => handleViewRow(row)}>
-              <VisibilityIcon />
-            </IconButton> */}
-            <IconButton>
+            <IconButton onClick={() => handleEdit(row)}>
               <EditIcon />
             </IconButton>
           </div>
@@ -403,6 +460,62 @@ export const Department = () => {
           </div>
         )}
       </div>
+      <Dialog open={editMode} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle style={{ fontSize: '20px' }}>Edit Department</DialogTitle>
+        <DialogContent>
+          <div className="col-md-8 mt-2 mb-3">
+            <TextField
+              label="Department Code"
+              variant="outlined"
+              size="small"
+              fullWidth
+              name="departmentCode"
+              value={formData.departmentCode}
+              onChange={handleInputChange}
+              error={!!fieldErrors.departmentCode} // Add error prop
+              helperText={fieldErrors.departmentCode} // Add helperText prop
+            />
+          </div>
+
+          <div className="col-md-8 mb-3">
+            <TextField
+              label="Department Name"
+              variant="outlined"
+              size="small"
+              fullWidth
+              name="department"
+              value={formData.department}
+              onChange={handleInputChange}
+              error={!!fieldErrors.department} // Add error prop
+              helperText={fieldErrors.department} // Add helperText prop
+            />
+          </div>
+          <div className="col-md-8 mb-3">
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                    id="active"
+                    checked={formData.active}
+                    onChange={(e) => handleInputChange({ target: { name: 'active', value: e.target.checked } })}
+                    name="active"
+                  />
+                }
+                label="Active"
+              />
+            </FormGroup>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleEditSave} color="primary">
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

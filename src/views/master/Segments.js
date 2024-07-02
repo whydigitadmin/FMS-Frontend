@@ -2,7 +2,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import FormatListBulletedTwoToneIcon from '@mui/icons-material/FormatListBulletedTwoTone';
 import SaveIcon from '@mui/icons-material/Save';
 import SearchIcon from '@mui/icons-material/Search';
-import { Avatar, ButtonBase, FormHelperText, Tooltip } from '@mui/material';
+import { Avatar, ButtonBase, FormHelperText, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -35,6 +35,10 @@ export const Segments = () => {
   });
   const [tableData, setTableData] = useState([]);
   const [listView, setListView] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [currentRowData, setCurrentRowData] = useState(null);
+
+  const [id, setId] = useState('');
 
   const handleClear = () => {
     setFormData({
@@ -51,22 +55,6 @@ export const Segments = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
     setFieldErrors({ ...fieldErrors, [name]: false });
-  };
-
-  const getAllSegments = async () => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getSegmentsById`);
-      console.log('API Response:', response);
-
-      if (response.status === 200) {
-        setTableData(response.data.paramObjectsMap.segmentsVO);
-      } else {
-        // Handle error
-        console.error('API Error:', response.data);
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
   };
 
   const handleSave = () => {
@@ -104,6 +92,64 @@ export const Segments = () => {
       });
   };
 
+  const handleEditSave = () => {
+    const errors = {};
+    if (!formData.segmentName) {
+      errors.segmentName = 'Segment Name is required';
+    }
+    if (!formData.segmentDescription) {
+      errors.segmentDescription = 'Segment Description is required';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      // Set error messages for each field
+      setFieldErrors(errors);
+      return;
+    }
+
+    const updatedFormData = {
+      ...formData,
+      id: currentRowData?.id // Ensure the id from the current row data is included
+    };
+
+    axios
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateSegments`, updatedFormData)
+      .then((response) => {
+        console.log('Response:', response.data);
+        toast.success('Segments Updated successfully', {
+          autoClose: 2000,
+          theme: 'colored'
+        });
+        setFormData({
+          active: true,
+          segmentName: '',
+          segmentDescription: ''
+        });
+        getAllSegments();
+        setEditMode(false); // Close the dialog after saving
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        toast.error('An error occurred while updating the segments');
+      });
+  };
+
+  const getAllSegments = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getSegmentsById`);
+      console.log('API Response:', response);
+
+      if (response.status === 200) {
+        setTableData(response.data.paramObjectsMap.segmentsVO);
+      } else {
+        // Handle error
+        console.error('API Error:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   const handleView = () => {
     getAllSegments();
     setListView(true);
@@ -111,6 +157,20 @@ export const Segments = () => {
 
   const handleBackToInput = () => {
     setListView(false);
+  };
+
+  const handleEdit = (row) => {
+    setCurrentRowData(row.original);
+    setFormData(row.original);
+    setEditMode(true);
+  };
+
+  const handleClose = () => {
+    setEditMode(false);
+    setFormData({
+      segmentName: '',
+      segmentDescription: ''
+    });
   };
 
   const columns = useMemo(
@@ -130,10 +190,7 @@ export const Segments = () => {
         enableEditing: false,
         Cell: ({ row }) => (
           <div>
-            {/* <IconButton onClick={() => handleViewRow(row)}>
-              <VisibilityIcon />
-            </IconButton> */}
-            <IconButton>
+            <IconButton onClick={() => handleEdit(row)}>
               <EditIcon />
             </IconButton>
           </div>
@@ -387,6 +444,52 @@ export const Segments = () => {
           </div>
         )}
       </div>
+      <Dialog open={editMode} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle style={{ fontSize: '20px' }}>Edit Segments</DialogTitle>
+        <DialogContent>
+          <div className="col-md-8 mt-2 mb-3">
+            <TextField
+              id="outlined-textarea"
+              label="Segment Name"
+              placeholder="Placeholder"
+              variant="outlined"
+              size="small"
+              name="segmentName"
+              fullWidth
+              required
+              value={formData.segmentName}
+              onChange={handleInputChange}
+              error={!!fieldErrors.segmentName} // Add error prop
+              helperText={fieldErrors.segmentName} // Add helperText prop
+            />
+          </div>
+
+          <div className="col-md-8 mb-3">
+            <TextField
+              id="outlined-textarea"
+              label="Segment Description"
+              placeholder="Placeholder"
+              variant="outlined"
+              size="small"
+              fullWidth
+              required
+              name="segmentDescription"
+              value={formData.segmentDescription}
+              onChange={handleInputChange}
+              error={!!fieldErrors.segmentDescription} // Add error prop
+              helperText={fieldErrors.segmentDescription} // Add helperText prop
+            />
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleEditSave} color="primary">
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
