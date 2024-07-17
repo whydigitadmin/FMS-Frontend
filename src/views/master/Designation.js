@@ -2,7 +2,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import FormatListBulletedTwoToneIcon from '@mui/icons-material/FormatListBulletedTwoTone';
 import SaveIcon from '@mui/icons-material/Save';
 import SearchIcon from '@mui/icons-material/Search';
-import { Avatar, ButtonBase, FormHelperText, Tooltip } from '@mui/material';
+import { Avatar, ButtonBase, FormHelperText, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import Checkbox from '@mui/material/Checkbox';
@@ -32,6 +32,9 @@ export const Designation = () => {
   });
   const [tableData, setTableData] = useState([]);
   const [listView, setListView] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [currentRowData, setCurrentRowData] = useState(null);
+  const [id, setId] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -104,6 +107,69 @@ export const Designation = () => {
       });
   };
 
+  const handleEditSave = () => {
+    const errors = {};
+    if (!formData.designation) {
+      errors.designation = 'Designation is required';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      // Set error messages for each field
+      setFieldErrors(errors);
+      return;
+    }
+
+    const updatedFormData = {
+      ...formData,
+      id: formData.id,
+      active: formData.active ? true : false
+      // designation: formData.designation
+      // orgId: formData.orgId,
+      // active: formData.active
+      // ...formData,
+      // id: currentRowData?.id // Ensure the id from the current row data is included
+    };
+
+    axios
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateDesignation`, updatedFormData)
+      .then((response) => {
+        console.log('Response:', response.data);
+        toast.success('Designation Updated successfully', {
+          autoClose: 2000,
+          theme: 'colored'
+        });
+        setFormData({
+          active: true,
+          designation: ''
+        });
+        getAllDesignation();
+        setEditMode(false);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        toast.error('An error occurred while updating the designation');
+      });
+  };
+
+  const handleEdit = (row) => {
+    setCurrentRowData(row.original.id);
+    setFormData({
+      designation: row.original.designation,
+      orgId: row.original.orgId,
+      active: row.original.active === 'Active',
+      id: row.original.id // Ensure the id is set in formData
+    });
+    setEditMode(true);
+  };
+
+  const handleClose = () => {
+    setEditMode(false);
+    setFormData({
+      designation: '',
+      active: true
+    });
+  };
+
   const columns = useMemo(
     () => [
       {
@@ -124,7 +190,7 @@ export const Designation = () => {
             {/* <IconButton onClick={() => handleViewRow(row)}>
               <VisibilityIcon />
             </IconButton> */}
-            <IconButton onClick={() => handleEditRow(row)}>
+            <IconButton onClick={() => handleEdit(row)}>
               <EditIcon />
             </IconButton>
           </div>
@@ -151,30 +217,19 @@ export const Designation = () => {
         muiTableBodyCellProps: {
           align: 'center'
         }
+      },
+      {
+        accessorKey: 'active',
+        header: 'Active',
+        size: 50,
+        muiTableHeadCellProps: {
+          align: 'center'
+        },
+        muiTableBodyCellProps: {
+          align: 'center'
+        }
+        // Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
       }
-      // {
-      //   accessorKey: 'cityCode',
-      //   header: 'Department Name',
-      //   size: 50,
-      //   muiTableHeadCellProps: {
-      //     align: 'center'
-      //   },
-      //   muiTableBodyCellProps: {
-      //     align: 'center'
-      //   }
-      // },
-      // {
-      //   accessorKey: 'active',
-      //   header: 'Active',
-      //   size: 50,
-      //   muiTableHeadCellProps: {
-      //     align: 'center'
-      //   },
-      //   muiTableBodyCellProps: {
-      //     align: 'center'
-      //   },
-      //   Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
-      // }
     ],
     []
   );
@@ -299,6 +354,22 @@ export const Designation = () => {
                 helperText={fieldErrors.designation} // Add helperText prop
               />
             </div>
+            <div className="col-md-4 mb-3">
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                      id="active"
+                      name="active"
+                      checked={formData.active}
+                      onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                    />
+                  }
+                  label="Active"
+                />
+              </FormGroup>
+            </div>
           </div>
         ) : (
           <div className="mt-4">
@@ -369,6 +440,48 @@ export const Designation = () => {
           </div>
         )}
       </div>
+      <Dialog open={editMode} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle style={{ fontSize: '20px' }}>Edit Designation</DialogTitle>
+        <DialogContent>
+          <div className="col-md-4 mb-3 mt-3">
+            <TextField
+              label="Designation"
+              variant="outlined"
+              size="small"
+              fullWidth
+              name="designation"
+              value={formData.designation}
+              onChange={handleInputChange}
+              error={!!fieldErrors.designation} // Add error prop
+              helperText={fieldErrors.designation} // Add helperText prop
+            />
+          </div>
+          <div className="col-md-8 mb-3">
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                    id="active"
+                    name="active"
+                    checked={formData.active}
+                    onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                  />
+                }
+                label="Active"
+              />
+            </FormGroup>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleEditSave} color="primary">
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

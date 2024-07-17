@@ -17,15 +17,21 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import Checkbox from '@mui/material/Checkbox';
 
 export const CityMaster = () => {
   const [orgId, setOrgId] = useState(localStorage.getItem('orgId'));
 
   const [formData, setFormData] = useState({
+    active: true,
     cityCode: '',
     cityName: '',
     country: '',
     state: '',
+    // createdBy: '',
+    // updatedBy: '',
     orgId: 1
   });
 
@@ -107,6 +113,55 @@ export const CityMaster = () => {
       });
   };
 
+  // const handleEditSave = () => {
+  //   const errors = {};
+  //   if (!formData.cityCode) {
+  //     errors.cityCode = 'City Code is required';
+  //   }
+  //   if (!formData.cityName) {
+  //     errors.cityName = 'City Name is required';
+  //   }
+  //   if (!formData.country) {
+  //     errors.country = 'Country is required';
+  //   }
+  //   if (!formData.state) {
+  //     errors.state = 'State is required';
+  //   }
+
+  //   if (Object.keys(errors).length > 0) {
+  //     setFieldErrors(errors);
+  //     return;
+  //   }
+
+  //   // Assume formData has an id field for the city ID
+  //   const updatedFormData = {
+  //     ...formData
+  //     // id: currentRowData?.id // Ensure the id from the current row data is included
+  //   };
+
+  //   axios
+  //     .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateCity`, updatedFormData)
+  //     .then((response) => {
+  //       console.log('Response:', response.data);
+  //       toast.success('City updated successfully', {
+  //         autoClose: 2000,
+  //         theme: 'colored'
+  //       });
+  //       setFormData({
+  //         cityCode: '',
+  //         cityName: '',
+  //         country: '',
+  //         state: ''
+  //       });
+  //       getAllCity();
+  //       setEditMode(false); // Close the dialog after saving
+  //     })
+  //     .catch((error) => {
+  //       console.error('Error:', error);
+  //       toast.error('An error occurred while updating the city');
+  //     });
+  // };
+
   const handleEditSave = () => {
     const errors = {};
     if (!formData.cityCode) {
@@ -127,10 +182,15 @@ export const CityMaster = () => {
       return;
     }
 
-    // Assume formData has an id field for the city ID
+    // Ensure only the required fields are included in the payload
     const updatedFormData = {
-      ...formData,
-      id: currentRowData?.id // Ensure the id from the current row data is included
+      id: formData.id, // Include the id
+      cityCode: formData.cityCode,
+      country: formData.country,
+      cityName: formData.cityName,
+      state: formData.state,
+      orgId: formData.orgId, // Assuming orgId is part of formData
+      active: formData.active ? true : false
     };
 
     axios
@@ -145,7 +205,10 @@ export const CityMaster = () => {
           cityCode: '',
           cityName: '',
           country: '',
-          state: ''
+          state: '',
+          orgId: '', // Clear orgId
+          active: '', // Clear active
+          id: '' // Clear id
         });
         getAllCity();
         setEditMode(false); // Close the dialog after saving
@@ -181,9 +244,32 @@ export const CityMaster = () => {
     setListView(false);
   };
 
+  // const handleEdit = (row) => {
+  //   setCurrentRowData(row.original);
+  //   setFormData(row.original);
+  //   setEditMode(true);
+  // };
+
+  // const handleEdit = (row) => {
+  //   setCurrentRowData(row.original);
+  //   setFormData({
+  //     ...row.original,
+  //     id: row.original.id // Ensure the id is set in formData
+  //   });
+  //   setEditMode(true);
+  // };
+
   const handleEdit = (row) => {
     setCurrentRowData(row.original);
-    setFormData(row.original);
+    setFormData({
+      cityCode: row.original.cityCode,
+      country: row.original.country,
+      cityName: row.original.cityName,
+      state: row.original.state,
+      orgId: row.original.orgId,
+      active: row.original.active === 'Active',
+      id: row.original.id // Ensure the id is set in formData
+    });
     setEditMode(true);
   };
 
@@ -193,7 +279,8 @@ export const CityMaster = () => {
       cityCode: '',
       cityName: '',
       country: '',
-      state: ''
+      state: '',
+      active: false // Ensure active is reset
     });
   };
 
@@ -251,8 +338,8 @@ export const CityMaster = () => {
         },
         muiTableBodyCellProps: {
           align: 'center'
-        },
-        Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Inactive'}</span>
+        }
+        // Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Inactive'}</span>
       }
     ],
     []
@@ -412,6 +499,22 @@ export const CityMaster = () => {
                 helperText={fieldErrors.cityName}
               />
             </div>
+            <div className="col-md-4 mb-3">
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                      id="active"
+                      name="active"
+                      checked={formData.active}
+                      onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                    />
+                  }
+                  label="Active"
+                />
+              </FormGroup>
+            </div>
           </div>
         ) : (
           <div className="mt-4">
@@ -523,6 +626,22 @@ export const CityMaster = () => {
               error={!!fieldErrors.cityName}
               helperText={fieldErrors.cityName}
             />
+          </div>
+          <div className="col-md-8 mb-3">
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                    id="active"
+                    name="active"
+                    checked={formData.active}
+                    onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                  />
+                }
+                label="Active"
+              />
+            </FormGroup>
           </div>
         </DialogContent>
         <DialogActions>

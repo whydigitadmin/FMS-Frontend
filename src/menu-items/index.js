@@ -1,5 +1,6 @@
 import dashboard from './dashboard';
 import fms from './fms';
+import transaction from './transaction';
 // import pages from './pages';
 // import utilities from './utilities';
 // import other from './other';
@@ -9,7 +10,8 @@ import fms from './fms';
 const menuItems = {
   items: [
     dashboard,
-    fms
+    fms,
+    transaction
     // pages,
     //  utilities,
     // other

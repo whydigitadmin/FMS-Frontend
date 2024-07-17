@@ -21,6 +21,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import BrowserUpdatedIcon from '@mui/icons-material/BrowserUpdated';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import Checkbox from '@mui/material/Checkbox';
 
 export const DocumentTypeMapping = () => {
   const [formData, setFormData] = useState({
@@ -199,7 +202,7 @@ export const DocumentTypeMapping = () => {
     };
 
     axios
-      .post(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateDocumentTypeMapping`, payload)
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateDocumentTypeMapping`, payload)
       .then((response) => {
         console.log('Response:', response.data);
         toast.success('Document Type Mapping created successfully', {
@@ -292,6 +295,7 @@ export const DocumentTypeMapping = () => {
 
     const payload = {
       ...formData,
+      active: formData.active ? true : false,
       mappingDTO: tableData.map((row) => {
         const mappingDTO = {
           docType: row.docType,
@@ -316,11 +320,13 @@ export const DocumentTypeMapping = () => {
 
     const updatedPayload = {
       ...payload,
-      id: currentRowData?.id
+      id: payload.id
+      // orgId: formData.orgId,
+      // active: formData.active
     };
 
     axios
-      .post(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateDocumentTypeMapping`, updatedPayload)
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateDocumentTypeMapping`, updatedPayload)
       .then((response) => {
         console.log('Response:', response.data);
         toast.success('Document Type Mapping Updated successfully', {
@@ -414,7 +420,8 @@ export const DocumentTypeMapping = () => {
     setFormData({
       branch: row.original.branch,
       financialYear: row.original.financialYear,
-      active: row.original.active
+      active: row.original.active === 'Active',
+      id: row.original.id
     });
 
     setTableData(
@@ -493,8 +500,8 @@ export const DocumentTypeMapping = () => {
         },
         muiTableBodyCellProps: {
           align: 'center'
-        },
-        Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
+        }
+        // Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
       }
     ],
     []
@@ -686,6 +693,22 @@ export const DocumentTypeMapping = () => {
                 </Select>
                 {fieldErrors.financialYear && <FormHelperText>{fieldErrors.financialYear}</FormHelperText>}
               </FormControl>
+            </div>
+            <div className="col-md-4 mb-3">
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                      id="active"
+                      name="active"
+                      checked={formData.active}
+                      onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                    />
+                  }
+                  label="Active"
+                />
+              </FormGroup>
             </div>
           </div>
 

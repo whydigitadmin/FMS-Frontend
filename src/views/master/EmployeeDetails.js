@@ -35,7 +35,7 @@ export const EmployeeDetails = () => {
     joiningDate: null,
     department: '',
     designation: '',
-    appointmentType: '',
+    appoinmentType: '',
     modeOfEntry: '',
     dateOfBirth: null,
     leavingDate: null
@@ -58,7 +58,7 @@ export const EmployeeDetails = () => {
   //   joiningDate: '',
   //   department: '',
   //   designation: '',
-  //   appointmentType: '',
+  //   appoinmentType: '',
   //   modeOfEntry: '',
   //   dateOfBirth: '',
   //   leavingDate: ''
@@ -107,7 +107,7 @@ export const EmployeeDetails = () => {
       joiningDate: null,
       department: '',
       designation: '',
-      appointmentType: '',
+      appoinmentType: '',
       modeOfEntry: '',
       dateOfBirth: null,
       leavingDate: null
@@ -121,7 +121,7 @@ export const EmployeeDetails = () => {
       joiningDate: null,
       department: '',
       designation: '',
-      appointmentType: '',
+      appoinmentType: '',
       modeOfEntry: '',
       dateOfBirth: null,
       leavingDate: null
@@ -157,8 +157,8 @@ export const EmployeeDetails = () => {
     if (!formData.designation) {
       errors.designation = 'Designation is required';
     }
-    if (!formData.appointmentType) {
-      errors.appointmentType = 'Appointment Type is required';
+    if (!formData.appoinmentType) {
+      errors.appoinmentType = 'Appointment Type is required';
     }
     if (!formData.modeOfEntry) {
       errors.modeOfEntry = 'Mode Of Entry is required';
@@ -199,7 +199,7 @@ export const EmployeeDetails = () => {
           joiningDate: null,
           department: '',
           designation: '',
-          appointmentType: '',
+          appoinmentType: '',
           modeOfEntry: '',
           dateOfBirth: null,
           leavingDate: null
@@ -244,8 +244,8 @@ export const EmployeeDetails = () => {
     if (!formData.designation) {
       errors.designation = 'Designation is required';
     }
-    if (!formData.appointmentType) {
-      errors.appointmentType = 'Appointment Type is required';
+    if (!formData.appoinmentType) {
+      errors.appoinmentType = 'Appointment Type is required';
     }
     if (!formData.modeOfEntry) {
       errors.modeOfEntry = 'Mode Of Entry is required';
@@ -291,7 +291,7 @@ export const EmployeeDetails = () => {
           joiningDate: null,
           department: '',
           designation: '',
-          appointmentType: '',
+          appoinmentType: '',
           modeOfEntry: '',
           dateOfBirth: null,
           leavingDate: null
@@ -346,6 +346,7 @@ export const EmployeeDetails = () => {
     // Convert date strings to Dayjs objects
     const updatedFormData = {
       ...rowData,
+      active: row.original.active === 'Active',
       joiningDate: rowData.joiningDate ? dayjs(rowData.joiningDate) : null,
       dateOfBirth: rowData.dateOfBirth ? dayjs(rowData.dateOfBirth) : null,
       leavingDate: rowData.leavingDate ? dayjs(rowData.leavingDate) : null
@@ -362,7 +363,7 @@ export const EmployeeDetails = () => {
       joiningDate: false,
       department: false,
       designation: false,
-      appointmentType: false,
+      appoinmentType: false,
       modeOfEntry: false,
       dateOfBirth: false,
       leavingDate: false
@@ -379,7 +380,7 @@ export const EmployeeDetails = () => {
       joiningDate: null,
       department: '',
       designation: '',
-      appointmentType: '',
+      appoinmentType: '',
       modeOfEntry: '',
       dateOfBirth: null,
       leavingDate: null
@@ -465,8 +466,8 @@ export const EmployeeDetails = () => {
         },
         muiTableBodyCellProps: {
           align: 'center'
-        },
-        Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
+        }
+        // Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
       }
     ],
     []
@@ -715,18 +716,18 @@ export const EmployeeDetails = () => {
               </div>
               <div className="col-md-4 mb-3">
                 <TextField
-                  id="appointmentType"
+                  id="appoinmentType"
                   label="Appointment Type"
                   placeholder="Placeholder"
                   variant="outlined"
                   size="small"
-                  name="appointmentType"
+                  name="appoinmentType"
                   fullWidth
                   required
-                  value={formData.appointmentType}
+                  value={formData.appoinmentType}
                   onChange={handleInputChange}
-                  error={fieldErrors.appointmentType}
-                  helperText={fieldErrors.appointmentType}
+                  error={fieldErrors.appoinmentType}
+                  helperText={fieldErrors.appoinmentType}
                 />
               </div>
               <div className="col-md-4 mb-3">
@@ -991,13 +992,13 @@ export const EmployeeDetails = () => {
               placeholder="Placeholder"
               variant="outlined"
               size="small"
-              name="appointmentType"
+              name="appoinmentType"
               fullWidth
               required
-              value={formData.appointmentType}
+              value={formData.appoinmentType}
               onChange={handleInputChange}
-              error={fieldErrors.appointmentType}
-              helperText={fieldErrors.appointmentType && 'Appointment Type is required'}
+              error={fieldErrors.appoinmentType}
+              helperText={fieldErrors.appoinmentType && 'Appointment Type is required'}
             />
           </div>
           <div className="col-md-8 mb-3">

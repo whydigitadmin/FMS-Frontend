@@ -214,7 +214,8 @@ export const CompanyDetails = () => {
 
     const updatedFormData = {
       ...formData,
-      id: currentRowData?.id // Ensure the id from the current row data is included
+      active: formData.active ? true : false,
+      id: formData.id // Ensure the id from the current row data is included
     };
 
     axios
@@ -277,7 +278,22 @@ export const CompanyDetails = () => {
 
   const handleEdit = (row) => {
     setCurrentRowData(row.original);
-    setFormData(row.original);
+    setFormData({
+      address: row.original.address,
+      adminEmail: row.original.adminEmail,
+      city: row.original.city,
+      companyCode: row.original.companyCode,
+      companyName: row.original.companyName,
+      country: row.original.country,
+      email: row.original.email,
+      passport: row.original.passport,
+      phoneNo: row.original.phoneNo,
+      pinCode: row.original.pinCode,
+      state: row.original.state,
+      orgId: row.original.orgId,
+      active: row.original.active === 'Active',
+      id: row.original.id // Ensure the id is set in formData
+    });
     setEditMode(true);
   };
 
@@ -363,8 +379,8 @@ export const CompanyDetails = () => {
         },
         muiTableBodyCellProps: {
           align: 'center'
-        },
-        Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
+        }
+        // Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
       }
     ],
     []

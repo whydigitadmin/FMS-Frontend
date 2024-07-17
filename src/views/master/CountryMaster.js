@@ -17,11 +17,15 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import Checkbox from '@mui/material/Checkbox';
 
 export const CountryMaster = () => {
   const [orgId, setOrgId] = useState(localStorage.getItem('orgId'));
   const [formData, setFormData] = useState({
-    country: '',
+    active: true,
+    countryName: '',
     countryCode: '',
     orgId: 1
   });
@@ -30,7 +34,7 @@ export const CountryMaster = () => {
   const anchorRef = useRef(null);
 
   const [fieldErrors, setFieldErrors] = useState({
-    country: '',
+    countryName: '',
     countryCode: ''
   });
   const [tableData, setTableData] = useState([]);
@@ -47,19 +51,20 @@ export const CountryMaster = () => {
 
   const handleClear = () => {
     setFormData({
-      country: '',
-      countryCode: ''
+      countryName: '',
+      countryCode: '',
+      active: true
     });
     setFieldErrors({
-      country: '',
+      countryName: '',
       countryCode: ''
     });
   };
 
   const handleSave = () => {
     const errors = {};
-    if (!formData.country) {
-      errors.country = 'Country is required';
+    if (!formData.countryName) {
+      errors.countryName = 'Country is required';
     }
     if (!formData.countryCode) {
       errors.countryCode = 'Country Code is required';
@@ -80,8 +85,9 @@ export const CountryMaster = () => {
           theme: 'colored'
         });
         setFormData({
-          country: '',
-          countryCode: ''
+          countryName: '',
+          countryCode: '',
+          active: true
         });
       })
       .catch((error) => {
@@ -92,8 +98,8 @@ export const CountryMaster = () => {
 
   const handleEditSave = () => {
     const errors = {};
-    if (!formData.country) {
-      errors.country = 'Country is required';
+    if (!formData.countryName) {
+      errors.countryName = 'Country is required';
     }
     if (!formData.countryCode) {
       errors.countryCode = 'Country Code is required';
@@ -106,8 +112,13 @@ export const CountryMaster = () => {
     }
 
     const updatedFormData = {
-      ...formData,
-      id: currentRowData?.id // Ensure the id from the current row data is included
+      id: formData.id,
+      countryName: formData.countryName,
+      countryCode: formData.countryCode,
+      orgId: formData.orgId,
+      active: formData.active ? true : false
+      // ...formData,
+      // id: currentRowData?.id // Ensure the id from the current row data is included
     };
 
     axios
@@ -119,8 +130,11 @@ export const CountryMaster = () => {
           theme: 'colored'
         });
         setFormData({
-          country: '',
-          countryCode: ''
+          countryName: '',
+          countryCode: '',
+          orgId: 1, // Clear orgId
+          active: true // Clear active
+          // id: '' // Clear id
         });
         getAllCountry();
         setEditMode(false); // Close the dialog after saving
@@ -159,15 +173,22 @@ export const CountryMaster = () => {
 
   const handleEdit = (row) => {
     setCurrentRowData(row.original);
-    setFormData(row.original);
+    setFormData({
+      countryCode: row.original.countryCode,
+      countryName: row.original.countryName,
+      orgId: row.original.orgId,
+      active: row.original.active === 'Active',
+      id: row.original.id // Ensure the id is set in formData
+    });
     setEditMode(true);
   };
 
   const handleClose = () => {
     setEditMode(false);
     setFormData({
-      country: '',
-      countryCode: ''
+      countryName: '',
+      countryCode: '',
+      active: true
     });
   };
 
@@ -209,7 +230,7 @@ export const CountryMaster = () => {
         }
       },
       {
-        accessorKey: 'country',
+        accessorKey: 'countryName',
         header: 'Country',
         size: 50,
         muiTableHeadCellProps: {
@@ -218,19 +239,19 @@ export const CountryMaster = () => {
         muiTableBodyCellProps: {
           align: 'center'
         }
+      },
+      {
+        accessorKey: 'active',
+        header: 'Active',
+        size: 50,
+        muiTableHeadCellProps: {
+          align: 'center'
+        },
+        muiTableBodyCellProps: {
+          align: 'center'
+        }
+        // Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
       }
-      // {
-      //   accessorKey: 'active',
-      //   header: 'Active',
-      //   size: 50,
-      //   muiTableHeadCellProps: {
-      //     align: 'center'
-      //   },
-      //   muiTableBodyCellProps: {
-      //     align: 'center'
-      //   },
-      //   Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
-      // }
     ],
     []
   );
@@ -355,16 +376,45 @@ export const CountryMaster = () => {
                 helperText={fieldErrors.countryCode}
               />
             </div>
-
             <div className="col-md-4 mb-3">
-              <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.country}>
-                <InputLabel id="country-label">Country</InputLabel>
-                <Select labelId="country-label" label="Country" value={formData.country} onChange={handleInputChange} name="country">
+              <TextField
+                label="Country"
+                variant="outlined"
+                size="small"
+                fullWidth
+                name="countryName"
+                value={formData.countryName}
+                onChange={handleInputChange}
+                error={!!fieldErrors.countryName}
+                helperText={fieldErrors.countryName}
+              />
+            </div>
+
+            {/* <div className="col-md-4 mb-3">
+              <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.countryName}>
+                <InputLabel id="countryName">Country</InputLabel>
+                <Select labelId="countryName" label="Country" value={formData.countryName} onChange={handleInputChange} name="countryName">
                   <MenuItem value="India">India</MenuItem>
                   <MenuItem value="USA">USA</MenuItem>
                 </Select>
-                {fieldErrors.country && <FormHelperText>{fieldErrors.country}</FormHelperText>}
+                {fieldErrors.countryName && <FormHelperText>{fieldErrors.countryName}</FormHelperText>}
               </FormControl>
+            </div> */}
+            <div className="col-md-4 mb-3">
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                      id="active"
+                      name="active"
+                      checked={formData.active}
+                      onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                    />
+                  }
+                  label="Active"
+                />
+              </FormGroup>
             </div>
           </div>
         ) : (
@@ -452,16 +502,44 @@ export const CountryMaster = () => {
               helperText={fieldErrors.countryCode}
             />
           </div>
-
           <div className="col-md-8 mb-3">
-            <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.country}>
-              <InputLabel id="country-label">Country</InputLabel>
-              <Select labelId="country-label" label="Country" value={formData.country} onChange={handleInputChange} name="country">
+            <TextField
+              label="Country"
+              variant="outlined"
+              size="small"
+              fullWidth
+              name="countryName"
+              value={formData.countryName}
+              onChange={handleInputChange}
+              error={!!fieldErrors.countryName}
+              helperText={fieldErrors.countryName}
+            />
+          </div>
+          {/* <div className="col-md-8 mb-3">
+            <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.countryName}>
+              <InputLabel id="countryName">Country</InputLabel>
+              <Select labelId="countryName" label="Country" value={formData.countryName} onChange={handleInputChange} name="countryName">
                 <MenuItem value="India">India</MenuItem>
                 <MenuItem value="USA">USA</MenuItem>
               </Select>
-              {fieldErrors.country && <FormHelperText>{fieldErrors.country}</FormHelperText>}
+              {fieldErrors.countryName && <FormHelperText>{fieldErrors.countryName}</FormHelperText>}
             </FormControl>
+          </div> */}
+          <div className="col-md-8 mb-3">
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                    id="active"
+                    name="active"
+                    checked={formData.active}
+                    onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                  />
+                }
+                label="Active"
+              />
+            </FormGroup>
           </div>
         </DialogContent>
         <DialogActions>

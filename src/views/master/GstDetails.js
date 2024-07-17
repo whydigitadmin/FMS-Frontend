@@ -332,7 +332,7 @@ export const GstDetails = () => {
     };
 
     axios
-      .post(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateGstIn`, payload)
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateGstIn`, payload)
       .then((response) => {
         console.log('Response:', response.data);
 
@@ -471,32 +471,9 @@ export const GstDetails = () => {
       return;
     }
 
-    // const payload = {
-    //   ...formData,
-    //   stateGstDTO: tableData.map((row) => ({
-    //     contactEmail: row.contactEmail,
-    //     contactPerson: row.contactPerson,
-    //     contactPhoneNo: row.contactPhoneNo,
-    //     gstIn: row.gstIn,
-    //     // id: row.id,
-    //     stateCode: row.stateCode,
-    //     stateGst: row.state
-    //   })),
-    //   businessAddressDTO: tableData1.map((row) => ({
-    //     address1: row.address1,
-    //     address2: row.address2,
-    //     businessPlace: row.businessPlace,
-    //     cityName: row.cityName,
-    //     contactEmail: row.contactEmail,
-    //     contactPerson: row.contactPerson,
-    //     contactPhoneNo: row.contactPhoneNo,
-    //     // id: row.id,
-    //     state: row.state
-    //   }))
-    // };
-
     const payload = {
       ...formData,
+      active: formData.active ? true : false,
       stateGstDTO: tableData
         .filter((row) => row.contactEmail || row.contactPerson || row.contactPhoneNo || row.gstIn || row.stateCode || row.state)
         .map((row) => {
@@ -561,11 +538,12 @@ export const GstDetails = () => {
 
     const updatedPayload = {
       ...payload,
-      id: currentRowData?.id
+      id: payload.id
     };
+    console.log('updatedPayload', updatedPayload);
 
     axios
-      .post(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateGstIn`, updatedPayload)
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateGstIn`, updatedPayload)
       .then((response) => {
         console.log('Response:', response.data);
 
@@ -670,7 +648,8 @@ export const GstDetails = () => {
       bussinessType: row.original.bussinessType,
       accountType: row.original.accountType,
       businessCategory: row.original.businessCategory,
-      active: row.original.active
+      active: row.original.active === 'Active',
+      id: row.original.id
     });
 
     setTableData(
@@ -782,8 +761,8 @@ export const GstDetails = () => {
         },
         muiTableBodyCellProps: {
           align: 'center'
-        },
-        Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
+        }
+        // Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
       }
     ],
     []
@@ -1052,10 +1031,11 @@ export const GstDetails = () => {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={formData.active}
-                      onChange={handleInputChange}
-                      name="active"
                       sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                      id="active"
+                      name="active"
+                      checked={formData.active}
+                      onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
                     />
                   }
                   label="Active"

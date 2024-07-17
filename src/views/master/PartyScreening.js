@@ -17,6 +17,9 @@ import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import Checkbox from '@mui/material/Checkbox';
 
 export const PartyScreening = () => {
   const [formData, setFormData] = useState({
@@ -26,7 +29,7 @@ export const PartyScreening = () => {
     alternativeEntityNames: '',
     uniqueId: '',
     includeAlias: '',
-    screeningstatus: ''
+    screeningStatus: ''
   });
 
   const theme = useTheme();
@@ -38,7 +41,7 @@ export const PartyScreening = () => {
     alternativeEntityNames: '',
     uniqueId: '',
     includeAlias: '',
-    screeningstatus: ''
+    screeningStatus: ''
   });
   const [tableData, setTableData] = useState([]);
   const [listView, setListView] = useState(false);
@@ -60,7 +63,7 @@ export const PartyScreening = () => {
       alternativeEntityNames: '',
       uniqueId: '',
       includeAlias: '',
-      screeningstatus: ''
+      screeningStatus: ''
     });
     setFieldErrors({
       partyType: '',
@@ -68,7 +71,7 @@ export const PartyScreening = () => {
       alternativeEntityNames: '',
       uniqueId: '',
       includeAlias: '',
-      screeningstatus: ''
+      screeningStatus: ''
     });
   };
 
@@ -89,8 +92,8 @@ export const PartyScreening = () => {
     if (!formData.includeAlias) {
       errors.includeAlias = 'Include Alias is required';
     }
-    if (!formData.screeningstatus) {
-      errors.screeningstatus = 'Screening status is required';
+    if (!formData.screeningStatus) {
+      errors.screeningStatus = 'Screening status is required';
     }
 
     if (Object.keys(errors).length > 0) {
@@ -114,7 +117,7 @@ export const PartyScreening = () => {
           alternativeEntityNames: '',
           uniqueId: '',
           includeAlias: '',
-          screeningstatus: ''
+          screeningStatus: ''
         });
       })
       .catch((error) => {
@@ -140,8 +143,8 @@ export const PartyScreening = () => {
     if (!formData.includeAlias) {
       errors.includeAlias = 'Include Alias is required';
     }
-    if (!formData.screeningstatus) {
-      errors.screeningstatus = 'Screening status is required';
+    if (!formData.screeningStatus) {
+      errors.screeningStatus = 'Screening status is required';
     }
 
     if (Object.keys(errors).length > 0) {
@@ -152,7 +155,8 @@ export const PartyScreening = () => {
 
     const updatedFormData = {
       ...formData,
-      id: currentRowData?.id // Ensure the id from the current row data is included
+      active: formData.active ? true : false,
+      id: formData.id // Ensure the id from the current row data is included
     };
 
     axios
@@ -170,7 +174,7 @@ export const PartyScreening = () => {
           alternativeEntityNames: '',
           uniqueId: '',
           includeAlias: '',
-          screeningstatus: ''
+          screeningStatus: ''
         });
         getAllPartyScreening();
         setEditMode(false); // Close the dialog after saving
@@ -209,7 +213,17 @@ export const PartyScreening = () => {
 
   const handleEdit = (row) => {
     setCurrentRowData(row.original);
-    setFormData(row.original);
+    setFormData({
+      partyType: row.original.partyType,
+      entityName: row.original.entityName,
+      alternativeEntityNames: row.original.alternativeEntityNames,
+      uniqueId: row.original.uniqueId,
+      includeAlias: row.original.includeAlias,
+      screeningStatus: row.original.screeningStatus,
+      orgId: row.original.orgId,
+      active: row.original.active === 'Active',
+      id: row.original.id // Ensure the id is set in formData
+    });
     setEditMode(true);
   };
 
@@ -222,7 +236,7 @@ export const PartyScreening = () => {
       alternativeEntityNames: '',
       uniqueId: '',
       includeAlias: '',
-      screeningstatus: ''
+      screeningStatus: ''
     });
   };
 
@@ -302,8 +316,8 @@ export const PartyScreening = () => {
         },
         muiTableBodyCellProps: {
           align: 'center'
-        },
-        Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
+        }
+        // Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
       }
     ],
     []
@@ -420,8 +434,8 @@ export const PartyScreening = () => {
               <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.partyType}>
                 <InputLabel id="partyType">Party Type</InputLabel>
                 <Select labelId="partyType" label="partyType" value={formData.partyType} onChange={handleInputChange} name="partyType">
-                  <MenuItem value="India">Type 1</MenuItem>
-                  <MenuItem value="USA">Type 2</MenuItem>
+                  <MenuItem value="Type 1">Type 1</MenuItem>
+                  <MenuItem value="Type 2">Type 2</MenuItem>
                 </Select>
                 {fieldErrors.partyType && <FormHelperText>{fieldErrors.partyType}</FormHelperText>}
               </FormControl>
@@ -498,14 +512,30 @@ export const PartyScreening = () => {
                 placeholder="Placeholder"
                 variant="outlined"
                 size="small"
-                name="screeningstatus"
+                name="screeningStatus"
                 fullWidth
                 required
-                value={formData.screeningstatus}
+                value={formData.screeningStatus}
                 onChange={handleInputChange}
-                error={fieldErrors.screeningstatus}
-                helperText={fieldErrors.screeningstatus}
+                error={fieldErrors.screeningStatus}
+                helperText={fieldErrors.screeningStatus}
               />
+            </div>
+            <div className="col-md-4 mb-3">
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                      id="active"
+                      name="active"
+                      checked={formData.active}
+                      onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                    />
+                  }
+                  label="Active"
+                />
+              </FormGroup>
             </div>
           </div>
         ) : (
@@ -584,8 +614,8 @@ export const PartyScreening = () => {
             <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.partyType}>
               <InputLabel id="partyType">Party Type</InputLabel>
               <Select labelId="partyType" label="partyType" value={formData.partyType} onChange={handleInputChange} name="partyType">
-                <MenuItem value="India">Type 1</MenuItem>
-                <MenuItem value="USA">Type 2</MenuItem>
+                <MenuItem value="Type 1">Type 1</MenuItem>
+                <MenuItem value="Type 2">Type 2</MenuItem>
               </Select>
               {fieldErrors.partyType && <FormHelperText>{fieldErrors.partyType}</FormHelperText>}
             </FormControl>
@@ -662,14 +692,30 @@ export const PartyScreening = () => {
               placeholder="Placeholder"
               variant="outlined"
               size="small"
-              name="screeningstatus"
+              name="screeningStatus"
               fullWidth
               required
-              value={formData.screeningstatus}
+              value={formData.screeningStatus}
               onChange={handleInputChange}
-              error={fieldErrors.screeningstatus}
-              helperText={fieldErrors.screeningstatus}
+              error={fieldErrors.screeningStatus}
+              helperText={fieldErrors.screeningStatus}
             />
+          </div>
+          <div className="col-md-4 mb-3">
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                    id="active"
+                    name="active"
+                    checked={formData.active}
+                    onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                  />
+                }
+                label="Active"
+              />
+            </FormGroup>
           </div>
         </DialogContent>
         <DialogActions>

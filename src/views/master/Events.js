@@ -2,7 +2,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import FormatListBulletedTwoToneIcon from '@mui/icons-material/FormatListBulletedTwoTone';
 import SaveIcon from '@mui/icons-material/Save';
 import SearchIcon from '@mui/icons-material/Search';
-import { Avatar, ButtonBase, FormHelperText, Tooltip } from '@mui/material';
+import { Avatar, ButtonBase, FormHelperText, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -42,6 +42,8 @@ export const Events = () => {
   });
   const [tableData, setTableData] = useState([]);
   const [listView, setListView] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [currentRowData, setCurrentRowData] = useState(null);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -102,6 +104,54 @@ export const Events = () => {
       });
   };
 
+  const handleEditSave = () => {
+    const errors = {};
+    if (!formData.eventid) {
+      errors.eventid = 'Event Id is required';
+    }
+    if (!formData.eventDescription) {
+      errors.eventDescription = 'Event Description is required';
+    }
+    if (!formData.eventType) {
+      errors.eventType = 'Event Type is required';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      // Set error messages for each field
+      setFieldErrors(errors);
+      return;
+    }
+
+    const updatedFormData = {
+      ...formData,
+      active: formData.active ? true : false,
+      id: formData.id // Ensure the id from the current row data is included
+    };
+
+    axios
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateEvents`, updatedFormData)
+      .then((response) => {
+        console.log('Response:', response.data);
+        toast.success('Events Updated successfully', {
+          autoClose: 2000,
+          theme: 'colored'
+        });
+        setFormData({
+          active: true,
+          eventid: '',
+          eventDescription: '',
+          eventType: '',
+          orgId: 1
+        });
+        getAllEvents();
+        setEditMode(false);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        toast.error('An error occurred while updating the events');
+      });
+  };
+
   const getAllEvents = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/basicMaster/getEventsById`);
@@ -127,6 +177,30 @@ export const Events = () => {
     setListView(false);
   };
 
+  const handleEdit = (row) => {
+    setCurrentRowData(row.original);
+    setFormData({
+      eventid: row.original.eventid,
+      eventDescription: row.original.eventDescription,
+      eventType: row.original.eventType,
+      stateName: row.original.stateName,
+      orgId: row.original.orgId,
+      active: row.original.active === 'Active',
+      id: row.original.id // Ensure the id is set in formData
+    });
+    setEditMode(true);
+  };
+
+  const handleClose = () => {
+    setEditMode(false);
+    setFormData({
+      eventid: '',
+      eventDescription: '',
+      eventType: '',
+      active: true
+    });
+  };
+
   const columns = useMemo(
     () => [
       {
@@ -147,7 +221,7 @@ export const Events = () => {
             {/* <IconButton onClick={() => handleViewRow(row)}>
               <VisibilityIcon />
             </IconButton> */}
-            <IconButton>
+            <IconButton onClick={() => handleEdit(row)}>
               <EditIcon />
             </IconButton>
           </div>
@@ -184,8 +258,8 @@ export const Events = () => {
         },
         muiTableBodyCellProps: {
           align: 'center'
-        },
-        Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
+        }
+        // Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
       }
     ],
     []
@@ -421,6 +495,72 @@ export const Events = () => {
           </div>
         )}
       </div>
+      <Dialog open={editMode} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle style={{ fontSize: '20px' }}>Edit State</DialogTitle>
+        <DialogContent>
+          <div className="col-md-4 mt-3 mb-3">
+            <TextField
+              label="Event Id"
+              variant="outlined"
+              size="small"
+              fullWidth
+              name="eventid"
+              value={formData.eventid}
+              onChange={handleInputChange}
+              error={!!fieldErrors.eventid} // Add error prop
+              helperText={fieldErrors.eventid} // Add helperText prop
+            />
+          </div>
+
+          <div className="col-md-4 mb-3">
+            <TextField
+              label="Event Description"
+              variant="outlined"
+              size="small"
+              fullWidth
+              name="eventDescription"
+              value={formData.eventDescription}
+              onChange={handleInputChange}
+              error={!!fieldErrors.eventDescription} // Add error prop
+              helperText={fieldErrors.eventDescription} // Add helperText prop
+            />
+          </div>
+          <div className="col-md-4 mb-3">
+            <FormControl size="small" variant="outlined" fullWidth error={!!fieldErrors.eventType}>
+              <InputLabel id="eventType">Event Type</InputLabel>
+              <Select labelId="eventType" label="eventType" value={formData.eventType} onChange={handleInputChange} name="eventType">
+                <MenuItem value="India">India</MenuItem>
+                <MenuItem value="USA">USA</MenuItem>
+              </Select>
+              {fieldErrors.eventType && <FormHelperText>{fieldErrors.eventType}</FormHelperText>}
+            </FormControl>
+          </div>
+          <div className="col-md-4 mb-3">
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                    id="active"
+                    checked={formData.active}
+                    onChange={(e) => handleInputChange({ target: { name: 'active', value: e.target.checked } })}
+                    name="active"
+                  />
+                }
+                label="Active"
+              />
+            </FormGroup>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleEditSave} color="primary">
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

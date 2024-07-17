@@ -17,10 +17,14 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import Checkbox from '@mui/material/Checkbox';
 
 export const Port = () => {
   const [orgId, setOrgId] = useState(localStorage.getItem('orgId'));
   const [formData, setFormData] = useState({
+    active: true,
     port: '',
     code: '',
     country: '',
@@ -132,7 +136,8 @@ export const Port = () => {
 
     const updatedFormData = {
       ...formData,
-      id: currentRowData?.id // Ensure the id from the current row data is included
+      active: formData.active ? true : false,
+      id: formData.id // Ensure the id from the current row data is included
     };
 
     axios
@@ -187,13 +192,22 @@ export const Port = () => {
 
   const handleEdit = (row) => {
     setCurrentRowData(row.original);
-    setFormData(row.original);
+    setFormData({
+      port: row.original.port,
+      code: row.original.code,
+      country: row.original.country,
+      type: row.original.type,
+      orgId: row.original.orgId,
+      active: row.original.active === 'Active',
+      id: row.original.id // Ensure the id is set in formData
+    });
     setEditMode(true);
   };
 
   const handleClose = () => {
     setEditMode(false);
     setFormData({
+      active: true,
       port: '',
       code: '',
       country: '',
@@ -266,8 +280,8 @@ export const Port = () => {
         },
         muiTableBodyCellProps: {
           align: 'center'
-        },
-        Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
+        }
+        // Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
       }
     ],
     []
@@ -431,6 +445,22 @@ export const Port = () => {
                 {fieldErrors.type && <FormHelperText>{fieldErrors.type}</FormHelperText>}
               </FormControl>
             </div>
+            <div className="col-md-4 mb-3">
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                      id="active"
+                      name="active"
+                      checked={formData.active}
+                      onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                    />
+                  }
+                  label="Active"
+                />
+              </FormGroup>
+            </div>
           </div>
         ) : (
           <div className="mt-4">
@@ -554,6 +584,22 @@ export const Port = () => {
               </Select>
               {fieldErrors.type && <FormHelperText>{fieldErrors.type}</FormHelperText>}
             </FormControl>
+          </div>
+          <div className="col-md-8 mb-3">
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                    id="active"
+                    name="active"
+                    checked={formData.active}
+                    onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                  />
+                }
+                label="Active"
+              />
+            </FormGroup>
           </div>
         </DialogContent>
         <DialogActions>

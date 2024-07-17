@@ -23,7 +23,13 @@ const Region = Loadable(lazy(() => import('views/master/Region')));
 const ListOfValues = Loadable(lazy(() => import('views/master/ListOfValues')));
 const TermsAndConditions = Loadable(lazy(() => import('views/master/TermsAndConditions')));
 const PartyScreening = Loadable(lazy(() => import('views/master/PartyScreening')));
-// const TaxMaster = Loadable(lazy(() => import('views/Finance/TaxMaster')));
+const ShipmentAO = Loadable(lazy(() => import('views/transaction/shipmentAO')));
+const ShipmentFollowUp = Loadable(lazy(() => import('views/transaction/shipmentFollowUp')));
+const MasterAirWayBill = Loadable(lazy(() => import('views/transaction/MasterAirWayBill')));
+const AirIBTransactionPreAlert = Loadable(lazy(() => import('views/transaction/AirIBTransactionPreAlert')));
+const ShipmentFollowUpSO = Loadable(lazy(() => import('views/transaction/shipmentFollowUpSO')));
+const HouseContainerAllocationSO = Loadable(lazy(() => import('views/transaction/HouseContainerAllocationSO')));
+const ShipmentSO = Loadable(lazy(() => import('views/transaction/shipmentSO')));
 
 const freightManagementRoutes = {
   path: '/',
@@ -104,6 +110,34 @@ const freightManagementRoutes = {
     {
       path: '/master/PartyScreening',
       element: <PartyScreening />
+    },
+    {
+      path: '/transaction/shipmentAO',
+      element: <ShipmentAO />
+    },
+    {
+      path: '/transaction/shipmentFollowUp',
+      element: <ShipmentFollowUp />
+    },
+    {
+      path: '/transaction/masterAirWayBill',
+      element: <MasterAirWayBill />
+    },
+    {
+      path: '/transaction/airIBTransactionPreAlert',
+      element: <AirIBTransactionPreAlert />
+    },
+    {
+      path: '/transaction/shipmentFollowUpSO',
+      element: <ShipmentFollowUpSO />
+    },
+    {
+      path: '/transaction/houseContainerAllocationSO',
+      element: <HouseContainerAllocationSO />
+    },
+    {
+      path: '/transaction/shipmentSO',
+      element: <ShipmentSO />
     }
   ]
 };

@@ -151,7 +151,7 @@ export const ListOfValues = () => {
     };
 
     axios
-      .post(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateListOfValues`, payload)
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateListOfValues`, payload)
       .then((response) => {
         console.log('Response:', response.data);
         toast.success('List of Values created successfully', {
@@ -212,9 +212,7 @@ export const ListOfValues = () => {
 
     const payload = {
       ...formData,
-      orgId: 0, // Assuming this is a fixed value or you need to set it dynamically
-      createdBy: 'string', // Assuming this is a placeholder or you need to set it dynamically
-      updatedBy: 'string', // Assuming this is a placeholder or you need to set it dynamically
+      active: formData.active ? true : false,
       listOfValues1DTO: tableData.map((row) => ({
         // id: 0, // Assuming new rows have id 0
         // sno: tableData.indexOf(row) + 1, // Using index + 1 for sno
@@ -226,11 +224,11 @@ export const ListOfValues = () => {
 
     const updatedPayload = {
       ...payload,
-      id: currentRowData?.id
+      id: payload.id
     };
 
     axios
-      .post(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateListOfValues`, updatedPayload)
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateListOfValues`, updatedPayload)
       .then((response) => {
         console.log('Response:', response.data);
         toast.success('List of Values Updated successfully', {
@@ -319,11 +317,13 @@ export const ListOfValues = () => {
     setFormData({
       listCode: row.original.listCode,
       listDescription: row.original.listDescription,
-      active: row.original.active
+      orgId: row.original.orgId,
+      id: row.original.id,
+      active: row.original.active === 'Active'
     });
 
     setTableData(
-      row.original.listOfValues1VO?.map(() => ({
+      row.original.listOfValues1VO?.map((list) => ({
         id: Date.now(),
         valueCode: list.valueCode,
         valueDescription: list.valueDescription,
@@ -392,8 +392,8 @@ export const ListOfValues = () => {
         },
         muiTableBodyCellProps: {
           align: 'center'
-        },
-        Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
+        }
+        // Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
       }
     ],
     []
@@ -598,10 +598,11 @@ export const ListOfValues = () => {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={formData.active}
-                      onChange={handleInputChange}
-                      name="active"
                       sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                      id="active"
+                      name="active"
+                      checked={formData.active}
+                      onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
                     />
                   }
                   label="Active"

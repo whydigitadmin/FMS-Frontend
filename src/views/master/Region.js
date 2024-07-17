@@ -112,7 +112,8 @@ export const Region = () => {
 
     const updatedFormData = {
       ...formData,
-      id: currentRowData?.id // Ensure the id from the current row data is included
+      active: formData.active ? true : false,
+      id: formData.id // Ensure the id from the current row data is included
     };
 
     axios
@@ -165,7 +166,13 @@ export const Region = () => {
 
   const handleEdit = (row) => {
     setCurrentRowData(row.original);
-    setFormData(row.original);
+    setFormData({
+      regionCode: row.original.regionCode,
+      regionName: row.original.regionName,
+      orgId: row.original.orgId,
+      active: row.original.active === 'Active',
+      id: row.original.id // Ensure the id is set in formData
+    });
     setEditMode(true);
   };
 
@@ -232,8 +239,8 @@ export const Region = () => {
         },
         muiTableBodyCellProps: {
           align: 'center'
-        },
-        Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
+        }
+        // Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
       }
     ],
     []

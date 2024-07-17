@@ -240,7 +240,7 @@ export const DocumentType = () => {
     };
 
     axios
-      .post(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateDocumentType`, payload)
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateDocumentType`, payload)
       .then((response) => {
         console.log('Response:', response.data);
         toast.success('Document Type created successfully', {
@@ -885,6 +885,7 @@ export const DocumentType = () => {
 
     const payload = {
       ...formData,
+      active: formData.active ? true : false,
       subTypesDTO: tableData
         .filter((row) => row.subType || row.subTypeCode || row.subTypeName || row.month) // Filter out rows with empty values
         .map((row) => {
@@ -906,11 +907,13 @@ export const DocumentType = () => {
 
     const updatedPayload = {
       ...payload,
-      id: currentRowData?.id
+      id: payload.id
+      // orgId: formData.orgId,
+      // active: formData.active
     };
 
     axios
-      .post(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateDocumentType`, updatedPayload)
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateDocumentType`, updatedPayload)
       .then((response) => {
         console.log('Response:', response.data);
         toast.success('Document Type Updated successfully', {
@@ -1112,7 +1115,8 @@ export const DocumentType = () => {
       noGeneration: row.original.noGeneration,
       prefix: row.original.prefix,
       orgId: row.original.orgId,
-      active: row.original.active
+      active: row.original.active === 'Active',
+      id: row.original.id
     });
 
     setTableData(
@@ -1243,8 +1247,8 @@ export const DocumentType = () => {
         },
         muiTableBodyCellProps: {
           align: 'center'
-        },
-        Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
+        }
+        // Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
       }
     ],
     []
@@ -1555,6 +1559,22 @@ export const DocumentType = () => {
                 error={!!fieldErrors.documentCode}
                 helperText={fieldErrors.documentCode}
               />
+            </div>
+            <div className="col-md-4 mb-3">
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                      id="active"
+                      name="active"
+                      checked={formData.active}
+                      onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                    />
+                  }
+                  label="Active"
+                />
+              </FormGroup>
             </div>
           </div>
           <div className="row d-flex">

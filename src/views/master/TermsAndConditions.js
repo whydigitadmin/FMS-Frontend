@@ -135,7 +135,8 @@ export const TermsAndConditions = () => {
 
     const updatedFormData = {
       ...formData,
-      id: currentRowData?.id // Ensure the id from the current row data is included
+      active: formData.active ? true : false,
+      id: formData.id // Ensure the id from the current row data is included
     };
 
     axios
@@ -190,7 +191,15 @@ export const TermsAndConditions = () => {
 
   const handleEdit = (row) => {
     setCurrentRowData(row.original);
-    setFormData(row.original);
+    setFormData({
+      branch: row.original.branch,
+      documentType: row.original.documentType,
+      partyType: row.original.partyType,
+      terms: row.original.terms,
+      orgId: row.original.orgId,
+      active: row.original.active === 'Active',
+      id: row.original.id // Ensure the id is set in formData
+    });
     setEditMode(true);
   };
 
@@ -270,8 +279,8 @@ export const TermsAndConditions = () => {
         },
         muiTableBodyCellProps: {
           align: 'center'
-        },
-        Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
+        }
+        // Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
       }
     ],
     []
@@ -444,6 +453,22 @@ export const TermsAndConditions = () => {
                 helperText={fieldErrors.terms}
               />
             </div>
+            <div className="col-md-4 mb-3">
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                      id="active"
+                      name="active"
+                      checked={formData.active}
+                      onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                    />
+                  }
+                  label="Active"
+                />
+              </FormGroup>
+            </div>
           </div>
         ) : (
           <div className="mt-4">
@@ -576,6 +601,22 @@ export const TermsAndConditions = () => {
               error={fieldErrors.terms}
               helperText={fieldErrors.terms}
             />
+          </div>
+          <div className="col-md-8 mb-3">
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                    id="active"
+                    name="active"
+                    checked={formData.active}
+                    onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                  />
+                }
+                label="Active"
+              />
+            </FormGroup>
           </div>
         </DialogContent>
         <DialogActions>

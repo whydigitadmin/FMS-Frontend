@@ -27,7 +27,10 @@ export const Department = () => {
     active: true,
     departmentCode: '',
     department: '',
-    orgId: 1
+    createdBy: '',
+    updatedBy: '',
+    orgId: 1,
+    id: 0
   });
 
   const [fieldErrors, setFieldErrors] = useState({
@@ -115,8 +118,10 @@ export const Department = () => {
 
     const updatedFormData = {
       ...formData,
-      id: currentRowData?.id // Ensure the id from the current row data is included
+      active: formData.active ? true : false,
+      id: formData.id // Ensure the id from the current row data is included
     };
+    console.log('upd', updatedFormData);
 
     axios
       .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateDepartment`, updatedFormData)
@@ -166,8 +171,15 @@ export const Department = () => {
   };
 
   const handleEdit = (row) => {
-    setCurrentRowData(row.original);
-    setFormData(row.original);
+    console.log('set', setCurrentRowData);
+    setCurrentRowData(row.original.id);
+    setFormData({
+      departmentCode: row.original.departmentCode,
+      department: row.original.department,
+      orgId: row.original.orgId,
+      active: row.original.active === 'Active',
+      id: row.original.id // Ensure the id is set in formData
+    });
     setEditMode(true);
   };
 
@@ -233,8 +245,8 @@ export const Department = () => {
         },
         muiTableBodyCellProps: {
           align: 'center'
-        },
-        Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
+        }
+        // Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
       }
     ],
     []

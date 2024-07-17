@@ -17,6 +17,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import Checkbox from '@mui/material/Checkbox';
 
 export const Segments = () => {
   const [formData, setFormData] = useState({
@@ -109,7 +112,8 @@ export const Segments = () => {
 
     const updatedFormData = {
       ...formData,
-      id: currentRowData?.id // Ensure the id from the current row data is included
+      active: formData.active ? true : false,
+      id: formData.id // Ensure the id from the current row data is included
     };
 
     axios
@@ -161,7 +165,13 @@ export const Segments = () => {
 
   const handleEdit = (row) => {
     setCurrentRowData(row.original);
-    setFormData(row.original);
+    setFormData({
+      segmentName: row.original.segmentName,
+      segmentDescription: row.original.segmentDescription,
+      orgId: row.original.orgId,
+      active: row.original.active === 'Active',
+      id: row.original.id // Ensure the id is set in formData
+    });
     setEditMode(true);
   };
 
@@ -227,8 +237,8 @@ export const Segments = () => {
         },
         muiTableBodyCellProps: {
           align: 'center'
-        },
-        Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
+        }
+        // Cell: ({ cell: { value } }) => <span>{value ? 'Active' : 'Active'}</span>
       }
     ],
     []
@@ -374,6 +384,22 @@ export const Segments = () => {
                 helperText={fieldErrors.segmentDescription} // Add helperText prop
               />
             </div>
+            <div className="col-md-4 mb-3">
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                      id="active"
+                      checked={formData.active}
+                      onChange={(e) => handleInputChange({ target: { name: 'active', value: e.target.checked } })}
+                      name="active"
+                    />
+                  }
+                  label="Active"
+                />
+              </FormGroup>
+            </div>
           </div>
         ) : (
           <div className="mt-4">
@@ -479,6 +505,22 @@ export const Segments = () => {
               error={!!fieldErrors.segmentDescription} // Add error prop
               helperText={fieldErrors.segmentDescription} // Add helperText prop
             />
+          </div>
+          <div className="col-md-8 mb-3">
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
+                    id="active"
+                    checked={formData.active}
+                    onChange={(e) => handleInputChange({ target: { name: 'active', value: e.target.checked } })}
+                    name="active"
+                  />
+                }
+                label="Active"
+              />
+            </FormGroup>
           </div>
         </DialogContent>
         <DialogActions>
