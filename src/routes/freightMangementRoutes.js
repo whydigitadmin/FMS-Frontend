@@ -23,6 +23,7 @@ const Region = Loadable(lazy(() => import('views/master/Region')));
 const ListOfValues = Loadable(lazy(() => import('views/master/ListOfValues')));
 const TermsAndConditions = Loadable(lazy(() => import('views/master/TermsAndConditions')));
 const PartyScreening = Loadable(lazy(() => import('views/master/PartyScreening')));
+const PartyMaster = Loadable(lazy(() => import('views/master/PartyMaster')));
 const ShipmentAO = Loadable(lazy(() => import('views/transaction/shipmentAO')));
 const ShipmentFollowUp = Loadable(lazy(() => import('views/transaction/shipmentFollowUp')));
 const MasterAirWayBill = Loadable(lazy(() => import('views/transaction/MasterAirWayBill')));
@@ -30,6 +31,17 @@ const AirIBTransactionPreAlert = Loadable(lazy(() => import('views/transaction/A
 const ShipmentFollowUpSO = Loadable(lazy(() => import('views/transaction/shipmentFollowUpSO')));
 const HouseContainerAllocationSO = Loadable(lazy(() => import('views/transaction/HouseContainerAllocationSO')));
 const ShipmentSO = Loadable(lazy(() => import('views/transaction/shipmentSO')));
+const SeaIBTransactionDeliveryOrder = Loadable(lazy(() => import('views/transaction/SeaIBTransactionDeliveryOrder')));
+const SeaIBTransactionHouseContainerAllocation = Loadable(lazy(() => import('views/transaction/SeaIBTransactionHouseContainerAllocation')));
+const SeaIBTransactionPreAlert = Loadable(lazy(() => import('views/transaction/SeaIBTransactionPreAlert')));
+const AirIBTransactionAdvanceCan = Loadable(lazy(() => import('views/transaction/AirIBTransactionAdvanceCan')));
+const SeaIBTransactionAdvanceCan = Loadable(lazy(() => import('views/transaction/SeaIBTransactionAdvanceCan')));
+const JobCardAO = Loadable(lazy(() => import('views/transaction/JobCardAO')));
+const JobCardAI = Loadable(lazy(() => import('views/transaction/JobCardAI')));
+const JobCardSO = Loadable(lazy(() => import('views/transaction/JobCardSO')));
+const JobCardSI = Loadable(lazy(() => import('views/transaction/JobCardSI')));
+const HouseAirWayBill = Loadable(lazy(() => import('views/transaction/HouseAirWayBill')));
+const HouseBillOfLading = Loadable(lazy(() => import('views/transaction/HouseBillOfLading')));
 
 const freightManagementRoutes = {
   path: '/',
@@ -112,6 +124,10 @@ const freightManagementRoutes = {
       element: <PartyScreening />
     },
     {
+      path: '/master/partyMaster',
+      element: <PartyMaster />
+    },
+    {
       path: '/transaction/shipmentAO',
       element: <ShipmentAO />
     },
@@ -138,6 +154,50 @@ const freightManagementRoutes = {
     {
       path: '/transaction/shipmentSO',
       element: <ShipmentSO />
+    },
+    {
+      path: '/transaction/seaIBTransactionDeliveryOrder',
+      element: <SeaIBTransactionDeliveryOrder />
+    },
+    {
+      path: '/transaction/seaIBTransactionHouseContainerAllocation',
+      element: <SeaIBTransactionHouseContainerAllocation />
+    },
+    {
+      path: '/transaction/seaIBTransactionPreAlert',
+      element: <SeaIBTransactionPreAlert />
+    },
+    {
+      path: '/transaction/airIBTransactionAdvanceCan',
+      element: <AirIBTransactionAdvanceCan />
+    },
+    {
+      path: '/transaction/seaIBTransactionAdvanceCan',
+      element: <SeaIBTransactionAdvanceCan />
+    },
+    {
+      path: '/transaction/jobCardAO',
+      element: <JobCardAO />
+    },
+    {
+      path: '/transaction/jobCardAI',
+      element: <JobCardAI />
+    },
+    {
+      path: '/transaction/jobCardSO',
+      element: <JobCardSO />
+    },
+    {
+      path: '/transaction/jobCardSI',
+      element: <JobCardSI />
+    },
+    {
+      path: '/transaction/houseAirWayBill',
+      element: <HouseAirWayBill />
+    },
+    {
+      path: '/transaction/houseBillOfLading',
+      element: <HouseBillOfLading />
     }
   ]
 };

@@ -128,6 +128,12 @@ const fms = {
           title: 'Party Screening',
           type: 'item',
           url: '/master/PartyScreening'
+        },
+        {
+          id: 'partyMaster',
+          title: 'Party Master',
+          type: 'item',
+          url: '/master/partyMaster'
         }
       ]
     }
