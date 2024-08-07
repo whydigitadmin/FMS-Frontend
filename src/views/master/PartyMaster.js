@@ -29,20 +29,59 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 
 export const PartyMaster = () => {
-  //   const [formData, setFormData] = useState({
-  //     employeeCode: '',
-  //     employeeName: '',
-  //     gender: '',
-  //     branch: '',
-  //     active: true,
-  //     joiningDate: null,
-  //     department: '',
-  //     designation: '',
-  //     appointmentType: '',
-  //     modeOfEntry: '',
-  //     dateOfBirth: null,
-  //     leavingDate: null
-  //   });
+  const [formData, setFormData] = useState({
+    partyType: '',
+    partyCode: '',
+    partyName: '',
+    gstPartyName: '',
+    active: true,
+    customerType: '',
+    company: '',
+    customerCategory: '',
+    agentName: '',
+    accountsType: '',
+    businessType: '',
+    carrierCode: '',
+    supplierType: '',
+    salesPerson: '',
+    salesPerson1: '',
+    customerCoordinator: '',
+    customerCoordinator1: '',
+    accountName: '',
+    gstRegistered: '',
+    creditLimit: '',
+    creditDays: '',
+    panNo: '',
+    controllingOffice: '',
+    currency: '',
+    panName: '',
+    airWayBillCode: '',
+    airLineCode: '',
+    tanNo: '',
+    businessCategory: '',
+    businessCategory1: '',
+    country: '',
+    caf: '',
+    remarks: '',
+    compoundingScheme: '',
+    psu: '',
+    nameOfBank: '',
+    branch: '',
+    addressOfBank: '',
+    accountNo: '',
+    accountType: '',
+    ifscCode: '',
+    swift: '',
+    partyVendorEvaluationDTO: [
+      {
+        commonAgreedTerms: '',
+        justification: '',
+        slaPoints: '',
+        whatBasisVendorSelected: '',
+        whoBroughtVentor: ''
+      }
+    ]
+  });
   //   const [listView, setListView] = useState(false);
 
   const theme = useTheme();
@@ -59,30 +98,70 @@ export const PartyMaster = () => {
 
   //   const [id, setId] = useState('');
 
-  // const [fieldErrors, setFieldErrors] = useState({
-  //   employeeCode: '',
-  //   employeeName: '',
-  //   gender: '',
-  //   branch: '',
-  //   active: true,
-  //   joiningDate: '',
-  //   department: '',
-  //   designation: '',
-  //   appointmentType: '',
-  //   modeOfEntry: '',
-  //   dateOfBirth: '',
-  //   leavingDate: ''
-  // });
+  const [fieldErrors, setFieldErrors] = useState({
+    partyType: '',
+    partyCode: '',
+    partyName: '',
+    gstPartyName: '',
+    active: true,
+    customerType: '',
+    company: '',
+    customerCategory: '',
+    agentName: '',
+    accountsType: '',
+    businessType: '',
+    carrierCode: '',
+    supplierType: '',
+    salesPerson: '',
+    salesPerson1: '',
+    customerCoordinator: '',
+    customerCoordinator1: '',
+    accountName: '',
+    gstRegistered: '',
+    creditLimit: '',
+    creditDays: '',
+    panNo: '',
+    controllingOffice: '',
+    currency: '',
+    panName: '',
+    airWayBillCode: '',
+    airLineCode: '',
+    tanNo: '',
+    businessCategory: '',
+    businessCategory1: '',
+    country: '',
+    caf: '',
+    remarks: '',
+    compoundingScheme: '',
+    psu: '',
+    nameOfBank: '',
+    branch: '',
+    addressOfBank: '',
+    accountNo: '',
+    accountType: '',
+    ifscCode: '',
+    swift: '',
+    partyVendorEvaluationDTO: [
+      {
+        commonAgreedTerms: '',
+        justification: '',
+        slaPoints: '',
+        whatBasisVendorSelected: '',
+        whoBroughtVentor: ''
+      }
+    ]
+  });
 
   //   const [fieldErrors, setFieldErrors] = useState({});
 
   //   const [tableData, setTableData] = useState([]);
 
-  //   const handleInputChange = (e) => {
-  //     const { name, value } = e.target;
-  //     setFormData({ ...formData, [name]: value });
-  //     setFieldErrors({ ...fieldErrors, [name]: '' });
-  //   };
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    setFieldErrors({ ...fieldErrors, [name]: '' });
+  };
+
   //   const handleDateChange = (name, date) => {
   //     if (date && date.isValid()) {
   //       setFormData({ ...formData, [name]: date });
@@ -92,116 +171,199 @@ export const PartyMaster = () => {
   //     }
   //   };
 
-  //   const handleClear = () => {
-  //     setFormData({
-  //       active: true,
-  //       employeeCode: '',
-  //       employeeName: '',
-  //       gender: '',
-  //       branch: '',
-  //       joiningDate: null,
-  //       department: '',
-  //       designation: '',
-  //       appointmentType: '',
-  //       modeOfEntry: '',
-  //       dateOfBirth: null,
-  //       leavingDate: null
-  //     });
-  //     setFieldErrors({
-  //       active: true,
-  //       employeeCode: '',
-  //       employeeName: '',
-  //       gender: '',
-  //       branch: '',
-  //       joiningDate: null,
-  //       department: '',
-  //       designation: '',
-  //       appointmentType: '',
-  //       modeOfEntry: '',
-  //       dateOfBirth: null,
-  //       leavingDate: null
-  //     });
-  //   };
-
-  //   const handleSave = () => {
-  //     const errors = {};
-  //     if (!formData.employeeCode) {
-  //       errors.employeeCode = 'Employee Code is required';
-  //     }
-  //     if (!formData.employeeName) {
-  //       errors.employeeName = 'Employee Name is required';
-  //     }
-  //     if (!formData.gender) {
-  //       errors.gender = 'Gender is required';
-  //     }
-  //     if (!formData.branch) {
-  //       errors.branch = 'Branch is required';
-  //     }
-  //     if (!formData.joiningDate) {
-  //       errors.joiningDate = 'Joining Date is required';
-  //     }
-  //     if (!formData.department) {
-  //       errors.department = 'Department is required';
-  //     }
-  //     if (!formData.designation) {
-  //       errors.designation = 'Designation is required';
-  //     }
-  //     if (!formData.appointmentType) {
-  //       errors.appointmentType = 'Appointment Type is required';
-  //     }
-  //     if (!formData.modeOfEntry) {
-  //       errors.modeOfEntry = 'Mode Of Entry is required';
-  //     }
-  //     if (!formData.dateOfBirth) {
-  //       errors.dateOfBirth = 'Date Of Birth is required';
-  //     }
-  //     if (!formData.leavingDate) {
-  //       errors.leavingDate = 'Leaving Date is required';
-  //     }
-
-  //     if (Object.keys(errors).length > 0) {
-  //       setFieldErrors(errors);
-  //       return;
-  //     }
-
-  //     const payload = {
-  //       ...formData,
-  //       active: formData.active ? 'true' : 'false',
-  //       joiningDate: formData.joiningDate?.format('YYYY-MM-DD') || '',
-  //       dateOfBirth: formData.dateOfBirth?.format('YYYY-MM-DD') || '',
-  //       leavingDate: formData.leavingDate?.format('YYYY-MM-DD') || '',
-  //       orgId: 1 // Update with actual orgId if needed
-  //       // createdBy: 'string', // Update with actual createdBy if needed
-  //       // updatedBy: 'string' // Update with actual updatedBy if needed
-  //     };
-
-  //     axios
-  //       .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateEmployee`, payload)
-  //       .then((response) => {
-  //         console.log('Response:', response.data);
-  //         setFormData({
-  //           employeeCode: '',
-  //           employeeName: '',
-  //           gender: '',
-  //           branch: '',
-  //           active: true,
-  //           joiningDate: null,
-  //           department: '',
-  //           designation: '',
-  //           appointmentType: '',
-  //           modeOfEntry: '',
-  //           dateOfBirth: null,
-  //           leavingDate: null
-  //         });
-  //         toast.success('Employee Created Successfully', {
-  //           autoClose: 2000,
-  //           theme: 'colored'
-  //         });
-  //       })
-  //       .catch((error) => {
-  //         console.error('Error:', error);
-  //       });
-  //   };
+  const handleClear = () => {
+    setFormData({
+      partyType: '',
+      partyCode: '',
+      partyName: '',
+      gstPartyName: '',
+      active: true,
+      customerType: '',
+      company: '',
+      customerCategory: '',
+      agentName: '',
+      accountsType: '',
+      businessType: '',
+      carrierCode: '',
+      supplierType: '',
+      salesPerson: '',
+      salesPerson1: '',
+      customerCoordinator: '',
+      customerCoordinator1: '',
+      accountName: '',
+      gstRegistered: '',
+      creditLimit: '',
+      creditDays: '',
+      panNo: '',
+      controllingOffice: '',
+      currency: '',
+      panName: '',
+      airWayBillCode: '',
+      airLineCode: '',
+      tanNo: '',
+      businessCategory: '',
+      businessCategory1: '',
+      country: '',
+      caf: '',
+      remarks: '',
+      compoundingScheme: '',
+      psu: '',
+      nameOfBank: '',
+      branch: '',
+      addressOfBank: '',
+      accountNo: '',
+      accountType: '',
+      ifscCode: '',
+      swift: '',
+      partyVendorEvaluationDTO: [
+        {
+          commonAgreedTerms: '',
+          justification: '',
+          slaPoints: '',
+          whatBasisVendorSelected: '',
+          whoBroughtVentor: ''
+        }
+      ]
+    });
+    setFieldErrors({
+      partyType: '',
+      partyCode: '',
+      partyName: '',
+      gstPartyName: '',
+      active: true,
+      customerType: '',
+      company: '',
+      customerCategory: '',
+      agentName: '',
+      accountsType: '',
+      businessType: '',
+      carrierCode: '',
+      supplierType: '',
+      salesPerson: '',
+      salesPerson1: '',
+      customerCoordinator: '',
+      customerCoordinator1: '',
+      accountName: '',
+      gstRegistered: '',
+      creditLimit: '',
+      creditDays: '',
+      panNo: '',
+      controllingOffice: '',
+      currency: '',
+      panName: '',
+      airWayBillCode: '',
+      airLineCode: '',
+      tanNo: '',
+      businessCategory: '',
+      businessCategory1: '',
+      country: '',
+      caf: '',
+      remarks: '',
+      compoundingScheme: '',
+      psu: '',
+      nameOfBank: '',
+      branch: '',
+      addressOfBank: '',
+      accountNo: '',
+      accountType: '',
+      ifscCode: '',
+      swift: '',
+      partyVendorEvaluationDTO: [
+        {
+          commonAgreedTerms: '',
+          justification: '',
+          slaPoints: '',
+          whatBasisVendorSelected: '',
+          whoBroughtVentor: ''
+        }
+      ]
+    });
+    setTableErrors([]);
+    setTableData([
+      {
+        state: '',
+        gstIn: '',
+        stateNo: '',
+        contactPerson: '',
+        contactPhoneNo: '',
+        contactEmail: '',
+        stateCode: ''
+      }
+    ]);
+    setTableErrors1([]);
+    setTableData1([
+      {
+        state: '',
+        businessPlace: '',
+        stateGstIn: '',
+        cityName: '',
+        addressType: '',
+        addressLine1: '',
+        addressLine2: '',
+        addressLine3: '',
+        pinCode: '',
+        contact: ''
+      }
+    ]);
+    setTableErrors2([]);
+    setTableData2([
+      {
+        name: '',
+        designation: '',
+        phone: '',
+        email: ''
+      }
+    ]);
+    setTableErrors3([]);
+    setTableData3([
+      {
+        tdsWhSection: '',
+        rateFrom: '',
+        rateTo: '',
+        tdsWh: '',
+        sur: '',
+        ed: '',
+        tdsCertificateNo: ''
+      }
+    ]);
+    setTableErrors4([]);
+    setTableData4([
+      {
+        tdsWhSection1: '',
+        charge: ''
+      }
+    ]);
+    setTableErrors5([]);
+    setTableData5([
+      {
+        transactionCurrency: ''
+      }
+    ]);
+    setTableErrors6([]);
+    setTableData6([
+      {
+        salesPerson: '',
+        empCode: '',
+        salesBranch: '',
+        effectiveFrom: '',
+        effectiveTill: ''
+      }
+    ]);
+    setTableErrors7([]);
+    setTableData7([
+      {
+        tdsExemptedCertificate: '',
+        valueTds: '',
+        finYear: ''
+      }
+    ]);
+    setTableErrors8([]);
+    setTableData8([
+      {
+        partnerName: ''
+      }
+    ]);
+  };
 
   //   const handleEditSave = () => {
   //     const errors = {};
@@ -866,6 +1028,552 @@ export const PartyMaster = () => {
     }
   };
 
+  const handleSave = () => {
+    // const errors = {};
+    // if (!formData.partyType) {
+    //   errors.partyType = 'Party Type is required';
+    // }
+    // if (!formData.partyCode) {
+    //   errors.partyCode = 'Party Code is required';
+    // }
+    // if (!formData.partyName) {
+    //   errors.partyName = 'Party Name is required';
+    // }
+    // if (!formData.gstPartyName) {
+    //   errors.gstPartyName = 'Gst Party Name is required';
+    // }
+    // if (!formData.customerType) {
+    //   errors.customerType = 'Customer Type is required';
+    // }
+    // if (!formData.company) {
+    //   errors.company = 'Company is required';
+    // }
+    // if (!formData.customerCategory) {
+    //   errors.customerCategory = 'Customer Category is required';
+    // }
+    // if (!formData.agentName) {
+    //   errors.agentName = 'Agent Name is required';
+    // }
+    // if (!formData.accountsType) {
+    //   errors.accountsType = 'Accounts Type is required';
+    // }
+    // if (!formData.businessType) {
+    //   errors.businessType = 'Business Type is required';
+    // }
+    // if (!formData.carrierCode) {
+    //   errors.carrierCode = 'Carrier Code is required';
+    // }
+    // if (!formData.supplierType) {
+    //   errors.supplierType = 'Supplier Type is required';
+    // }
+    // if (!formData.salesPerson) {
+    //   errors.salesPerson = 'Sales Person is required';
+    // }
+    // if (!formData.customerCoordinator) {
+    //   errors.customerCoordinator = 'Customer Coordinator is required';
+    // }
+    // if (!formData.accountName) {
+    //   errors.accountName = 'Account Name is required';
+    // }
+    // if (!formData.gstRegistered) {
+    //   errors.gstRegistered = 'Gst Registered is required';
+    // }
+    // if (!formData.creditLimit) {
+    //   errors.creditLimit = 'Credit Limit is required';
+    // }
+    // if (!formData.creditDays) {
+    //   errors.creditDays = 'Credit Days is required';
+    // }
+    // if (!formData.panNo) {
+    //   errors.panNo = 'Pan No is required';
+    // }
+    // if (!formData.controllingOffice) {
+    //   errors.controllingOffice = 'Controlling Office is required';
+    // }
+    // if (!formData.currency) {
+    //   errors.currency = 'Currency is required';
+    // }
+    // if (!formData.panName) {
+    //   errors.panName = 'Pan Name is required';
+    // }
+    // if (!formData.airWayBillCode) {
+    //   errors.airWayBillCode = 'AirWay Bill Code is required';
+    // }
+    // if (!formData.airLineCode) {
+    //   errors.airLineCode = 'AirLine Code is required';
+    // }
+    // if (!formData.tanNo) {
+    //   errors.tanNo = 'Tan No is required';
+    // }
+    // if (!formData.businessCategory) {
+    //   errors.businessCategory = 'Business Category is required';
+    // }
+    // if (!formData.country) {
+    //   errors.country = 'Country is required';
+    // }
+    // if (!formData.caf) {
+    //   errors.caf = 'Caf is required';
+    // }
+    // if (!formData.remarks) {
+    //   errors.remarks = 'Remarks is required';
+    // }
+    // if (!formData.compoundingScheme) {
+    //   errors.compoundingScheme = 'Compounding Scheme is required';
+    // }
+    // if (!formData.psu) {
+    //   errors.psu = 'Psu is required';
+    // }
+    // if (!formData.nameOfBank) {
+    //   errors.nameOfBank = 'Name of Bank is required';
+    // }
+    // if (!formData.branch) {
+    //   errors.branch = 'Branch is required';
+    // }
+    // if (!formData.addressOfBank) {
+    //   errors.addressOfBank = 'Address of Bank is required';
+    // }
+    // if (!formData.accountNo) {
+    //   errors.accountNo = 'Account No is required';
+    // }
+    // if (!formData.accountType) {
+    //   errors.accountType = 'Account Type is required';
+    // }
+    // if (!formData.ifscCode) {
+    //   errors.ifscCode = 'Ifsc Code is required';
+    // }
+    // if (!formData.swift) {
+    //   errors.swift = 'Swift is required';
+    // }
+    // if (!formData.whoBroughtVentor) {
+    //   errors.whoBroughtVentor = 'Who Brought Vendor is required';
+    // }
+    // if (!formData.whatBasisVendorSelected) {
+    //   errors.whatBasisVendorSelected = 'What Basis Vendor Selected is required';
+    // }
+    // if (!formData.justification) {
+    //   errors.justification = 'Justification is required';
+    // }
+    // if (!formData.slaPoints) {
+    //   errors.slaPoints = 'SLA Points is required';
+    // }
+    // if (!formData.commonAgreedTerms) {
+    //   errors.commonAgreedTerms = 'Common Agreed Terms is required';
+    // }
+
+    // let tableDataValid = true;
+    // const newTableErrors = tableData.map((row) => {
+    //   const rowErrors = {};
+    //   if (!row.state) {
+    //     rowErrors.state = 'State is required';
+    //     tableDataValid = false;
+    //   }
+    //   if (!row.gstIn) {
+    //     rowErrors.gstIn = 'Gst In is required';
+    //     tableDataValid = false;
+    //   }
+    //   if (!row.stateNo) {
+    //     rowErrors.stateNo = 'State No is required';
+    //     tableDataValid = false;
+    //   }
+    //   if (!row.contactPerson) {
+    //     rowErrors.contactPerson = 'Contact Person is required';
+    //     tableDataValid = false;
+    //   }
+    //   if (!row.contactPhoneNo) {
+    //     rowErrors.contactPhoneNo = 'Contact Phone No is required';
+    //     tableDataValid = false;
+    //   }
+    //   if (!row.contactEmail) {
+    //     rowErrors.contactEmail = 'Contact Email is required';
+    //     tableDataValid = false;
+    //   }
+    //   if (!row.stateCode) {
+    //     rowErrors.stateCode = 'State Code is required';
+    //     tableDataValid = false;
+    //   }
+
+    //   return rowErrors;
+    // });
+    // setFieldErrors(errors);
+
+    // setTableErrors(newTableErrors);
+
+    // let tableDataValid1 = true;
+    // const newTableErrors1 = tableData1.map((row) => {
+    //   const rowErrors = {};
+    //   if (!row.state) {
+    //     rowErrors.state = 'State is required';
+    //     tableDataValid1 = false;
+    //   }
+    //   if (!row.businessPlace) {
+    //     rowErrors.businessPlace = 'Business Place is required';
+    //     tableDataValid1 = false;
+    //   }
+    //   if (!row.stateGstIn) {
+    //     rowErrors.stateGstIn = 'State GstIn is required';
+    //     tableDataValid1 = false;
+    //   }
+    //   if (!row.cityName) {
+    //     rowErrors.cityName = 'City Name is required';
+    //     tableDataValid1 = false;
+    //   }
+    //   if (!row.addressType) {
+    //     rowErrors.addressType = 'Address Type is required';
+    //     tableDataValid1 = false;
+    //   }
+    //   if (!row.addressLine1) {
+    //     rowErrors.addressLine1 = 'Address Line1 is required';
+    //     tableDataValid1 = false;
+    //   }
+    //   if (!row.addressLine2) {
+    //     rowErrors.addressLine2 = 'Address Line2 is required';
+    //     tableDataValid1 = false;
+    //   }
+    //   if (!row.addressLine3) {
+    //     rowErrors.addressLine3 = 'Address Line3 is required';
+    //     tableDataValid1 = false;
+    //   }
+    //   if (!row.pinCode) {
+    //     rowErrors.pinCode = 'Pin Code is required';
+    //     tableDataValid1 = false;
+    //   }
+    //   if (!row.contact) {
+    //     rowErrors.contact = 'Contact is required';
+    //     tableDataValid1 = false;
+    //   }
+
+    //   return rowErrors;
+    // });
+    // setTableErrors1(newTableErrors1);
+
+    // let tableDataValid2 = true;
+    // const newTableErrors2 = tableData2.map((row) => {
+    //   const rowErrors = {};
+    //   if (!row.name) {
+    //     rowErrors.name = 'Name is required';
+    //     tableDataValid2 = false;
+    //   }
+    //   if (!row.designation) {
+    //     rowErrors.designation = 'Designation is required';
+    //     tableDataValid2 = false;
+    //   }
+    //   if (!row.phone) {
+    //     rowErrors.phone = 'Phone is required';
+    //     tableDataValid2 = false;
+    //   }
+    //   if (!row.email) {
+    //     rowErrors.email = 'Email is required';
+    //     tableDataValid2 = false;
+    //   }
+
+    //   return rowErrors;
+    // });
+    // setTableErrors2(newTableErrors2);
+
+    // let tableDataValid3 = true;
+    // const newTableErrors3 = tableData3.map((row) => {
+    //   const rowErrors = {};
+    //   if (!row.tdsWhSection) {
+    //     rowErrors.tdsWhSection = 'Tds Wh Section is required';
+    //     tableDataValid3 = false;
+    //   }
+    //   if (!row.rateFrom) {
+    //     rowErrors.rateFrom = 'Rate From is required';
+    //     tableDataValid3 = false;
+    //   }
+    //   if (!row.rateTo) {
+    //     rowErrors.rateTo = 'Rate To is required';
+    //     tableDataValid3 = false;
+    //   }
+    //   if (!row.tdsWh) {
+    //     rowErrors.tdsWh = 'Tds Wh is required';
+    //     tableDataValid3 = false;
+    //   }
+    //   if (!row.sur) {
+    //     rowErrors.sur = 'Sur is required';
+    //     tableDataValid3 = false;
+    //   }
+    //   if (!row.ed) {
+    //     rowErrors.ed = 'Ed is required';
+    //     tableDataValid3 = false;
+    //   }
+    //   if (!row.tdsCertificateNo) {
+    //     rowErrors.tdsCertificateNo = 'Tds Certificate No is required';
+    //     tableDataValid3 = false;
+    //   }
+
+    //   return rowErrors;
+    // });
+    // setTableErrors3(newTableErrors3);
+
+    // let tableDataValid4 = true;
+    // const newTableErrors4 = tableData6.map((row) => {
+    //   const rowErrors = {};
+    //   if (!row.salesPerson) {
+    //     rowErrors.salesPerson = 'Sales Person is required';
+    //     tableDataValid4 = false;
+    //   }
+    //   if (!row.empCode) {
+    //     rowErrors.empCode = 'Emp Code is required';
+    //     tableDataValid4 = false;
+    //   }
+    //   if (!row.salesBranch) {
+    //     rowErrors.salesBranch = 'Sales Branch is required';
+    //     tableDataValid4 = false;
+    //   }
+    //   if (!row.effectiveFrom) {
+    //     rowErrors.effectiveFrom = 'Effective From is required';
+    //     tableDataValid4 = false;
+    //   }
+    //   if (!row.effectiveTill) {
+    //     rowErrors.effectiveTill = 'Effective Till is required';
+    //     tableDataValid4 = false;
+    //   }
+
+    //   return rowErrors;
+    // });
+    // setTableErrors6(newTableErrors4);
+
+    // let tableDataValid5 = true;
+    // const newTableErrors5 = tableData7.map((row) => {
+    //   const rowErrors = {};
+    //   if (!row.tdsExemptedCertificate) {
+    //     rowErrors.tdsExemptedCertificate = 'Tds Exempted Certificate is required';
+    //     tableDataValid5 = false;
+    //   }
+    //   if (!row.valueTds) {
+    //     rowErrors.valueTds = 'Value Tds is required';
+    //     tableDataValid5 = false;
+    //   }
+    //   if (!row.finYear) {
+    //     rowErrors.finYear = 'Fin Year is required';
+    //     tableDataValid5 = false;
+    //   }
+
+    //   return rowErrors;
+    // });
+    // setTableErrors7(newTableErrors5);
+
+    // let tableDataValid6 = true;
+    // const newTableErrors6 = tableData8.map((row) => {
+    //   const rowErrors = {};
+    //   if (!row.partnerName) {
+    //     rowErrors.partnerName = 'Partner Name is required';
+    //     tableDataValid6 = false;
+    //   }
+
+    //   return rowErrors;
+    // });
+    // setTableErrors8(newTableErrors6);
+
+    // if (
+    //   Object.keys(errors).length > 0 ||
+    //   !tableDataValid ||
+    //   !tableDataValid1 ||
+    //   !tableDataValid2 ||
+    //   !tableDataValid3 ||
+    //   !tableDataValid4 ||
+    //   !tableDataValid5 ||
+    //   !tableDataValid6
+    // ) {
+    //   return;
+    // }
+
+    const payload = {
+      ...formData,
+      active: formData.active ? 'true' : 'false',
+      orgId: 1, // Update with actual orgId if needed
+      // createdBy: 'string', // Update with actual createdBy if needed
+      // updatedBy: 'string' // Update with actual updatedBy if needed
+      partyStateDTO: tableData.map((row) => ({
+        contactEmail: row.contactEmail,
+        contactPerson: row.contactPerson,
+        contactPhoneNo: row.contactPhoneNo,
+        gstIn: row.gstIn,
+        state: row.state,
+        stateCode: row.stateCode,
+        stateNo: row.stateNo
+      })),
+      partyAdressDTO: tableData1.map((row) => ({
+        addressType: row.addressType,
+        addressline1: row.addressline1,
+        addressline2: row.addressline2,
+        addressline3: row.addressline3,
+        businessPlace: row.businessPlace,
+        cityName: row.cityName,
+        contactEmail: row.contactEmail,
+        contactPerson: row.contactPerson,
+        contactPhoneNo: row.contactPhoneNo,
+        pincode: row.pincode,
+        state: row.state,
+        stateGstIn: row.stateGstIn
+      })),
+      partyDetailsOfDirectorsDTO: tableData2.map((row) => ({
+        designation: row.designation,
+        email: row.email,
+        name: row.name,
+        phone: row.phone
+      })),
+      partySpecialTDSDTO: tableData3.map((row) => ({
+        edPercentage: row.ed,
+        rateForm: row.rateForm,
+        rateTo: row.rateTo,
+        surPercentage: row.sur,
+        tdsCertificateNo: row.tdsCertificateNo,
+        tdsPercentage: row.tdsWh,
+        tdsSection: row.tdsWhSection
+      })),
+      partyChargesExemptionDTO: tableData4.map((row) => ({
+        charge: row.charge,
+        tdssection: row.tdsWhSection1
+      })),
+      partyCurrencyMappingDTO: tableData5.map((row) => ({
+        transactionCurrency: row.transactionCurrency
+      })),
+      partySalesPersonTaggingDTO: tableData6.map((row) => ({
+        effectiveFrom: row.effectiveFrom,
+        effectiveTill: row.effectiveTill,
+        empCode: row.empCode,
+        salesBranch: row.salesBranch,
+        salesPerson: row.salesPerson
+      })),
+      partyTdsExemptedDTO: tableData7.map((row) => ({
+        finYear: row.finYear,
+        tdsExemptedCertificate: row.tdsExemptedCertificate,
+        value: row.value
+      })),
+      partyPartnerTaggingDTO: tableData8.map((row) => ({
+        partnerName: row.partnerName
+      }))
+    };
+
+    axios
+      .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreatePartyMaster`, payload)
+      .then((response) => {
+        console.log('Response:', response.data);
+        setFormData({
+          partyType: '',
+          partyCode: '',
+          partyName: '',
+          gstPartyName: '',
+          active: true,
+          customerType: '',
+          company: '',
+          customerCategory: '',
+          agentName: '',
+          accountsType: '',
+          businessType: '',
+          carrierCode: '',
+          supplierType: '',
+          salesPerson: '',
+          salesPerson1: '',
+          customerCoordinator: '',
+          customerCoordinator1: '',
+          accountName: '',
+          gstRegistered: '',
+          creditLimit: '',
+          creditDays: '',
+          panNo: '',
+          controllingOffice: '',
+          currency: '',
+          panName: '',
+          airWayBillCode: '',
+          airLineCode: '',
+          tanNo: '',
+          businessCategory: '',
+          businessCategory1: '',
+          country: '',
+          caf: '',
+          remarks: '',
+          compoundingScheme: '',
+          psu: '',
+          nameOfBank: '',
+          branch: '',
+          addressOfBank: '',
+          accountNo: '',
+          accountType: '',
+          ifscCode: '',
+          swift: ''
+        });
+        setTableData([
+          { id: 1, state: '', gstIn: '', stateNo: '', contactPerson: '', contactPhoneNo: '', contactEmail: '', stateCode: '' }
+        ]);
+        setTableData1([
+          {
+            state: '',
+            businessPlace: '',
+            stateGstIn: '',
+            cityName: '',
+            addressType: '',
+            addressLine1: '',
+            addressLine2: '',
+            addressLine3: '',
+            pinCode: '',
+            contact: ''
+          }
+        ]);
+        setTableData2([
+          {
+            name: '',
+            designation: '',
+            phone: '',
+            email: ''
+          }
+        ]);
+        setTableData3([
+          {
+            tdsWhSection: '',
+            rateFrom: '',
+            rateTo: '',
+            tdsWh: '',
+            sur: '',
+            ed: '',
+            tdsCertificateNo: ''
+          }
+        ]);
+        setTableData4([
+          {
+            tdsWhSection1: '',
+            charge: ''
+          }
+        ]);
+        setTableData5([
+          {
+            transactionCurrency: ''
+          }
+        ]);
+        setTableData6([
+          {
+            salesPerson: '',
+            empCode: '',
+            salesBranch: '',
+            effectiveFrom: '',
+            effectiveTill: ''
+          }
+        ]);
+        setTableData7([
+          {
+            tdsExemptedCertificate: '',
+            valueTds: '',
+            finYear: ''
+          }
+        ]);
+        setTableData8([
+          {
+            partnerName: ''
+          }
+        ]);
+        toast.success('Party Master Created Successfully', {
+          autoClose: 2000,
+          theme: 'colored'
+        });
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        toast.error('An error occurred while saving the Party Master');
+      });
+  };
+
   return (
     <>
       <div>
@@ -900,7 +1608,7 @@ export const PartyMaster = () => {
 
             <Tooltip title="Clear" placement="top">
               {' '}
-              <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }}>
+              <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleClear}>
                 <Avatar
                   variant="rounded"
                   sx={{
@@ -949,7 +1657,7 @@ export const PartyMaster = () => {
             </Tooltip>
             <Tooltip title="Save" placement="top">
               {' '}
-              <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }}>
+              <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={handleSave}>
                 <Avatar
                   variant="rounded"
                   sx={{
@@ -974,23 +1682,13 @@ export const PartyMaster = () => {
           </div>
           <div className="row d-flex ml">
             <div className="col-md-4 mb-3">
-              <FormControl
-                variant="outlined"
-                fullWidth
-                size="small"
-                // error={!!fieldErrors.gender}
-              >
+              <FormControl variant="outlined" fullWidth size="small" error={!!fieldErrors.partyType}>
                 <InputLabel id="partyType">Party Type</InputLabel>
-                <Select
-                  labelId="partyType"
-                  label="Party Type"
-                  name="partyType"
-                  //   value={formData.gender} onChange={handleInputChange}
-                >
+                <Select labelId="partyType" label="Party Type" name="partyType" value={formData.partyType} onChange={handleInputChange}>
                   <MenuItem value="1">1</MenuItem>
                   <MenuItem value="2">2</MenuItem>
                 </Select>
-                {/* {fieldErrors.gender && <FormHelperText>{fieldErrors.gender}</FormHelperText>} */}
+                {fieldErrors.partyType && <FormHelperText>{fieldErrors.partyType}</FormHelperText>}
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
@@ -1000,10 +1698,10 @@ export const PartyMaster = () => {
                 name="partyCode"
                 label="Party Code"
                 size="small"
-                //   value={formData.employeeCode}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeCode}
-                //   helperText={fieldErrors.employeeCode}
+                value={formData.partyCode}
+                onChange={handleInputChange}
+                error={fieldErrors.partyCode}
+                helperText={fieldErrors.partyCode}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -1014,8 +1712,8 @@ export const PartyMaster = () => {
                       sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
                       id="active"
                       name="active"
-                      // checked={formData.active}
-                      // onChange={(e) => handleInputChange({ target: { name: 'active', value: e.target.checked } })}
+                      checked={formData.active}
+                      onChange={(e) => handleInputChange({ target: { name: 'active', value: e.target.checked } })}
                     />
                   }
                   label="Active"
@@ -1029,10 +1727,10 @@ export const PartyMaster = () => {
                 name="partyName"
                 label="Party Name"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.partyName}
+                onChange={handleInputChange}
+                error={fieldErrors.partyName}
+                helperText={fieldErrors.partyName}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -1042,10 +1740,10 @@ export const PartyMaster = () => {
                 name="gstPartyName"
                 label="GST Party Name"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.gstPartyName}
+                onChange={handleInputChange}
+                error={fieldErrors.gstPartyName}
+                helperText={fieldErrors.gstPartyName}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -1055,50 +1753,36 @@ export const PartyMaster = () => {
                 name="customerType"
                 label="Customer Type"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.customerType}
+                onChange={handleInputChange}
+                error={fieldErrors.customerType}
+                helperText={fieldErrors.customerType}
               />
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl
-                variant="outlined"
-                fullWidth
-                size="small"
-                // error={!!fieldErrors.gender}
-              >
+              <FormControl variant="outlined" fullWidth size="small" error={!!fieldErrors.company}>
                 <InputLabel id="company">Company</InputLabel>
-                <Select
-                  labelId="company"
-                  label="Company"
-                  name="company"
-                  //   value={formData.gender} onChange={handleInputChange}
-                >
+                <Select labelId="company" label="Company" name="company" value={formData.company} onChange={handleInputChange}>
                   <MenuItem value="1">1</MenuItem>
                   <MenuItem value="2">2</MenuItem>
                 </Select>
-                {/* {fieldErrors.gender && <FormHelperText>{fieldErrors.gender}</FormHelperText>} */}
+                {fieldErrors.company && <FormHelperText>{fieldErrors.company}</FormHelperText>}
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl
-                variant="outlined"
-                fullWidth
-                size="small"
-                // error={!!fieldErrors.gender}
-              >
+              <FormControl variant="outlined" fullWidth size="small" error={!!fieldErrors.customerCategory}>
                 <InputLabel id="customerCategory">Customer Category</InputLabel>
                 <Select
                   labelId="customerCategory"
                   label="Customer Category"
                   name="customerCategory"
-                  //   value={formData.gender} onChange={handleInputChange}
+                  value={formData.customerCategory}
+                  onChange={handleInputChange}
                 >
                   <MenuItem value="1">1</MenuItem>
                   <MenuItem value="2">2</MenuItem>
                 </Select>
-                {/* {fieldErrors.gender && <FormHelperText>{fieldErrors.gender}</FormHelperText>} */}
+                {fieldErrors.customerCategory && <FormHelperText>{fieldErrors.customerCategory}</FormHelperText>}
               </FormControl>
             </div>
 
@@ -1109,50 +1793,42 @@ export const PartyMaster = () => {
                 name="agentName"
                 label="Agent Name"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.agentName}
+                onChange={handleInputChange}
+                error={fieldErrors.agentName}
+                helperText={fieldErrors.agentName}
               />
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl
-                variant="outlined"
-                fullWidth
-                size="small"
-                // error={!!fieldErrors.gender}
-              >
+              <FormControl variant="outlined" fullWidth size="small" error={!!fieldErrors.accountsType}>
                 <InputLabel id="accountsType">Accounts Type</InputLabel>
                 <Select
                   labelId="accountsType"
                   label="Accounts Type"
                   name="accountsType"
-                  //   value={formData.gender} onChange={handleInputChange}
+                  value={formData.accountsType}
+                  onChange={handleInputChange}
                 >
                   <MenuItem value="1">1</MenuItem>
                   <MenuItem value="2">2</MenuItem>
                 </Select>
-                {/* {fieldErrors.gender && <FormHelperText>{fieldErrors.gender}</FormHelperText>} */}
+                {fieldErrors.accountsType && <FormHelperText>{fieldErrors.accountsType}</FormHelperText>}
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl
-                variant="outlined"
-                fullWidth
-                size="small"
-                // error={!!fieldErrors.gender}
-              >
+              <FormControl variant="outlined" fullWidth size="small" error={!!fieldErrors.businessType}>
                 <InputLabel id="businessType">Business Type</InputLabel>
                 <Select
                   labelId="businessType"
                   label="Business Type"
                   name="businessType"
-                  //   value={formData.gender} onChange={handleInputChange}
+                  value={formData.businessType}
+                  onChange={handleInputChange}
                 >
                   <MenuItem value="1">1</MenuItem>
                   <MenuItem value="2">2</MenuItem>
                 </Select>
-                {/* {fieldErrors.gender && <FormHelperText>{fieldErrors.gender}</FormHelperText>} */}
+                {fieldErrors.businessType && <FormHelperText>{fieldErrors.businessType}</FormHelperText>}
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
@@ -1162,30 +1838,26 @@ export const PartyMaster = () => {
                 name="carrierCode"
                 label="Carrier Code"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.carrierCode}
+                onChange={handleInputChange}
+                error={fieldErrors.carrierCode}
+                helperText={fieldErrors.carrierCode}
               />
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl
-                variant="outlined"
-                fullWidth
-                size="small"
-                // error={!!fieldErrors.gender}
-              >
+              <FormControl variant="outlined" fullWidth size="small" error={!!fieldErrors.supplierType}>
                 <InputLabel id="supplierType">Supplier Type</InputLabel>
                 <Select
                   labelId="supplierType"
                   label="Supplier Type"
                   name="supplierType"
-                  //   value={formData.gender} onChange={handleInputChange}
+                  value={formData.supplierType}
+                  onChange={handleInputChange}
                 >
                   <MenuItem value="1">1</MenuItem>
                   <MenuItem value="2">2</MenuItem>
                 </Select>
-                {/* {fieldErrors.gender && <FormHelperText>{fieldErrors.gender}</FormHelperText>} */}
+                {fieldErrors.supplierType && <FormHelperText>{fieldErrors.supplierType}</FormHelperText>}
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
@@ -1195,10 +1867,10 @@ export const PartyMaster = () => {
                 name="salesPerson"
                 label="Sales Person"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.salesPerson}
+                onChange={handleInputChange}
+                error={fieldErrors.salesPerson}
+                helperText={fieldErrors.salesPerson}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -1208,10 +1880,10 @@ export const PartyMaster = () => {
                 name="salesPerson1"
                 // label="salesPerson1"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.salesPerson1}
+                onChange={handleInputChange}
+                error={fieldErrors.salesPerson1}
+                helperText={fieldErrors.salesPerson1}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -1221,10 +1893,10 @@ export const PartyMaster = () => {
                 name="customerCoordinator"
                 label="Customer Coordinator"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.customerCoordinator}
+                onChange={handleInputChange}
+                error={fieldErrors.customerCoordinator}
+                helperText={fieldErrors.customerCoordinator}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -1234,50 +1906,42 @@ export const PartyMaster = () => {
                 name="customerCoordinator1"
                 // label="customerCoordinator1"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.customerCoordinator1}
+                onChange={handleInputChange}
+                error={fieldErrors.customerCoordinator1}
+                helperText={fieldErrors.customerCoordinator1}
               />
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl
-                variant="outlined"
-                fullWidth
-                size="small"
-                // error={!!fieldErrors.gender}
-              >
+              <FormControl variant="outlined" fullWidth size="small" error={!!fieldErrors.accountName}>
                 <InputLabel id="accountName">Account Name</InputLabel>
                 <Select
                   labelId="accountName"
                   label="Account Name"
                   name="accountName"
-                  //   value={formData.gender} onChange={handleInputChange}
+                  value={formData.accountName}
+                  onChange={handleInputChange}
                 >
                   <MenuItem value="1">1</MenuItem>
                   <MenuItem value="2">2</MenuItem>
                 </Select>
-                {/* {fieldErrors.gender && <FormHelperText>{fieldErrors.gender}</FormHelperText>} */}
+                {fieldErrors.accountName && <FormHelperText>{fieldErrors.accountName}</FormHelperText>}
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl
-                variant="outlined"
-                fullWidth
-                size="small"
-                // error={!!fieldErrors.gender}
-              >
+              <FormControl variant="outlined" fullWidth size="small" error={!!fieldErrors.gstRegistered}>
                 <InputLabel id="gstRegistered">GST Registered</InputLabel>
                 <Select
                   labelId="gstRegistered"
                   label="GST Registered"
                   name="gstRegistered"
-                  //   value={formData.gender} onChange={handleInputChange}
+                  value={formData.gstRegistered}
+                  onChange={handleInputChange}
                 >
                   <MenuItem value="1">1</MenuItem>
                   <MenuItem value="2">2</MenuItem>
                 </Select>
-                {/* {fieldErrors.gender && <FormHelperText>{fieldErrors.gender}</FormHelperText>} */}
+                {fieldErrors.gstRegistered && <FormHelperText>{fieldErrors.gstRegistered}</FormHelperText>}
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
@@ -1287,10 +1951,10 @@ export const PartyMaster = () => {
                 name="creditLimit"
                 label="Credit Limit"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.creditLimit}
+                onChange={handleInputChange}
+                error={fieldErrors.creditLimit}
+                helperText={fieldErrors.creditLimit}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -1300,10 +1964,10 @@ export const PartyMaster = () => {
                 name="creditDays"
                 label="Credit Days"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.creditDays}
+                onChange={handleInputChange}
+                error={fieldErrors.creditDays}
+                helperText={fieldErrors.creditDays}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -1313,10 +1977,10 @@ export const PartyMaster = () => {
                 name="panNo"
                 label="PAN No"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.panNo}
+                onChange={handleInputChange}
+                error={fieldErrors.panNo}
+                helperText={fieldErrors.panNo}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -1326,31 +1990,21 @@ export const PartyMaster = () => {
                 name="controllingOffice"
                 label="Controlling Office"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.controllingOffice}
+                onChange={handleInputChange}
+                error={fieldErrors.controllingOffice}
+                helperText={fieldErrors.controllingOffice}
               />
             </div>
 
             <div className="col-md-4 mb-3">
-              <FormControl
-                variant="outlined"
-                fullWidth
-                size="small"
-                // error={!!fieldErrors.gender}
-              >
+              <FormControl variant="outlined" fullWidth size="small" error={!!fieldErrors.currency}>
                 <InputLabel id="currency">Currency</InputLabel>
-                <Select
-                  labelId="currency"
-                  label="Currency"
-                  name="currency"
-                  //   value={formData.gender} onChange={handleInputChange}
-                >
+                <Select labelId="currency" label="Currency" name="currency" value={formData.currency} onChange={handleInputChange}>
                   <MenuItem value="1">1</MenuItem>
                   <MenuItem value="2">2</MenuItem>
                 </Select>
-                {/* {fieldErrors.gender && <FormHelperText>{fieldErrors.gender}</FormHelperText>} */}
+                {fieldErrors.currency && <FormHelperText>{fieldErrors.currency}</FormHelperText>}
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
@@ -1360,10 +2014,10 @@ export const PartyMaster = () => {
                 name="panName"
                 label="Pan Name"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.panName}
+                onChange={handleInputChange}
+                error={fieldErrors.panName}
+                helperText={fieldErrors.panName}
               />
             </div>
 
@@ -1374,10 +2028,10 @@ export const PartyMaster = () => {
                 name="airWayBillCode"
                 label="Air Way Bill Code"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.airWayBillCode}
+                onChange={handleInputChange}
+                error={fieldErrors.airWayBillCode}
+                helperText={fieldErrors.airWayBillCode}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -1387,10 +2041,10 @@ export const PartyMaster = () => {
                 name="airLineCode"
                 label="AirLine Code"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.airLineCode}
+                onChange={handleInputChange}
+                error={fieldErrors.airLineCode}
+                helperText={fieldErrors.airLineCode}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -1400,30 +2054,26 @@ export const PartyMaster = () => {
                 name="tanNo"
                 label="TAN No"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.tanNo}
+                onChange={handleInputChange}
+                error={fieldErrors.tanNo}
+                helperText={fieldErrors.tanNo}
               />
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl
-                variant="outlined"
-                fullWidth
-                size="small"
-                // error={!!fieldErrors.gender}
-              >
+              <FormControl variant="outlined" fullWidth size="small" error={!!fieldErrors.businessCategory}>
                 <InputLabel id="businessCategory">Business Category</InputLabel>
                 <Select
                   labelId="businessCategory"
                   label="Business Category"
                   name="businessCategory"
-                  //   value={formData.gender} onChange={handleInputChange}
+                  value={formData.businessCategory}
+                  onChange={handleInputChange}
                 >
                   <MenuItem value="1">1</MenuItem>
                   <MenuItem value="2">2</MenuItem>
                 </Select>
-                {/* {fieldErrors.gender && <FormHelperText>{fieldErrors.gender}</FormHelperText>} */}
+                {fieldErrors.businessCategory && <FormHelperText>{fieldErrors.businessCategory}</FormHelperText>}
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
@@ -1433,51 +2083,31 @@ export const PartyMaster = () => {
                 name="businessCategory1"
                 // label="TAN No"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.businessCategory1}
+                onChange={handleInputChange}
+                error={fieldErrors.businessCategory1}
+                helperText={fieldErrors.businessCategory1}
               />
             </div>
 
             <div className="col-md-4 mb-3">
-              <FormControl
-                variant="outlined"
-                fullWidth
-                size="small"
-                // error={!!fieldErrors.gender}
-              >
+              <FormControl variant="outlined" fullWidth size="small" error={!!fieldErrors.country}>
                 <InputLabel id="country">Country</InputLabel>
-                <Select
-                  labelId="country"
-                  label="Country"
-                  name="country"
-                  //   value={formData.gender} onChange={handleInputChange}
-                >
+                <Select labelId="country" label="Country" name="country" value={formData.country} onChange={handleInputChange}>
                   <MenuItem value="1">1</MenuItem>
                   <MenuItem value="2">2</MenuItem>
                 </Select>
-                {/* {fieldErrors.gender && <FormHelperText>{fieldErrors.gender}</FormHelperText>} */}
+                {fieldErrors.country && <FormHelperText>{fieldErrors.country}</FormHelperText>}
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl
-                variant="outlined"
-                fullWidth
-                size="small"
-                // error={!!fieldErrors.gender}
-              >
+              <FormControl variant="outlined" fullWidth size="small" error={!!fieldErrors.caf}>
                 <InputLabel id="caf">CAF</InputLabel>
-                <Select
-                  labelId="caf"
-                  label="CAF"
-                  name="caf"
-                  //   value={formData.gender} onChange={handleInputChange}
-                >
+                <Select labelId="caf" label="CAF" name="caf" value={formData.caf} onChange={handleInputChange}>
                   <MenuItem value="1">1</MenuItem>
                   <MenuItem value="2">2</MenuItem>
                 </Select>
-                {/* {fieldErrors.gender && <FormHelperText>{fieldErrors.gender}</FormHelperText>} */}
+                {fieldErrors.caf && <FormHelperText>{fieldErrors.caf}</FormHelperText>}
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
@@ -1487,50 +2117,36 @@ export const PartyMaster = () => {
                 name="remarks"
                 label="Remarks"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.remarks}
+                onChange={handleInputChange}
+                error={fieldErrors.remarks}
+                helperText={fieldErrors.remarks}
               />
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl
-                variant="outlined"
-                fullWidth
-                size="small"
-                // error={!!fieldErrors.gender}
-              >
+              <FormControl variant="outlined" fullWidth size="small" error={!!fieldErrors.compoundingScheme}>
                 <InputLabel id="compoundingScheme">Compounding Scheme</InputLabel>
                 <Select
                   labelId="compoundingScheme"
                   label="Compounding Scheme"
                   name="compoundingScheme"
-                  //   value={formData.gender} onChange={handleInputChange}
+                  value={formData.compoundingScheme}
+                  onChange={handleInputChange}
                 >
                   <MenuItem value="1">1</MenuItem>
                   <MenuItem value="2">2</MenuItem>
                 </Select>
-                {/* {fieldErrors.gender && <FormHelperText>{fieldErrors.gender}</FormHelperText>} */}
+                {fieldErrors.compoundingScheme && <FormHelperText>{fieldErrors.compoundingScheme}</FormHelperText>}
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl
-                variant="outlined"
-                fullWidth
-                size="small"
-                // error={!!fieldErrors.gender}
-              >
-                <InputLabel id="psuGovernmentOrganization">PSU / Government Organization</InputLabel>
-                <Select
-                  labelId="psuGovernmentOrganization"
-                  label="PSU / Government Organization"
-                  name="psuGovernmentOrganization"
-                  //   value={formData.gender} onChange={handleInputChange}
-                >
+              <FormControl variant="outlined" fullWidth size="small" error={!!fieldErrors.psu}>
+                <InputLabel id="psu">PSU / Government Organization</InputLabel>
+                <Select labelId="psu" label="PSU / Government Organization" name="psu" value={formData.psu} onChange={handleInputChange}>
                   <MenuItem value="1">1</MenuItem>
                   <MenuItem value="2">2</MenuItem>
                 </Select>
-                {/* {fieldErrors.gender && <FormHelperText>{fieldErrors.gender}</FormHelperText>} */}
+                {fieldErrors.psu && <FormHelperText>{fieldErrors.gender}</FormHelperText>}
               </FormControl>
             </div>
           </div>
@@ -1547,10 +2163,10 @@ export const PartyMaster = () => {
                 name="nameOfBank"
                 label="Name of Bank"
                 size="small"
-                //   value={formData.employeeCode}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeCode}
-                //   helperText={fieldErrors.employeeCode}
+                value={formData.nameOfBank}
+                onChange={handleInputChange}
+                error={fieldErrors.nameOfBank}
+                helperText={fieldErrors.nameOfBank}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -1560,10 +2176,10 @@ export const PartyMaster = () => {
                 name="branch"
                 label="Branch"
                 size="small"
-                //   value={formData.employeeCode}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeCode}
-                //   helperText={fieldErrors.employeeCode}
+                value={formData.branch}
+                onChange={handleInputChange}
+                error={fieldErrors.branch}
+                helperText={fieldErrors.branch}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -1573,10 +2189,10 @@ export const PartyMaster = () => {
                 name="addressOfBank"
                 label="Address of Bank"
                 size="small"
-                //   value={formData.employeeCode}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeCode}
-                //   helperText={fieldErrors.employeeCode}
+                value={formData.addressOfBank}
+                onChange={handleInputChange}
+                error={fieldErrors.addressOfBank}
+                helperText={fieldErrors.addressOfBank}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -1586,10 +2202,10 @@ export const PartyMaster = () => {
                 name="accountNo"
                 label="Account No"
                 size="small"
-                //   value={formData.employeeCode}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeCode}
-                //   helperText={fieldErrors.employeeCode}
+                value={formData.accountNo}
+                onChange={handleInputChange}
+                error={fieldErrors.accountNo}
+                helperText={fieldErrors.accountNo}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -1599,10 +2215,10 @@ export const PartyMaster = () => {
                 name="accountType"
                 label="Account Type"
                 size="small"
-                //   value={formData.employeeCode}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeCode}
-                //   helperText={fieldErrors.employeeCode}
+                value={formData.accountType}
+                onChange={handleInputChange}
+                error={fieldErrors.accountType}
+                helperText={fieldErrors.accountType}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -1612,10 +2228,10 @@ export const PartyMaster = () => {
                 name="ifscCode"
                 label="IFSC Code"
                 size="small"
-                //   value={formData.employeeCode}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeCode}
-                //   helperText={fieldErrors.employeeCode}
+                value={formData.ifscCode}
+                onChange={handleInputChange}
+                error={fieldErrors.ifscCode}
+                helperText={fieldErrors.ifscCode}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -1625,10 +2241,10 @@ export const PartyMaster = () => {
                 name="swift"
                 label="SWIFT"
                 size="small"
-                //   value={formData.employeeCode}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeCode}
-                //   helperText={fieldErrors.employeeCode}
+                value={formData.swift}
+                onChange={handleInputChange}
+                error={fieldErrors.swift}
+                helperText={fieldErrors.swift}
               />
             </div>
           </div>
@@ -3333,15 +3949,15 @@ export const PartyMaster = () => {
             <div className="row d-flex mt-3">
               <div className="col-md-4 mb-3">
                 <TextField
-                  id="whoBoughtVendor"
+                  id="whoBroughtVentor"
                   fullWidth
-                  name="whoBoughtVendor"
+                  name="whoBroughtVentor"
                   label="Who Bought Vendor"
                   size="small"
-                  //   value={formData.employeeCode}
-                  //   onChange={handleInputChange}
-                  //   error={fieldErrors.employeeCode}
-                  //   helperText={fieldErrors.employeeCode}
+                  value={formData.whoBroughtVentor}
+                  onChange={handleInputChange}
+                  error={fieldErrors.whoBroughtVentor}
+                  helperText={fieldErrors.whoBroughtVentor}
                 />
               </div>
               <div className="col-md-4 mb-3">
@@ -3351,10 +3967,10 @@ export const PartyMaster = () => {
                   name="whatBasisVendorSelected"
                   label="What Basis Vendor Selected"
                   size="small"
-                  //   value={formData.employeeCode}
-                  //   onChange={handleInputChange}
-                  //   error={fieldErrors.employeeCode}
-                  //   helperText={fieldErrors.employeeCode}
+                  value={formData.whatBasisVendorSelected}
+                  onChange={handleInputChange}
+                  error={fieldErrors.whatBasisVendorSelected}
+                  helperText={fieldErrors.whatBasisVendorSelected}
                 />
               </div>
 
@@ -3365,10 +3981,10 @@ export const PartyMaster = () => {
                   name="justification"
                   label="Justification"
                   size="small"
-                  //   value={formData.employeeCode}
-                  //   onChange={handleInputChange}
-                  //   error={fieldErrors.employeeCode}
-                  //   helperText={fieldErrors.employeeCode}
+                  value={formData.justification}
+                  onChange={handleInputChange}
+                  error={fieldErrors.justification}
+                  helperText={fieldErrors.justification}
                 />
               </div>
               <div className="col-md-4 mb-3">
@@ -3378,10 +3994,10 @@ export const PartyMaster = () => {
                   name="slaPoints"
                   label="SLA Points"
                   size="small"
-                  //   value={formData.employeeCode}
-                  //   onChange={handleInputChange}
-                  //   error={fieldErrors.employeeCode}
-                  //   helperText={fieldErrors.employeeCode}
+                  value={formData.slaPoints}
+                  onChange={handleInputChange}
+                  error={fieldErrors.slaPoints}
+                  helperText={fieldErrors.slaPoints}
                 />
               </div>
               <div className="col-md-4 mb-3">
@@ -3391,10 +4007,10 @@ export const PartyMaster = () => {
                   name="commonAgreedTerms"
                   label="Common Agreed Terms"
                   size="small"
-                  //   value={formData.employeeCode}
-                  //   onChange={handleInputChange}
-                  //   error={fieldErrors.employeeCode}
-                  //   helperText={fieldErrors.employeeCode}
+                  value={formData.commonAgreedTerms}
+                  onChange={handleInputChange}
+                  error={fieldErrors.commonAgreedTerms}
+                  helperText={fieldErrors.commonAgreedTerms}
                 />
               </div>
             </div>

@@ -24,6 +24,7 @@ const ListOfValues = Loadable(lazy(() => import('views/master/ListOfValues')));
 const TermsAndConditions = Loadable(lazy(() => import('views/master/TermsAndConditions')));
 const PartyScreening = Loadable(lazy(() => import('views/master/PartyScreening')));
 const PartyMaster = Loadable(lazy(() => import('views/master/PartyMaster')));
+const UserCreation = Loadable(lazy(() => import('views/master/UserCreation')));
 const ShipmentAO = Loadable(lazy(() => import('views/transaction/shipmentAO')));
 const ShipmentFollowUp = Loadable(lazy(() => import('views/transaction/shipmentFollowUp')));
 const MasterAirWayBill = Loadable(lazy(() => import('views/transaction/MasterAirWayBill')));
@@ -126,6 +127,10 @@ const freightManagementRoutes = {
     {
       path: '/master/partyMaster',
       element: <PartyMaster />
+    },
+    {
+      path: '/master/userCreation',
+      element: <UserCreation />
     },
     {
       path: '/transaction/shipmentAO',

@@ -134,6 +134,12 @@ const fms = {
           title: 'Party Master',
           type: 'item',
           url: '/master/partyMaster'
+        },
+        {
+          id: 'userCreation',
+          title: 'User Creation',
+          type: 'item',
+          url: '/master/userCreation'
         }
       ]
     }

@@ -29,20 +29,37 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 
 export const shipmentSO = () => {
-  //   const [formData, setFormData] = useState({
-  //     employeeCode: '',
-  //     employeeName: '',
-  //     gender: '',
-  //     branch: '',
-  //     active: true,
-  //     joiningDate: null,
-  //     department: '',
-  //     designation: '',
-  //     appointmentType: '',
-  //     modeOfEntry: '',
-  //     dateOfBirth: null,
-  //     leavingDate: null
-  //   });
+  const [formData, setFormData] = useState({
+    docId: '',
+    docDate: null,
+    pol: '',
+    pod: '',
+    fpod: '',
+    nominatedBy: '',
+    deliveryTerms: '',
+    freight: '',
+    shipperInvoiceNo: '',
+    billOfEntry: '',
+    projectCargo: true,
+    directMaster: true,
+    jobAssigned: true,
+    shipper: '',
+    saddType: '',
+    saddress: '',
+    consignee: '',
+    caddType: '',
+    caddress: '',
+    notify: '',
+    naddType: '',
+    naddress: '',
+    salesCategory: '',
+    salesPerson: '',
+    totalNoOfPkgs: '',
+    totalChWt: '',
+    totEstimationCost: '',
+    totalGrtWt: '',
+    totalVolWt: ''
+  });
   //   const [listView, setListView] = useState(false);
 
   const theme = useTheme();
@@ -59,30 +76,189 @@ export const shipmentSO = () => {
 
   //   const [id, setId] = useState('');
 
-  // const [fieldErrors, setFieldErrors] = useState({
-  //   employeeCode: '',
-  //   employeeName: '',
-  //   gender: '',
-  //   branch: '',
-  //   active: true,
-  //   joiningDate: '',
-  //   department: '',
-  //   designation: '',
-  //   appointmentType: '',
-  //   modeOfEntry: '',
-  //   dateOfBirth: '',
-  //   leavingDate: ''
-  // });
+  const [fieldErrors, setFieldErrors] = useState({
+    docId: '',
+    docDate: '',
+    pol: '',
+    pod: '',
+    fpod: '',
+    nominatedBy: '',
+    deliveryTerms: '',
+    freight: '',
+    shipperInvoiceNo: '',
+    billOfEntry: '',
+    projectCargo: true,
+    directMaster: true,
+    jobAssigned: true,
+    shipper: '',
+    saddType: '',
+    saddress: '',
+    consignee: '',
+    caddType: '',
+    caddress: '',
+    notify: '',
+    naddType: '',
+    naddress: '',
+    salesCategory: '',
+    salesPerson: '',
+    totalNoOfPkgs: '',
+    totalChWt: '',
+    totEstimationCost: '',
+    totalGrtWt: '',
+    totalVolWt: ''
+  });
 
-  //   const [fieldErrors, setFieldErrors] = useState({});
+  const [tableErrors, setTableErrors] = useState([
+    {
+      custPoNo: '',
+      custPoDt: '',
+      industry: '',
+      itemDescription: '',
+      qty: '',
+      uom: '',
+      grWt: '',
+      chWt: '',
+      dimL: '',
+      dimW: '',
+      dimH: '',
+      unit: '',
+      volume: ''
+    }
+  ]);
 
-  //   const [tableData, setTableData] = useState([]);
+  const [tableData, setTableData] = useState([
+    {
+      sidNO: 1,
+      custPoNo: '',
+      custPoDt: '',
+      industry: '',
+      itemDescription: '',
+      qty: '',
+      uom: '',
+      grWt: '',
+      chWt: '',
+      dimL: '',
+      dimW: '',
+      dimH: '',
+      unit: '',
+      volume: ''
+    }
+  ]);
 
-  //   const handleInputChange = (e) => {
-  //     const { name, value } = e.target;
-  //     setFormData({ ...formData, [name]: value });
-  //     setFieldErrors({ ...fieldErrors, [name]: '' });
-  //   };
+  const handleAddRowPackingList = () => {
+    const newRow = {
+      sidNO: Date.now(),
+      custPoNo: '',
+      custPoDt: '',
+      industry: '',
+      itemDescription: '',
+      qty: '',
+      uom: '',
+      grWt: '',
+      chWt: '',
+      dimL: '',
+      dimW: '',
+      dimH: '',
+      unit: '',
+      volume: ''
+    };
+    setTableData([...tableData, newRow]);
+    setTableErrors([
+      ...tableErrors,
+      {
+        custPoNo: '',
+        custPoDt: '',
+        industry: '',
+        itemDescription: '',
+        qty: '',
+        uom: '',
+        grWt: '',
+        chWt: '',
+        dimL: '',
+        dimW: '',
+        dimH: '',
+        unit: '',
+        volume: ''
+      }
+    ]);
+  };
+
+  const handleDeleteRowPackingList = (id) => {
+    setTableData(tableData.filter((row) => row.id !== id));
+    setTableErrors(tableErrors.filter((_, index) => index !== id - 1));
+  };
+
+  const [tableErrors1, setTableErrors1] = useState([
+    {
+      partyVendor: '',
+      linearCarrier: '',
+      billToCustomer: '',
+      chargeCode: '',
+      description: '',
+      amountInInr: '',
+      estimatePayDate: null,
+      funReqDate: null
+    }
+  ]);
+
+  const [tableData1, setTableData1] = useState([
+    {
+      partyVendor: '',
+      linearCarrier: '',
+      billToCustomer: '',
+      chargeCode: '',
+      description: '',
+      amountInInr: '',
+      estimatePayDate: null,
+      funReqDate: null
+    }
+  ]);
+
+  const handleAddRowCostEstimate = () => {
+    const newRow = {
+      partyVendor: '',
+      linearCarrier: '',
+      billToCustomer: '',
+      chargeCode: '',
+      description: '',
+      amountInInr: '',
+      estimatePayDate: null,
+      funReqDate: null
+    };
+    setTableData1([...tableData1, newRow]);
+    setTableErrors1([
+      ...tableErrors1,
+      {
+        partyVendor: '',
+        linearCarrier: '',
+        billToCustomer: '',
+        chargeCode: '',
+        description: '',
+        amountInInr: '',
+        estimatePayDate: null,
+        funReqDate: null
+      }
+    ]);
+  };
+
+  const handleDeleteRowCostEstimate = (id) => {
+    setTableData1(tableData1.filter((row) => row.id !== id));
+    setTableErrors1(tableErrors1.filter((_, index) => index !== id - 1));
+  };
+
+  const handleKeyDown = (e, row) => {
+    if (e.key === 'Tab' && row.id === tableData[tableData.length - 1].id) {
+      e.preventDefault();
+      handleAddRow();
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    setFieldErrors({ ...fieldErrors, [name]: '' });
+  };
+
   //   const handleDateChange = (name, date) => {
   //     if (date && date.isValid()) {
   //       setFormData({ ...formData, [name]: date });
@@ -92,116 +268,424 @@ export const shipmentSO = () => {
   //     }
   //   };
 
-  //   const handleClear = () => {
-  //     setFormData({
-  //       active: true,
-  //       employeeCode: '',
-  //       employeeName: '',
-  //       gender: '',
-  //       branch: '',
-  //       joiningDate: null,
-  //       department: '',
-  //       designation: '',
-  //       appointmentType: '',
-  //       modeOfEntry: '',
-  //       dateOfBirth: null,
-  //       leavingDate: null
-  //     });
-  //     setFieldErrors({
-  //       active: true,
-  //       employeeCode: '',
-  //       employeeName: '',
-  //       gender: '',
-  //       branch: '',
-  //       joiningDate: null,
-  //       department: '',
-  //       designation: '',
-  //       appointmentType: '',
-  //       modeOfEntry: '',
-  //       dateOfBirth: null,
-  //       leavingDate: null
-  //     });
-  //   };
+  const handleDateChange = (index, name, date) => {
+    const newTableData = [...tableData1];
+    const newFieldErrors = { ...fieldErrors };
 
-  //   const handleSave = () => {
-  //     const errors = {};
-  //     if (!formData.employeeCode) {
-  //       errors.employeeCode = 'Employee Code is required';
-  //     }
-  //     if (!formData.employeeName) {
-  //       errors.employeeName = 'Employee Name is required';
-  //     }
-  //     if (!formData.gender) {
-  //       errors.gender = 'Gender is required';
-  //     }
-  //     if (!formData.branch) {
-  //       errors.branch = 'Branch is required';
-  //     }
-  //     if (!formData.joiningDate) {
-  //       errors.joiningDate = 'Joining Date is required';
-  //     }
-  //     if (!formData.department) {
-  //       errors.department = 'Department is required';
-  //     }
-  //     if (!formData.designation) {
-  //       errors.designation = 'Designation is required';
-  //     }
-  //     if (!formData.appointmentType) {
-  //       errors.appointmentType = 'Appointment Type is required';
-  //     }
-  //     if (!formData.modeOfEntry) {
-  //       errors.modeOfEntry = 'Mode Of Entry is required';
-  //     }
-  //     if (!formData.dateOfBirth) {
-  //       errors.dateOfBirth = 'Date Of Birth is required';
-  //     }
-  //     if (!formData.leavingDate) {
-  //       errors.leavingDate = 'Leaving Date is required';
-  //     }
+    if (date && dayjs(date).isValid()) {
+      newTableData[index][name] = date.format('YYYY-MM-DD');
+      setTableData1(newTableData);
+      if (newFieldErrors[index]) {
+        newFieldErrors[index][name] = '';
+      }
+    } else {
+      if (!newFieldErrors[index]) {
+        newFieldErrors[index] = {};
+      }
+      newFieldErrors[index][name] = `${name} is required`;
+    }
 
-  //     if (Object.keys(errors).length > 0) {
-  //       setFieldErrors(errors);
-  //       return;
-  //     }
+    setFieldErrors(newFieldErrors);
+  };
 
-  //     const payload = {
-  //       ...formData,
-  //       active: formData.active ? 'true' : 'false',
-  //       joiningDate: formData.joiningDate?.format('YYYY-MM-DD') || '',
-  //       dateOfBirth: formData.dateOfBirth?.format('YYYY-MM-DD') || '',
-  //       leavingDate: formData.leavingDate?.format('YYYY-MM-DD') || '',
-  //       orgId: 1 // Update with actual orgId if needed
-  //       // createdBy: 'string', // Update with actual createdBy if needed
-  //       // updatedBy: 'string' // Update with actual updatedBy if needed
-  //     };
+  const handleClear = () => {
+    setFormData({
+      docId: '',
+      docDate: null,
+      pol: '',
+      pod: '',
+      fpod: '',
+      nominatedBy: '',
+      deliveryTerms: '',
+      freight: '',
+      shipperInvoiceNo: '',
+      billOfEntry: '',
+      projectCargo: true,
+      directMaster: true,
+      jobAssigned: true,
+      shipper: '',
+      saddType: '',
+      saddress: '',
+      consignee: '',
+      caddType: '',
+      caddress: '',
+      notify: '',
+      naddType: '',
+      naddress: '',
+      salesCategory: '',
+      salesPerson: '',
+      totalNoOfPkgs: '',
+      totalChWt: '',
+      totEstimationCost: '',
+      totalGrtWt: '',
+      totalVolWt: ''
+    });
+    setFieldErrors({
+      docId: '',
+      docDate: null,
+      pol: '',
+      pod: '',
+      fpod: '',
+      nominatedBy: '',
+      deliveryTerms: '',
+      freight: '',
+      shipperInvoiceNo: '',
+      billOfEntry: '',
+      projectCargo: true,
+      directMaster: true,
+      jobAssigned: true,
+      shipper: '',
+      saddType: '',
+      saddress: '',
+      consignee: '',
+      caddType: '',
+      caddress: '',
+      notify: '',
+      naddType: '',
+      naddress: '',
+      salesCategory: '',
+      salesPerson: '',
+      totalNoOfPkgs: '',
+      totalChWt: '',
+      totEstimationCost: '',
+      totalGrtWt: '',
+      totalVolWt: ''
+    });
+    setTableErrors([]);
+    setTableData([
+      {
+        custPoNo: '',
+        custPoDt: '',
+        industry: '',
+        itemDescription: '',
+        qty: '',
+        uom: '',
+        grWt: '',
+        chWt: '',
+        dimL: '',
+        dimW: '',
+        dimH: '',
+        unit: '',
+        volume: ''
+      }
+    ]);
+    setTableErrors1([]);
+    setTableData1([
+      {
+        partyVendor: '',
+        linearCarrier: '',
+        billToCustomer: '',
+        chargeCode: '',
+        description: '',
+        amountInInr: '',
+        estimatePayDate: null,
+        funReqDate: null
+      }
+    ]);
+  };
 
-  //     axios
-  //       .put(`${process.env.REACT_APP_API_URL}/api/basicMaster/updateCreateEmployee`, payload)
-  //       .then((response) => {
-  //         console.log('Response:', response.data);
-  //         setFormData({
-  //           employeeCode: '',
-  //           employeeName: '',
-  //           gender: '',
-  //           branch: '',
-  //           active: true,
-  //           joiningDate: null,
-  //           department: '',
-  //           designation: '',
-  //           appointmentType: '',
-  //           modeOfEntry: '',
-  //           dateOfBirth: null,
-  //           leavingDate: null
-  //         });
-  //         toast.success('Employee Created Successfully', {
-  //           autoClose: 2000,
-  //           theme: 'colored'
-  //         });
-  //       })
-  //       .catch((error) => {
-  //         console.error('Error:', error);
-  //       });
-  //   };
+  const handleSave = () => {
+    console.log('first');
+    // const errors = {};
+    // if (!formData.docId) {
+    //   errors.docId = 'So No is required';
+    // }
+    // if (!formData.docDate) {
+    //   errors.docDate = 'So Date is required';
+    // }
+    // if (!formData.pol) {
+    //   errors.pol = 'Pol is required';
+    // }
+    // if (!formData.pod) {
+    //   errors.pod = 'Pod is required';
+    // }
+    // if (!formData.fpod) {
+    //   errors.fpod = 'Fpod is required';
+    // }
+    // if (!formData.nominatedBy) {
+    //   errors.nominatedBy = 'Nominated By is required';
+    // }
+    // if (!formData.deliveryTerms) {
+    //   errors.deliveryTerms = 'Delivery Terms is required';
+    // }
+    // if (!formData.freight) {
+    //   errors.freight = 'Freight is required';
+    // }
+    // if (!formData.shipperInvoiceNo) {
+    //   errors.shipperInvoiceNo = 'Shipper Invoice No is required';
+    // }
+    // if (!formData.billOfEntry) {
+    //   errors.billOfEntry = 'Bill of Entry is required';
+    // }
+    // if (!formData.shipper) {
+    //   errors.shipper = 'Shipper is required';
+    // }
+    // if (!formData.saddType) {
+    //   errors.saddType = 'AddType is required';
+    // }
+    // if (!formData.saddress) {
+    //   errors.saddress = 'Address is required';
+    // }
+    // if (!formData.consignee) {
+    //   errors.consignee = 'Consignee is required';
+    // }
+    // if (!formData.caddType) {
+    //   errors.caddType = 'AddType is required';
+    // }
+    // if (!formData.caddress) {
+    //   errors.caddress = 'Address is required';
+    // }
+    // if (!formData.notify) {
+    //   errors.notify = 'Notify is required';
+    // }
+    // if (!formData.naddType) {
+    //   errors.naddType = 'AddType is required';
+    // }
+    // if (!formData.naddress) {
+    //   errors.naddress = 'Address is required';
+    // }
+    // if (!formData.salesCategory) {
+    //   errors.salesCategory = 'Sales Category is required';
+    // }
+    // if (!formData.salesPerson) {
+    //   errors.salesPerson = 'Sales Person is required';
+    // }
+    // if (!formData.totalNoOfPkgs) {
+    //   errors.totalNoOfPkgs = 'Total No of Pkgs is required';
+    // }
+    // if (!formData.totalChWt) {
+    //   errors.totalChWt = 'Total Ch Wt is required';
+    // }
+    // if (!formData.totEstimationCost) {
+    //   errors.totEstimationCost = 'Total Estimation Cost is required';
+    // }
+    // if (!formData.totalGrtWt) {
+    //   errors.totalGrtWt = 'Total Gr Wt is required';
+    // }
+    // if (!formData.totalVolWt) {
+    //   errors.totalVolWt = 'Total Vol Wt is required';
+    // }
+
+    // let tableDataValid = true;
+    // const newTableErrors = tableData.map((row) => {
+    //   const rowErrors = {};
+    //   if (!row.custPoNo) {
+    //     rowErrors.custPoNo = 'cust PO No is required';
+    //     tableDataValid = false;
+    //   }
+    //   if (!row.custPoDt) {
+    //     rowErrors.custPoDt = 'cust PO Dt is required';
+    //     tableDataValid = false;
+    //   }
+    //   if (!row.industry) {
+    //     rowErrors.industry = 'Industry is required';
+    //     tableDataValid = false;
+    //   }
+    //   if (!row.itemDescription) {
+    //     rowErrors.itemDescription = 'Item Description is required';
+    //     tableDataValid = false;
+    //   }
+    //   if (!row.qty) {
+    //     rowErrors.qty = 'Qty is required';
+    //     tableDataValid = false;
+    //   }
+    //   if (!row.uom) {
+    //     rowErrors.uom = 'Uom is required';
+    //     tableDataValid = false;
+    //   }
+    //   if (!row.grWt) {
+    //     rowErrors.grWt = 'Gr Wt is required';
+    //     tableDataValid = false;
+    //   }
+    //   if (!row.chWt) {
+    //     rowErrors.chWt = 'Ch Wt is required';
+    //     tableDataValid = false;
+    //   }
+    //   if (!row.dimL) {
+    //     rowErrors.dimL = 'Dim (L) is required';
+    //     tableDataValid = false;
+    //   }
+    //   if (!row.dimW) {
+    //     rowErrors.dimW = 'Dim (W) is required';
+    //     tableDataValid = false;
+    //   }
+    //   if (!row.dimH) {
+    //     rowErrors.dimH = 'Dim (H) is required';
+    //     tableDataValid = false;
+    //   }
+    //   if (!row.unit) {
+    //     rowErrors.unit = 'Unit is required';
+    //     tableDataValid = false;
+    //   }
+    //   if (!row.volume) {
+    //     rowErrors.volume = 'Volume is required';
+    //     tableDataValid = false;
+    //   }
+    //   return rowErrors;
+    // });
+    // setFieldErrors(errors);
+
+    // setTableErrors(newTableErrors);
+
+    // let tableDataValid1 = true;
+    // const newTableErrors1 = tableData1.map((row) => {
+    //   const rowErrors1 = {};
+    //   if (!row.partyVendor) {
+    //     rowErrors1.partyVendor = 'Party Vendor is required';
+    //     tableDataValid1 = false;
+    //   }
+    //   if (!row.linearCarrier) {
+    //     rowErrors1.linearCarrier = 'Linear Carrier is required';
+    //     tableDataValid1 = false;
+    //   }
+    //   if (!row.billToCustomer) {
+    //     rowErrors1.billToCustomer = 'Bill To Customer is required';
+    //     tableDataValid1 = false;
+    //   }
+    //   if (!row.chargeCode) {
+    //     rowErrors1.chargeCode = 'Charge Code is required';
+    //     tableDataValid1 = false;
+    //   }
+    //   if (!row.description) {
+    //     rowErrors1.description = 'Description is required';
+    //     tableDataValid1 = false;
+    //   }
+    //   if (!row.amountInInr) {
+    //     rowErrors1.amountInInr = 'Amount INR is required';
+    //     tableDataValid1 = false;
+    //   }
+    //   if (!row.estimatePayDate) {
+    //     rowErrors1.estimatePayDate = 'Estimate Pay Date is required';
+    //     tableDataValid1 = false;
+    //   }
+    //   if (!row.funReqDate) {
+    //     rowErrors1.funReqDate = 'Fund Req Date is required';
+    //     tableDataValid1 = false;
+    //   }
+    //   return rowErrors1;
+    // });
+
+    // setTableErrors1(newTableErrors1);
+
+    // if (Object.keys(errors).length > 0 || !tableDataValid || !tableDataValid1) {
+    //   return;
+    // }
+
+    const payload = {
+      ...formData,
+      projectCargo: formData.projectCargo ? true : false,
+      directMaster: formData.directMaster ? true : false,
+      jobAssigned: formData.jobAssigned ? true : false,
+      docDate: formData.docDate ? formData.docDate.format('YYYY-MM-DD') : '',
+      totalNoOfPkgs: parseInt(formData.totalNoOfPkgs),
+      totalChWt: parseInt(formData.totalChWt),
+      totEstimationCost: parseInt(formData.totEstimationCost),
+      totalGrtWt: parseInt(formData.totalGrtWt),
+      totalVolWt: parseInt(formData.totalVolWt),
+      orgId: 1, // Update with actual orgId if needed
+      soPackingListDTO: tableData.map((row) => ({
+        custPoNo: row.custPoNo,
+        custPoDt: row.custPoDt,
+        industry: row.industry === 'No' ? 'No' : 'Yes',
+        itemDescription: row.itemDescription,
+        qty: parseInt(row.qty),
+        uom: row.uom === 'No' ? 'No' : 'Yes',
+        grWt: row.grWt,
+        chWt: row.chWt,
+        dimL: parseInt(row.dimL),
+        dimW: parseInt(row.dimW),
+        dimH: parseInt(row.dimH),
+        unit: row.unit === 'No' ? 'No' : 'Yes',
+        volume: parseInt(row.volume)
+      })),
+      soCostEstimateDTO: tableData1.map((row) => ({
+        partyVendor: row.partyVendor,
+        linearCarrier: row.linearCarrier,
+        billToCustomer: row.billToCustomer,
+        chargeCode: row.chargeCode,
+        description: row.description,
+        amountInInr: row.amountInInr,
+        estimatePayDate: row.estimatePayDate,
+        funReqDate: row.funReqDate
+      }))
+    };
+
+    console.log('clikd', payload);
+
+    axios
+      .put(`${process.env.REACT_APP_API_URL}/api/Transaction/updateCreateShipmentSO`, payload)
+      .then((response) => {
+        console.log('Response:', response.data);
+        setFormData({
+          docId: '',
+          docDate: null,
+          pol: '',
+          pod: '',
+          fpod: '',
+          nominatedBy: '',
+          deliveryTerms: '',
+          freight: '',
+          shipperInvoiceNo: '',
+          billOfEntry: '',
+          projectCargo: true,
+          directMaster: true,
+          jobAssigned: true,
+          shipper: '',
+          saddType: '',
+          saddress: '',
+          consignee: '',
+          caddType: '',
+          caddress: '',
+          notify: '',
+          naddType: '',
+          naddress: '',
+          salesCategory: '',
+          salesPerson: '',
+          totalNoOfPkgs: '',
+          totalChWt: '',
+          totEstimationCost: '',
+          totalGrtWt: '',
+          totalVolWt: ''
+        });
+        setTableData([
+          {
+            custPoNo: '',
+            custPoDt: '',
+            industry: '',
+            itemDescription: '',
+            qty: '',
+            uom: '',
+            grWt: '',
+            chWt: '',
+            dimL: '',
+            dimW: '',
+            dimH: '',
+            unit: '',
+            volume: ''
+          }
+        ]);
+        setTableData1([
+          {
+            partyVendor: '',
+            linearCarrier: '',
+            billToCustomer: '',
+            chargeCode: '',
+            description: '',
+            amountInInr: '',
+            estimatePayDate: null,
+            funReqDate: null
+          }
+        ]);
+        toast.success('Shipment SO Created Successfully', {
+          autoClose: 2000,
+          theme: 'colored'
+        });
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        toast.error('An error occurred while saving the shipment SO');
+      });
+  };
 
   //   const handleEditSave = () => {
   //     const errors = {};
@@ -448,151 +932,6 @@ export const shipmentSO = () => {
   //     []
   //   );
 
-  const [tableErrors, setTableErrors] = useState([
-    {
-      custPONo: '',
-      custPODt: '',
-      industry: '',
-      itemDescription: '',
-      qty: '',
-      uom: '',
-      grWt: '',
-      chWt: '',
-      dimL: '',
-      dimW: '',
-      dimH: '',
-      unit: '',
-      volume: ''
-    }
-  ]);
-
-  const [tableData, setTableData] = useState([
-    {
-      sidNo: 1,
-      custPONo: '',
-      custPODt: '',
-      industry: '',
-      itemDescription: '',
-      qty: '',
-      uom: '',
-      grWt: '',
-      chWt: '',
-      dimL: '',
-      dimW: '',
-      dimH: '',
-      unit: '',
-      volume: ''
-    }
-  ]);
-
-  const handleAddRowPackingList = () => {
-    const newRow = {
-      sidNo: Date.now(),
-      custPONo: '',
-      custPODt: '',
-      industry: '',
-      itemDescription: '',
-      qty: '',
-      uom: '',
-      grWt: '',
-      chWt: '',
-      dimL: '',
-      dimW: '',
-      dimH: '',
-      unit: '',
-      volume: ''
-    };
-    setTableData([...tableData, newRow]);
-    setTableErrors([
-      ...tableErrors,
-      {
-        custPONo: '',
-        custPODt: '',
-        industry: '',
-        itemDescription: '',
-        qty: '',
-        uom: '',
-        grWt: '',
-        chWt: '',
-        dimL: '',
-        dimW: '',
-        dimH: '',
-        unit: '',
-        volume: ''
-      }
-    ]);
-  };
-
-  const handleDeleteRowPackingList = (id) => {
-    setTableData(tableData.filter((row) => row.id !== id));
-    setTableErrors(tableErrors.filter((_, index) => index !== id - 1));
-  };
-
-  const [tableErrors1, setTableErrors1] = useState([
-    {
-      partyVendor: '',
-      linearCarrier: '',
-      billToCustomer: '',
-      chargeCode: '',
-      description: '',
-      amountINR: '',
-      estimatePayDate: '',
-      fundReqDate: ''
-    }
-  ]);
-
-  const [tableData1, setTableData1] = useState([
-    {
-      partyVendor: '',
-      linearCarrier: '',
-      billToCustomer: '',
-      chargeCode: '',
-      description: '',
-      amountINR: '',
-      estimatePayDate: '',
-      fundReqDate: ''
-    }
-  ]);
-
-  const handleAddRowCostEstimate = () => {
-    const newRow = {
-      partyVendor: '',
-      linearCarrier: '',
-      billToCustomer: '',
-      chargeCode: '',
-      description: '',
-      amountINR: '',
-      estimatePayDate: '',
-      fundReqDate: ''
-    };
-    setTableData1([...tableData1, newRow]);
-    setTableErrors1([
-      ...tableErrors1,
-      {
-        partyVendor: '',
-        linearCarrier: '',
-        billToCustomer: '',
-        chargeCode: '',
-        description: '',
-        amountINR: '',
-        estimatePayDate: '',
-        fundReqDate: ''
-      }
-    ]);
-  };
-
-  const handleDeleteRowCostEstimate = (id) => {
-    setTableData1(tableData1.filter((row) => row.id !== id));
-    setTableErrors1(tableErrors1.filter((_, index) => index !== id - 1));
-  };
-
-  const handleKeyDown = (e, row) => {
-    if (e.key === 'Tab' && row.id === tableData[tableData.length - 1].id) {
-      e.preventDefault();
-      handleAddRow();
-    }
-  };
-
   return (
     <>
       <div>
@@ -627,7 +966,7 @@ export const shipmentSO = () => {
 
             <Tooltip title="Clear" placement="top">
               {' '}
-              <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }}>
+              <ButtonBase sx={{ borderRadius: '12px', marginRight: '10px' }} onClick={handleClear}>
                 <Avatar
                   variant="rounded"
                   sx={{
@@ -676,7 +1015,7 @@ export const shipmentSO = () => {
             </Tooltip>
             <Tooltip title="Save" placement="top">
               {' '}
-              <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }}>
+              <ButtonBase sx={{ borderRadius: '12px', marginLeft: '10px' }} onClick={handleSave}>
                 <Avatar
                   variant="rounded"
                   sx={{
@@ -702,15 +1041,15 @@ export const shipmentSO = () => {
           <div className="row d-flex ml">
             <div className="col-md-4 mb-3">
               <TextField
-                id="soNo"
+                id="docId"
                 fullWidth
-                name="soNo"
+                name="docId"
                 label="SO No"
                 size="small"
-                //   value={formData.employeeCode}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeCode}
-                //   helperText={fieldErrors.employeeCode}
+                value={formData.docId}
+                onChange={handleInputChange}
+                error={fieldErrors.docId}
+                helperText={fieldErrors.docId}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -718,14 +1057,14 @@ export const shipmentSO = () => {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     label="SO Date"
-                    //   value={formData.joiningDate}
+                    value={formData.docDate}
                     slotProps={{
                       textField: { size: 'small', clearable: true }
                     }}
-                    //   onChange={(date) => handleDateChange('joiningDate', date)}
-                    //   renderInput={(params) => (
-                    //     <TextField {...params} size="small" error={!!fieldErrors.joiningDate} helperText={fieldErrors.joiningDate} />
-                    //   )}
+                    onChange={(date) => handleDateChange('docDate', date)}
+                    renderInput={(params) => (
+                      <TextField {...params} size="small" error={!!fieldErrors.docDate} helperText={fieldErrors.docDate} />
+                    )}
                   />
                 </LocalizationProvider>
               </FormControl>
@@ -737,6 +1076,7 @@ export const shipmentSO = () => {
                 name="globalShipNo"
                 label="Global Ship No"
                 size="small"
+                disabled
                 //   value={formData.employeeName}
                 //   onChange={handleInputChange}
                 //   error={fieldErrors.employeeName}
@@ -750,6 +1090,7 @@ export const shipmentSO = () => {
                 name="orderNo"
                 label="Order No"
                 size="small"
+                disabled
                 //   value={formData.employeeName}
                 //   onChange={handleInputChange}
                 //   error={fieldErrors.employeeName}
@@ -763,10 +1104,10 @@ export const shipmentSO = () => {
                 name="pol"
                 label="POL"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.pol}
+                onChange={handleInputChange}
+                error={fieldErrors.pol}
+                helperText={fieldErrors.pol}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -776,10 +1117,10 @@ export const shipmentSO = () => {
                 name="pod"
                 label="POD"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.pod}
+                onChange={handleInputChange}
+                error={fieldErrors.pod}
+                helperText={fieldErrors.pod}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -789,6 +1130,7 @@ export const shipmentSO = () => {
                 name="jobNo"
                 label="Job No"
                 size="small"
+                disabled
                 //   value={formData.employeeName}
                 //   onChange={handleInputChange}
                 //   error={fieldErrors.employeeName}
@@ -804,6 +1146,7 @@ export const shipmentSO = () => {
                     slotProps={{
                       textField: { size: 'small', clearable: true }
                     }}
+                    disabled
                     //   onChange={(date) => handleDateChange('joiningDate', date)}
                     //   renderInput={(params) => (
                     //     <TextField {...params} size="small" error={!!fieldErrors.joiningDate} helperText={fieldErrors.joiningDate} />
@@ -819,30 +1162,26 @@ export const shipmentSO = () => {
                 name="fpod"
                 label="FPOD"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.fpod}
+                onChange={handleInputChange}
+                error={fieldErrors.fpod}
+                helperText={fieldErrors.fpod}
               />
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl
-                variant="outlined"
-                fullWidth
-                size="small"
-                // error={!!fieldErrors.gender}
-              >
-                <InputLabel id="gender">Nominated By</InputLabel>
+              <FormControl variant="outlined" fullWidth size="small" error={!!fieldErrors.nominatedBy}>
+                <InputLabel id="nominatedBy">Nominated By</InputLabel>
                 <Select
-                  labelId="gender"
+                  labelId="nominatedBy"
                   label="Nominated By"
                   name="nominatedBy"
-                  //   value={formData.gender} onChange={handleInputChange}
+                  value={formData.nominatedBy}
+                  onChange={handleInputChange}
                 >
                   <MenuItem value="1">1</MenuItem>
                   <MenuItem value="2">2</MenuItem>
                 </Select>
-                {/* {fieldErrors.gender && <FormHelperText>{fieldErrors.gender}</FormHelperText>} */}
+                {fieldErrors.nominatedBy && <FormHelperText>{fieldErrors.nominatedBy}</FormHelperText>}
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
@@ -852,6 +1191,7 @@ export const shipmentSO = () => {
                 name="hawbNo"
                 label="HAWB No"
                 size="small"
+                disabled
                 //   value={formData.employeeName}
                 //   onChange={handleInputChange}
                 //   error={fieldErrors.employeeName}
@@ -867,6 +1207,7 @@ export const shipmentSO = () => {
                     slotProps={{
                       textField: { size: 'small', clearable: true }
                     }}
+                    disabled
                     //   onChange={(date) => handleDateChange('joiningDate', date)}
                     //   renderInput={(params) => (
                     //     <TextField {...params} size="small" error={!!fieldErrors.joiningDate} helperText={fieldErrors.joiningDate} />
@@ -876,43 +1217,29 @@ export const shipmentSO = () => {
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl
-                variant="outlined"
-                fullWidth
-                size="small"
-                // error={!!fieldErrors.gender}
-              >
-                <InputLabel id="gender">Delivery Terms</InputLabel>
+              <FormControl variant="outlined" fullWidth size="small" error={!!fieldErrors.deliveryTerms}>
+                <InputLabel id="deliveryTerms">Delivery Terms</InputLabel>
                 <Select
-                  labelId="gender"
+                  labelId="deliveryTerms"
                   label="Delivery Terms"
                   name="deliveryTerms"
-                  //   value={formData.gender} onChange={handleInputChange}
+                  value={formData.deliveryTerms}
+                  onChange={handleInputChange}
                 >
                   <MenuItem value="1">1</MenuItem>
                   <MenuItem value="2">2</MenuItem>
                 </Select>
-                {/* {fieldErrors.gender && <FormHelperText>{fieldErrors.gender}</FormHelperText>} */}
+                {fieldErrors.deliveryTerms && <FormHelperText>{fieldErrors.deliveryTerms}</FormHelperText>}
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
-              <FormControl
-                variant="outlined"
-                fullWidth
-                size="small"
-                // error={!!fieldErrors.gender}
-              >
+              <FormControl variant="outlined" fullWidth size="small" error={!!fieldErrors.freight}>
                 <InputLabel id="freight">Freight</InputLabel>
-                <Select
-                  labelId="freight"
-                  label="Freight"
-                  name="freight"
-                  //   value={formData.gender} onChange={handleInputChange}
-                >
+                <Select labelId="freight" label="Freight" name="freight" value={formData.freight} onChange={handleInputChange}>
                   <MenuItem value="COLLECT">COLLECT</MenuItem>
                   <MenuItem value="PREPAID">PREPAID</MenuItem>
                 </Select>
-                {/* {fieldErrors.gender && <FormHelperText>{fieldErrors.gender}</FormHelperText>} */}
+                {fieldErrors.freight && <FormHelperText>{fieldErrors.freight}</FormHelperText>}
               </FormControl>
             </div>
             <div className="col-md-4 mb-3">
@@ -922,6 +1249,7 @@ export const shipmentSO = () => {
                 name="mawbNo"
                 label="MAWB No"
                 size="small"
+                disabled
                 //   value={formData.employeeName}
                 //   onChange={handleInputChange}
                 //   error={fieldErrors.employeeName}
@@ -937,6 +1265,7 @@ export const shipmentSO = () => {
                     slotProps={{
                       textField: { size: 'small', clearable: true }
                     }}
+                    disabled
                     //   onChange={(date) => handleDateChange('joiningDate', date)}
                     //   renderInput={(params) => (
                     //     <TextField {...params} size="small" error={!!fieldErrors.joiningDate} helperText={fieldErrors.joiningDate} />
@@ -953,10 +1282,10 @@ export const shipmentSO = () => {
                 name="shipperInvoiceNo"
                 label="Shipper Invoice No"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.shipperInvoiceNo}
+                onChange={handleInputChange}
+                error={fieldErrors.shipperInvoiceNo}
+                helperText={fieldErrors.shipperInvoiceNo}
               />
             </div>
             <div className="col-md-4 mb-3">
@@ -966,10 +1295,10 @@ export const shipmentSO = () => {
                 name="billOfEntry"
                 label="Bill Of Entry"
                 size="small"
-                //   value={formData.employeeName}
-                //   onChange={handleInputChange}
-                //   error={fieldErrors.employeeName}
-                //   helperText={fieldErrors.employeeName}
+                value={formData.billOfEntry}
+                onChange={handleInputChange}
+                error={fieldErrors.billOfEntry}
+                helperText={fieldErrors.billOfEntry}
               />
             </div>
             <div className="col-md-3 mb-3">
@@ -980,8 +1309,8 @@ export const shipmentSO = () => {
                       sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
                       id="projectCargo"
                       name="projectCargo"
-                      // checked={formData.active}
-                      // onChange={(e) => handleInputChange({ target: { name: 'active', value: e.target.checked } })}
+                      checked={formData.projectCargo}
+                      onChange={(e) => handleInputChange({ target: { name: 'projectCargo', value: e.target.checked } })}
                     />
                   }
                   label="Project Cargo"
@@ -996,8 +1325,8 @@ export const shipmentSO = () => {
                       sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
                       id="directMaster"
                       name="directMaster"
-                      // checked={formData.active}
-                      // onChange={(e) => handleInputChange({ target: { name: 'active', value: e.target.checked } })}
+                      checked={formData.directMaster}
+                      onChange={(e) => handleInputChange({ target: { name: 'directMaster', value: e.target.checked } })}
                     />
                   }
                   label="Direct Master"
@@ -1010,10 +1339,10 @@ export const shipmentSO = () => {
                   control={
                     <Checkbox
                       sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
-                      id="joBHouse"
-                      name="joBHouse"
-                      // checked={formData.active}
-                      // onChange={(e) => handleInputChange({ target: { name: 'active', value: e.target.checked } })}
+                      id="jobAssigned"
+                      name="jobAssigned"
+                      checked={formData.jobAssigned}
+                      onChange={(e) => handleInputChange({ target: { name: 'jobAssigned', value: e.target.checked } })}
                     />
                   }
                   label="JoB / House Assigned"
@@ -1028,6 +1357,7 @@ export const shipmentSO = () => {
                       sx={{ '& .MuiSvgIcon-root': { color: '#5e35b1' } }}
                       id="masterFinalize"
                       name="masterFinalize"
+                      disabled
                       // checked={formData.active}
                       // onChange={(e) => handleInputChange({ target: { name: 'active', value: e.target.checked } })}
                     />
@@ -1110,43 +1440,33 @@ export const shipmentSO = () => {
                   name="shipper"
                   label="Shipper"
                   size="small"
-                  //   value={formData.employeeCode}
-                  //   onChange={handleInputChange}
-                  //   error={fieldErrors.employeeCode}
-                  //   helperText={fieldErrors.employeeCode}
+                  value={formData.shipper}
+                  onChange={handleInputChange}
+                  error={fieldErrors.shipper}
+                  helperText={fieldErrors.shipper}
                 />
               </div>
               <div className="col-md-4 mb-3">
-                <FormControl
-                  variant="outlined"
-                  fullWidth
-                  size="small"
-                  // error={!!fieldErrors.gender}
-                >
-                  <InputLabel id="gender">Add Type</InputLabel>
-                  <Select
-                    labelId="addType"
-                    label="Add Type"
-                    name="addType"
-                    //   value={formData.gender} onChange={handleInputChange}
-                  >
+                <FormControl variant="outlined" fullWidth size="small" error={!!fieldErrors.saddType}>
+                  <InputLabel id="saddType">Add Type</InputLabel>
+                  <Select labelId="saddType" label="Add Type" name="saddType" value={formData.saddType} onChange={handleInputChange}>
                     <MenuItem value="1">1</MenuItem>
                     <MenuItem value="2">2</MenuItem>
                   </Select>
-                  {/* {fieldErrors.gender && <FormHelperText>{fieldErrors.gender}</FormHelperText>} */}
+                  {fieldErrors.saddType && <FormHelperText>{fieldErrors.saddType}</FormHelperText>}
                 </FormControl>
               </div>
               <div className="col-md-4 mb-3">
                 <TextField
-                  id="address"
+                  id="saddress"
                   fullWidth
-                  name="address"
+                  name="saddress"
                   label="Address"
                   size="small"
-                  //   value={formData.employeeCode}
-                  //   onChange={handleInputChange}
-                  //   error={fieldErrors.employeeCode}
-                  //   helperText={fieldErrors.employeeCode}
+                  value={formData.saddress}
+                  onChange={handleInputChange}
+                  error={fieldErrors.saddress}
+                  helperText={fieldErrors.saddress}
                 />
               </div>
               <div className="col-md-4 mb-3">
@@ -1156,43 +1476,33 @@ export const shipmentSO = () => {
                   name="consignee"
                   label="Consignee"
                   size="small"
-                  //   value={formData.employeeCode}
-                  //   onChange={handleInputChange}
-                  //   error={fieldErrors.employeeCode}
-                  //   helperText={fieldErrors.employeeCode}
+                  value={formData.consignee}
+                  onChange={handleInputChange}
+                  error={fieldErrors.consignee}
+                  helperText={fieldErrors.consignee}
                 />
               </div>
               <div className="col-md-4 mb-3">
-                <FormControl
-                  variant="outlined"
-                  fullWidth
-                  size="small"
-                  // error={!!fieldErrors.gender}
-                >
-                  <InputLabel id="gender">Add Type</InputLabel>
-                  <Select
-                    labelId="addType"
-                    label="Add Type"
-                    name="addType"
-                    //   value={formData.gender} onChange={handleInputChange}
-                  >
+                <FormControl variant="outlined" fullWidth size="small" error={!!fieldErrors.caddType}>
+                  <InputLabel id="caddType">Add Type</InputLabel>
+                  <Select labelId="caddType" label="Add Type" name="caddType" value={formData.caddType} onChange={handleInputChange}>
                     <MenuItem value="1">1</MenuItem>
                     <MenuItem value="2">2</MenuItem>
                   </Select>
-                  {/* {fieldErrors.gender && <FormHelperText>{fieldErrors.gender}</FormHelperText>} */}
+                  {fieldErrors.caddType && <FormHelperText>{fieldErrors.caddType}</FormHelperText>}
                 </FormControl>
               </div>
               <div className="col-md-4 mb-3">
                 <TextField
-                  id="address"
+                  id="caddress"
                   fullWidth
-                  name="address"
+                  name="caddress"
                   label="Address"
                   size="small"
-                  //   value={formData.employeeCode}
-                  //   onChange={handleInputChange}
-                  //   error={fieldErrors.employeeCode}
-                  //   helperText={fieldErrors.employeeCode}
+                  value={formData.caddress}
+                  onChange={handleInputChange}
+                  error={fieldErrors.caddress}
+                  helperText={fieldErrors.caddress}
                 />
               </div>
               <div className="col-md-4 mb-3">
@@ -1202,83 +1512,65 @@ export const shipmentSO = () => {
                   name="notify"
                   label="Notify"
                   size="small"
-                  //   value={formData.employeeCode}
-                  //   onChange={handleInputChange}
-                  //   error={fieldErrors.employeeCode}
-                  //   helperText={fieldErrors.employeeCode}
+                  value={formData.notify}
+                  onChange={handleInputChange}
+                  error={fieldErrors.notify}
+                  helperText={fieldErrors.notify}
                 />
               </div>
               <div className="col-md-4 mb-3">
-                <FormControl
-                  variant="outlined"
-                  fullWidth
-                  size="small"
-                  // error={!!fieldErrors.gender}
-                >
-                  <InputLabel id="gender">Add Type</InputLabel>
-                  <Select
-                    labelId="addType"
-                    label="Add Type"
-                    name="addType"
-                    //   value={formData.gender} onChange={handleInputChange}
-                  >
+                <FormControl variant="outlined" fullWidth size="small" error={!!fieldErrors.naddType}>
+                  <InputLabel id="naddType">Add Type</InputLabel>
+                  <Select labelId="naddType" label="Add Type" name="naddType" value={formData.naddType} onChange={handleInputChange}>
                     <MenuItem value="1">1</MenuItem>
                     <MenuItem value="2">2</MenuItem>
                   </Select>
-                  {/* {fieldErrors.gender && <FormHelperText>{fieldErrors.gender}</FormHelperText>} */}
+                  {fieldErrors.naddType && <FormHelperText>{fieldErrors.naddType}</FormHelperText>}
                 </FormControl>
               </div>
               <div className="col-md-4 mb-3">
                 <TextField
-                  id="address"
+                  id="naddress"
                   fullWidth
-                  name="address"
+                  name="naddress"
                   label="Address"
                   size="small"
-                  //   value={formData.employeeCode}
-                  //   onChange={handleInputChange}
-                  //   error={fieldErrors.employeeCode}
-                  //   helperText={fieldErrors.employeeCode}
+                  value={formData.naddress}
+                  onChange={handleInputChange}
+                  error={fieldErrors.naddress}
+                  helperText={fieldErrors.naddress}
                 />
               </div>
               <div className="col-md-4 mb-3">
-                <FormControl
-                  variant="outlined"
-                  fullWidth
-                  size="small"
-                  // error={!!fieldErrors.gender}
-                >
-                  <InputLabel id="gender">Sales Category</InputLabel>
+                <FormControl variant="outlined" fullWidth size="small" error={!!fieldErrors.salesCategory}>
+                  <InputLabel id="salesCategory">Sales Category</InputLabel>
                   <Select
                     labelId="salesCategory"
                     label="Sales Category"
                     name="salesCategory"
-                    //   value={formData.gender} onChange={handleInputChange}
+                    value={formData.salesCategory}
+                    onChange={handleInputChange}
                   >
                     <MenuItem value="1">1</MenuItem>
                     <MenuItem value="2">2</MenuItem>
                   </Select>
-                  {/* {fieldErrors.gender && <FormHelperText>{fieldErrors.gender}</FormHelperText>} */}
+                  {fieldErrors.salesCategory && <FormHelperText>{fieldErrors.salesCategory}</FormHelperText>}
                 </FormControl>
               </div>
               <div className="col-md-4 mb-3">
-                <FormControl
-                  variant="outlined"
-                  fullWidth
-                  size="small"
-                  // error={!!fieldErrors.gender}
-                >
-                  <InputLabel id="gender">Sales Category</InputLabel>
+                <FormControl variant="outlined" fullWidth size="small" error={!!fieldErrors.salesPerson}>
+                  <InputLabel id="salesPerson">Sales Person</InputLabel>
                   <Select
                     labelId="salesPerson"
                     label="Sales Person"
                     name="salesPerson"
-                    //   value={formData.gender} onChange={handleInputChange}
+                    value={formData.salesPerson}
+                    onChange={handleInputChange}
                   >
                     <MenuItem value="1">1</MenuItem>
                     <MenuItem value="2">2</MenuItem>
                   </Select>
-                  {/* {fieldErrors.gender && <FormHelperText>{fieldErrors.gender}</FormHelperText>} */}
+                  {fieldErrors.salesPerson && <FormHelperText>{fieldErrors.salesPerson}</FormHelperText>}
                 </FormControl>
               </div>
             </div>
@@ -1375,44 +1667,44 @@ export const shipmentSO = () => {
                             <td className="border px-2 py-2">
                               <input
                                 type="text"
-                                value={row.custPONo}
+                                value={row.custPoNo}
                                 onChange={(e) => {
                                   const value = e.target.value;
-                                  setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, custPONo: value } : r)));
+                                  setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, custPoNo: value } : r)));
                                   setTableErrors((prev) => {
                                     const newErrors = [...prev];
-                                    newErrors[index] = { ...newErrors[index], custPONo: !value ? 'Cust PO No is required' : '' };
+                                    newErrors[index] = { ...newErrors[index], custPoNo: !value ? 'Cust PO No is required' : '' };
                                     return newErrors;
                                   });
                                 }}
-                                className={tableErrors[index]?.custPONo ? 'error' : ''}
+                                className={tableErrors[index]?.custPoNo ? 'error' : ''}
                                 style={{ marginBottom: '6px' }}
                               />
-                              {tableErrors[index]?.custPONo && (
-                                <div style={{ color: 'red', fontSize: '12px' }}>{tableErrors[index].custPONo}</div>
+                              {tableErrors[index]?.custPoNo && (
+                                <div style={{ color: 'red', fontSize: '12px' }}>{tableErrors[index].custPoNo}</div>
                               )}
                             </td>
                             <td className="border px-2 py-2">
                               <input
                                 type="text"
-                                value={row.custPODt}
+                                value={row.custPoDt}
                                 onChange={(e) => {
                                   const value = e.target.value;
-                                  setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, custPODt: value } : r)));
+                                  setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, custPoDt: value } : r)));
                                   setTableErrors((prev) => {
                                     const newErrors = [...prev];
                                     newErrors[index] = {
                                       ...newErrors[index],
-                                      custPODt: !value ? 'Cust PO Dt is required' : ''
+                                      custPoDt: !value ? 'Cust PO Dt is required' : ''
                                     };
                                     return newErrors;
                                   });
                                 }}
-                                className={tableErrors[index]?.custPODt ? 'error' : ''}
+                                className={tableErrors[index]?.custPoDt ? 'error' : ''}
                                 style={{ marginBottom: '6px' }}
                               />
-                              {tableErrors[index]?.custPODt && (
-                                <div style={{ color: 'red', fontSize: '12px' }}>{tableErrors[index].custPODt}</div>
+                              {tableErrors[index]?.custPoDt && (
+                                <div style={{ color: 'red', fontSize: '12px' }}>{tableErrors[index].custPoDt}</div>
                               )}
                             </td>
                             <td className="border px-2 py-2">
@@ -1421,7 +1713,6 @@ export const shipmentSO = () => {
                                 onChange={(e) =>
                                   setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, industry: e.target.value } : r)))
                                 }
-                                // onKeyDown={(e) => handleKeyDown(e, row)}
                               >
                                 <option value="Yes">Yes</option>
                                 <option value="No">No</option>
@@ -1477,7 +1768,6 @@ export const shipmentSO = () => {
                                 onChange={(e) =>
                                   setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, uom: e.target.value } : r)))
                                 }
-                                // onKeyDown={(e) => handleKeyDown(e, row)}
                               >
                                 <option value="Yes">Yes</option>
                                 <option value="No">No</option>
@@ -1594,7 +1884,6 @@ export const shipmentSO = () => {
                                 onChange={(e) =>
                                   setTableData((prev) => prev.map((r) => (r.id === row.id ? { ...r, unit: e.target.value } : r)))
                                 }
-                                // onKeyDown={(e) => handleKeyDown(e, row)}
                               >
                                 <option value="Yes">Yes</option>
                                 <option value="No">No</option>
@@ -1677,7 +1966,7 @@ export const shipmentSO = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {tableData.map((row, index) => (
+                        {tableData1.map((row, index) => (
                           <tr key={row.id}>
                             <td className="border px-2 py-2">
                               <Tooltip title="Delete" placement="top">
@@ -1824,10 +2113,10 @@ export const shipmentSO = () => {
                             <td className="border px-2 py-2">
                               <input
                                 type="text"
-                                value={row.amountINR}
+                                value={row.amountInInr}
                                 onChange={(e) => {
                                   const value = e.target.value;
-                                  setTableData1((prev) => prev.map((r) => (r.id === row.id ? { ...r, amountINR: value } : r)));
+                                  setTableData1((prev) => prev.map((r) => (r.id === row.id ? { ...r, amountInInr: value } : r)));
                                   setTableErrors1((prev) => {
                                     const newErrors = [...prev];
                                     newErrors[index] = {
@@ -1837,98 +2126,47 @@ export const shipmentSO = () => {
                                     return newErrors;
                                   });
                                 }}
-                                className={tableErrors1[index]?.amountINR ? 'error' : ''}
+                                className={tableErrors1[index]?.amountInInr ? 'error' : ''}
                                 style={{ marginBottom: '6px' }}
                               />
-                              {tableErrors1[index]?.amountINR && (
-                                <div style={{ color: 'red', fontSize: '12px' }}>{tableErrors1[index].amountINR}</div>
+                              {tableErrors1[index]?.amountInInr && (
+                                <div style={{ color: 'red', fontSize: '12px' }}>{tableErrors1[index].amountInInr}</div>
                               )}
                             </td>
-                            {/* <td className="border px-2 py-2">
-                              <input
-                                type="text"
-                                value={row.estimatePayDate}
-                                onChange={(e) => {
-                                  const value = e.target.value;
-                                  setTableData1((prev) => prev.map((r) => (r.id === row.id ? { ...r, estimatePayDate: value } : r)));
-                                  setTableErrors1((prev) => {
-                                    const newErrors = [...prev];
-                                    newErrors[index] = {
-                                      ...newErrors[index],
-                                      estimatePayDate: !value ? 'Estimate Pay Date is required' : ''
-                                    };
-                                    return newErrors;
-                                  });
-                                }}
-                                className={tableErrors1[index]?.estimatePayDate ? 'error' : ''}
-                                style={{ marginBottom: '6px' }}
-                              />
-                              {tableErrors1[index]?.estimatePayDate && (
-                                <div style={{ color: 'red', fontSize: '12px' }}>{tableErrors1[index].estimatePayDate}</div>
-                              )}
-                            </td> */}
                             <td className="border px-2 py-2">
-                              {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
+                              <LocalizationProvider dateAdapter={AdapterDayjs}>
                                 <DatePicker
-                                  value={row.estimatePayDate}
-                                  onChange={(newValue) => {
-                                    setTableData1((prev) => prev.map((r) => (r.id === row.id ? { ...r, estimatePayDate: newValue } : r)));
-                                    setTableErrors1((prev) => {
-                                      const newErrors = [...prev];
-                                      newErrors[index] = {
-                                        ...newErrors[index],
-                                        estimatePayDate: !newValue ? 'Estimate Pay Date is required' : ''
-                                      };
-                                      return newErrors;
-                                    });
-                                  }}
+                                  value={row.estimatePayDate ? dayjs(row.estimatePayDate) : null}
+                                  onChange={(date) => handleDateChange(index, 'estimatePayDate', date)}
                                   renderInput={(params) => (
                                     <TextField
                                       {...params}
-                                      error={!!tableErrors1[index]?.estimatePayDate}
-                                      helperText={tableErrors1[index]?.estimatePayDate}
+                                      error={!!(fieldErrors[index] && fieldErrors[index].estimatePayDate)}
+                                      helperText={fieldErrors[index]?.estimatePayDate || ''}
+                                      size="small"
                                       style={{ marginBottom: '6px' }}
                                     />
                                   )}
-                                />
-                              </LocalizationProvider> */}
-                              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DatePicker
-                                  label="MAWB Date"
-                                  //   value={formData.joiningDate}
-                                  slotProps={{
-                                    textField: { size: 'small', clearable: true }
-                                  }}
-                                  //   onChange={(date) => handleDateChange('joiningDate', date)}
-                                  //   renderInput={(params) => (
-                                  //     <TextField {...params} size="small" error={!!fieldErrors.joiningDate} helperText={fieldErrors.joiningDate} />
-                                  //   )}
                                 />
                               </LocalizationProvider>
                             </td>
 
                             <td className="border px-2 py-2">
-                              <input
-                                type="text"
-                                value={row.fundReqDate}
-                                onChange={(e) => {
-                                  const value = e.target.value;
-                                  setTableData1((prev) => prev.map((r) => (r.id === row.id ? { ...r, fundReqDate: value } : r)));
-                                  setTableErrors1((prev) => {
-                                    const newErrors = [...prev];
-                                    newErrors[index] = {
-                                      ...newErrors[index],
-                                      fundReqDate: !value ? 'Fund Req Date is required' : ''
-                                    };
-                                    return newErrors;
-                                  });
-                                }}
-                                className={tableErrors1[index]?.fundReqDate ? 'error' : ''}
-                                style={{ marginBottom: '6px' }}
-                              />
-                              {tableErrors1[index]?.fundReqDate && (
-                                <div style={{ color: 'red', fontSize: '12px' }}>{tableErrors1[index].fundReqDate}</div>
-                              )}
+                              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DatePicker
+                                  value={row.funReqDate ? dayjs(row.funReqDate) : null}
+                                  onChange={(date) => handleDateChange(index, 'funReqDate', date)}
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      error={!!(fieldErrors[index] && fieldErrors[index].funReqDate)}
+                                      helperText={fieldErrors[index]?.funReqDate || ''}
+                                      size="small"
+                                      style={{ marginBottom: '6px' }}
+                                    />
+                                  )}
+                                />
+                              </LocalizationProvider>
                             </td>
                           </tr>
                         ))}
@@ -1944,15 +2182,15 @@ export const shipmentSO = () => {
             <div className="row d-flex mt-3">
               <div className="col-md-4 mb-3">
                 <TextField
-                  id="totalNoOfPackages"
+                  id="totalNoOfPkgs"
                   fullWidth
-                  name="totalNoOfPackages"
+                  name="totalNoOfPkgs"
                   label="Total No of Pkgs"
                   size="small"
-                  //   value={formData.employeeCode}
-                  //   onChange={handleInputChange}
-                  //   error={fieldErrors.employeeCode}
-                  //   helperText={fieldErrors.employeeCode}
+                  value={formData.totalNoOfPkgs}
+                  onChange={handleInputChange}
+                  error={fieldErrors.totalNoOfPkgs}
+                  helperText={fieldErrors.totalNoOfPkgs}
                 />
               </div>
               <div className="col-md-4 mb-3">
@@ -1962,36 +2200,36 @@ export const shipmentSO = () => {
                   name="totalChWt"
                   label="Total Ch Wt"
                   size="small"
-                  //   value={formData.employeeCode}
-                  //   onChange={handleInputChange}
-                  //   error={fieldErrors.employeeCode}
-                  //   helperText={fieldErrors.employeeCode}
+                  value={formData.totalChWt}
+                  onChange={handleInputChange}
+                  error={fieldErrors.totalChWt}
+                  helperText={fieldErrors.totalChWt}
                 />
               </div>
               <div className="col-md-4 mb-3">
                 <TextField
-                  id="totalEstimationCost"
+                  id="totEstimationCost"
                   fullWidth
-                  name="totalEstimationCost"
+                  name="totEstimationCost"
                   label="Total Estimation Cost"
                   size="small"
-                  //   value={formData.employeeCode}
-                  //   onChange={handleInputChange}
-                  //   error={fieldErrors.employeeCode}
-                  //   helperText={fieldErrors.employeeCode}
+                  value={formData.totEstimationCost}
+                  onChange={handleInputChange}
+                  error={fieldErrors.totEstimationCost}
+                  helperText={fieldErrors.totEstimationCost}
                 />
               </div>
               <div className="col-md-4 mb-3">
                 <TextField
-                  id="totalGrWt"
+                  id="totalGrtWt"
                   fullWidth
-                  name="totalGrWt"
+                  name="totalGrtWt"
                   label="Total Gr Wt"
                   size="small"
-                  //   value={formData.employeeCode}
-                  //   onChange={handleInputChange}
-                  //   error={fieldErrors.employeeCode}
-                  //   helperText={fieldErrors.employeeCode}
+                  value={formData.totalGrtWt}
+                  onChange={handleInputChange}
+                  error={fieldErrors.totalGrtWt}
+                  helperText={fieldErrors.totalGrtWt}
                 />
               </div>
               <div className="col-md-4 mb-3">
@@ -2001,10 +2239,10 @@ export const shipmentSO = () => {
                   name="totalVolWt"
                   label="Total Vol Wt"
                   size="small"
-                  //   value={formData.employeeCode}
-                  //   onChange={handleInputChange}
-                  //   error={fieldErrors.employeeCode}
-                  //   helperText={fieldErrors.employeeCode}
+                  value={formData.totalVolWt}
+                  onChange={handleInputChange}
+                  error={fieldErrors.totalVolWt}
+                  helperText={fieldErrors.totalVolWt}
                 />
               </div>
             </div>
